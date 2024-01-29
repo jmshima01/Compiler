@@ -118,20 +118,27 @@ def read_file(file_path,sigma) -> DFA:
         else:
             nonacc[i[1]] = i[2:]
     
-    return DFA(accept=accepting,non_accept=nonacc,sigma=sigma)
+    return DFA(accepting,nonacc,sigma)
 
 def equal_tables(d1,d2) -> bool:
     return (len(d1.T['-'])+len(d1.T['+'])) == (len(d2.T['-'])+len(d2.T['+']))
         
 if __name__ == "__main__":
-    if len(argv) != 2:
+    if len(argv) != 3:
+        print("usage: python3 dfa.py file sigma")
         exit(-1) 
 
-    sigma = ['a','b','c','q','r','s','t','u','v']
+    
+    # sigma = ['a','b','c','q','r','s','t','u','v']
+    sigma = argv[2]
+    sigma = [char for char in sigma]
+
     D = read_file(argv[1],sigma)
     original = copy.deepcopy(D)
 
+    count = 0
     while 1:
+        count+=1
         D_ = merge_states(D)
         if equal_tables(D_ ,original):
             break
@@ -140,3 +147,4 @@ if __name__ == "__main__":
     D = D_
     D.print_T()
     D.to_file(argv[1].strip(".txt") + "-optimzed.txt")
+    print("iters:",count)
