@@ -86,9 +86,7 @@ def merge_states(dfa : DFA) -> DFA:
         print()
         S,C = L.pop()
         C = copy.copy(C)
-        c = ''
-        if len(C)!=0:
-            c = C.pop(0)
+        c = C.pop(0)
         sets = partition(S,dfa,c)
         for x_i in sets:
             if(not (len(x_i)>1)):
