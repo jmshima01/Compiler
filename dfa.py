@@ -30,7 +30,6 @@ class DFA():
                     f.write("+ " + k + " " + " ".join(v))
                 else:
                     f.write("+ " + k + " " + " ".join(v)+"\n")
-    
 
 
 def update_del(s,new_s,dfa):
@@ -74,36 +73,36 @@ def partition(S,dfa,c):
     return list(res.values())
 
 def merge_states(dfa : DFA) -> DFA:
-        L = deque()
-        M = []
-        n_sigma = copy.copy(dfa.sigma)
-        a_sigma = copy.copy(dfa.sigma)
-        L.append((list(dfa.T['+'].keys()),a_sigma))
-        L.append((list(dfa.T['-'].keys()),n_sigma))
-        
-        while L:
-            print("L:",list(L)[::-1])
-            print("M:",M)
-            print()
-            S,C = L.pop()
-            C = copy.copy(C)
-            c = ''
-            if len(C)!=0:
-                c = C.pop(0)
-            sets = partition(S,dfa,c)
-            for x_i in sets:
-                if(not (len(x_i)>1)):
-                    continue
-                if C==[]:
-                    M.append(x_i)
-                else:
-                    L.append((x_i,C))
-        print(M)
-        print(L)
-        for s in M:
-            merge_row(s,dfa)
-        
-        return dfa
+    L = deque()
+    M = []
+    n_sigma = copy.copy(dfa.sigma)
+    a_sigma = copy.copy(dfa.sigma)
+    L.append((list(dfa.T['+'].keys()),a_sigma))
+    L.append((list(dfa.T['-'].keys()),n_sigma))
+    
+    while L:
+        print("L:",list(L)[::-1])
+        print("M:",M)
+        print()
+        S,C = L.pop()
+        C = copy.copy(C)
+        c = ''
+        if len(C)!=0:
+            c = C.pop(0)
+        sets = partition(S,dfa,c)
+        for x_i in sets:
+            if(not (len(x_i)>1)):
+                continue
+            if C==[]:
+                M.append(x_i)
+            else:
+                L.append((x_i,C))
+    print(M)
+    print(L)
+    for s in M:
+        merge_row(s,dfa)
+    
+    return dfa
 
 def read_file(file_path,sigma) -> DFA:
     data = []
@@ -119,28 +118,25 @@ def read_file(file_path,sigma) -> DFA:
         else:
             nonacc[i[1]] = i[2:]
     
-    
     return DFA(accept=accepting,non_accept=nonacc,sigma=sigma)
 
 def equal_tables(d1,d2) -> bool:
     return (len(d1.T['-'])+len(d1.T['+'])) == (len(d2.T['-'])+len(d2.T['+']))
         
-if (__name__ == "__main__"):
-    if len(argv) !=2:
+if __name__ == "__main__":
+    if len(argv) != 2:
         exit(-1) 
 
     sigma = ['a','b','c','q','r','s','t','u','v']
     D = read_file(argv[1],sigma)
     original = copy.deepcopy(D)
-    
+
     while 1:
         D_ = merge_states(D)
         if equal_tables(D_ ,original):
             break
         original = copy.deepcopy(D_)
-    
-    D = D_
 
+    D = D_
     D.print_T()
     D.to_file(argv[1].strip(".txt") + "-optimzed.txt")
-
