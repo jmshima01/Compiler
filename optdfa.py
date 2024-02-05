@@ -1,6 +1,7 @@
 from sys import argv
 from collections import deque
 import copy
+import re
 
 class DFA():
     def __init__(self, accept, non_accept, sigma):
@@ -110,7 +111,7 @@ def read_file(file_path,sigma) -> DFA:
     accepting = {}
     nonacc = {}
     for i in data:
-        i = i.split(" ")
+        i = re.split(r"\s+", i)
         if i[0] == '+':
             accepting[i[1]] = i[2:]
         else:

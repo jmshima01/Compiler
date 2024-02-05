@@ -1,8 +1,0 @@
--  9  E  E  E  E  E  9  8  E  E
-- 10  E  E  E  E  E  9  8  E  E
-- 11  E  E  E  E 11 10  E  E  E
-- 12  E  E  E  E  6  5  E  4  E
-- 13  E  E  E 12 11 10  E  E  E
-- 14  E  E 13  E  E  E  E  E  E
-- 15  E 14  E  E  E  E  E  E  E
-+ 16  E  E  E  E  E  E  E  E  E
