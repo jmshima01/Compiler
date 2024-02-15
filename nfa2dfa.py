@@ -87,16 +87,6 @@ if __name__ == "__main__":
     
     print(f"\n\nN:{N}")
 
-    # REMOVE DEAD STATES                   
-    # for k,v in N.items():
-    #     for i,j in v.items():
-    #         if len(list(v.keys())) == 1 and i==k and k not in A: # Dead state
-    #             N.pop(k)
-
-    # print(f"\n\nN Deads Removed:{N}")
-
-
-
 
     T={} # Transition Function aka DFA
     L = deque()
@@ -143,22 +133,21 @@ if __name__ == "__main__":
 
 
     T_final = {k:{} for k in new_keys.values()}
-    # print()
-    # print(T_final)
+
     for k,v in T.items():
         # print("val:",v)
         # print("k:",k)
         T_final[new_keys[k]] = convert_old_keys(new_keys,v)
-    print()
-    print()
-    print(T)
-    print("===============")
-    print(T_final)
+    # print()
+    # print()
+    # print(T)
+
+    # print(T_final)
 
     new_accept = set()
     for i in DFA_ACCEPT_STATES:
         new_accept.add(new_keys[i])
-    print(new_accept)
+    # print(new_accept)
 
     def convert_row_to_dfa_list(row,alphabet):
         row_to_write = {i:'E' for i in ALPHABET}
@@ -168,9 +157,8 @@ if __name__ == "__main__":
         return " ".join(row_to_write.values())
 
 
-    print("++++++++++")
+
     a = " ".join(ALPHABET)
-    print("    " + a)
     with open("nfa2dfa.txt","w+") as f:
         line = ""
         for k,v in T_final.items():
@@ -179,7 +167,7 @@ if __name__ == "__main__":
                 line+= "+ " + k + " "
             else:
                 line+= "- " + k + " "
-            print(line + convert_row_to_dfa_list(v,ALPHABET))
+            # print(line + convert_row_to_dfa_list(v,ALPHABET))
             if k != list(T_final.keys())[-1]:
                 f.write(line + convert_row_to_dfa_list(v,ALPHABET) + "\n")
             else:
