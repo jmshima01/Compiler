@@ -14,13 +14,18 @@ class DFA_Converter():
 
     def __read_nfa(self,filepath):
         nfa = ""
-        whitespace = lambda w: w.split(" ")
+        whitespace = lambda w: re.split(r"\s+",w)
         try:
-            with open(filepath,"r+") as f:
+            with open(filepath,"r+",newline="") as f:
                 nfa = list(map(whitespace, f.read().split('\n')))
                 header = nfa[0]
                 nfa = nfa[1:]
-        
+            t = []
+            for i in nfa:
+                if i != ['']:
+                    t.append(i)
+            nfa = t
+
         except Exception as E:
             print(E)
             exit(1)
@@ -42,15 +47,24 @@ class DFA_Converter():
         return A
     
     def __gen_nfa(self):
-        N = {str(i):{} for i in range(self.NUM_STATES)} #NFA file in nice dict format
+        unique_states = set()
+        for i in self.nfa:
+            unique_states.add(i[1])
+            unique_states.add(i[2])
 
+        N = {i:{} for i in unique_states} #NFA file in nice dict format
+        print()
+        print(self.nfa)
         for row in self.nfa:
             state = row[1]
             transition_state = row[2]
-            if len(row) < 4: # No transition char on this line of the file i.e dead(if not finish state) or finish state
+            if len(row) < 4:
                 transition_chars = []
             else:
                 transition_chars = row[3:]
+            print(state)
+            print(transition_state)
+            print(transition_chars)
             N[state][transition_state] = transition_chars
         return N
     
@@ -191,10 +205,10 @@ class DFA_Optimizer():
             i = 0
             for k,v in self.T['+'].items():
                 i+=1
-                if i==len(self.T['+'].items()):
-                    f.write("+ " + k + " " + " ".join(v))
-                else:
-                    f.write("+ " + k + " " + " ".join(v)+"\n")
+                # if i==len(self.T['+'].items()):
+                #     f.write("+ " + k + " " + " ".join(v))
+                # else:
+                f.write("+ " + k + " " + " ".join(v)+"\n")
     
     def __reorder_keys(self):
         new_k = [str(i) for i in range(len(self.accept)+len(self.non_accept))]
@@ -371,38 +385,35 @@ class DFA_Optimizer():
         return self.T
     
         
-class TokenChecker():
-    def __init__(self,T,alphabet):
-        self.T = T
-        self.ALPHABET = alphabet
+# class TokenChecker():
+#     def __init__(self,T,alphabet):
+#         self.T = T
+#         self.ALPHABET = alphabet
 
-    def process_token_stream(self,*tokens):
-        for t in tokens:
-            process(t)
+#     def process_token_stream(self,*tokens):
+#         for t in tokens:
+#             process(t)
 
-    def __process_token(self,t):
-        for k,v in self.T['-']:
-            
+#     def __process_token(self,t):
+#         for k,v in self.T['-']:
+
         
 
 if __name__ == "__main__":
     if len(argv) < 3:
         print("Usage: python3 NFAMATCH.py nfa_file_path out_file_path token1 token2 ... tokenN ")
         exit(1)
-    try:
-        nfa2dfa = DFA_Converter(argv[1])
-        dfa = nfa2dfa.export()
-        
-        print(dfa)
-        sigma = nfa2dfa.get_alphabet()
-        
-        optimizer = DFA_Optimizer(dfa,sigma)
-        print(optimizer.T)
-
-        T = optimizer.run()
-        optimizer.to_file(argv[2])
     
-    except Exception as E:
-        print(E.with_traceback())
-        exit(1)
+    nfa2dfa = DFA_Converter(argv[1])
+    dfa = nfa2dfa.export()
+    
+    print(dfa)
+    sigma = nfa2dfa.get_alphabet()
+    
+    optimizer = DFA_Optimizer(dfa,sigma)
+    print(optimizer.T)
+
+    T = optimizer.run()
+    optimizer.to_file(argv[2])
+
 
