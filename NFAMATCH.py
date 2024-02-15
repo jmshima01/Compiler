@@ -53,8 +53,8 @@ class DFA_Converter():
             unique_states.add(i[2])
 
         N = {i:{} for i in unique_states} #NFA file in nice dict format
-        print()
-        print(self.nfa)
+        # print()
+        # print(self.nfa)
         for row in self.nfa:
             state = row[1]
             transition_state = row[2]
@@ -62,9 +62,9 @@ class DFA_Converter():
                 transition_chars = []
             else:
                 transition_chars = row[3:]
-            print(state)
-            print(transition_state)
-            print(transition_chars)
+            # print(state)
+            # print(transition_state)
+            # print(transition_chars)
             N[state][transition_state] = transition_chars
         return N
     
@@ -185,8 +185,8 @@ class DFA_Optimizer():
                 nonacc[i[1]] = i[2:]
         return {"+" : accepting,"-" : nonacc}, accepting, nonacc
     
-    def __eq_T(self,T):
-        return (len(self.T['-'])+len(self.T['+'])) == (len(T['-'])+len(T['+']))
+    def __eq_T(self,target):
+        return (len(self.T['-'])+len(self.T['+'])) == (len(target['-'])+len(target['+']))
     
     def print_T(self):
         print()
@@ -270,7 +270,7 @@ class DFA_Optimizer():
             # print(seen)
             if len(acc_set.intersection(seen))==0:
                 dead.add(k)
-        print(dead)
+        # print(dead)
         return list(dead)
             
     def __delete_states(self,states):
@@ -314,6 +314,10 @@ class DFA_Optimizer():
                 if lis[i]==s:
                     self.T['+'][k][i]=new_s
     
+    #TODO
+    def __find_redundant_accept(self):
+        pass
+
     def __merge_row(self,s):
         if s == []:
             print("err: s_e")
@@ -373,7 +377,7 @@ class DFA_Optimizer():
                 break
             original = deepcopy(self.T)
             
-            self.print_T()
+            # self.print_T()
     
     
         u = self.__find_unreachables()
@@ -381,21 +385,39 @@ class DFA_Optimizer():
         
         self.__delete_states(u+dead)
         self.__reorder_keys()
-        self.print_T()
+        # self.print_T()
         return self.T
     
         
-# class TokenChecker():
-#     def __init__(self,T,alphabet):
-#         self.T = T
-#         self.ALPHABET = alphabet
+class TokenChecker():
+    def __init__(self,T,alphabet):
+        self.T = T
+        self.ALPHABET = {v:i for i,v in enumerate(alphabet)}
 
-#     def process_token_stream(self,*tokens):
-#         for t in tokens:
-#             process(t)
-
-#     def __process_token(self,t):
-#         for k,v in self.T['-']:
+    def process_token(self,tok):
+        curr_state = '0'
+        combined = {**self.T['-'],**self.T['+']}
+        # print("++++++++++\n")
+        # print(self.T)
+        # print(tok)
+        last_i = 0
+        
+        for i,c in enumerate(tok):
+            # print('curr_st:',curr_state)
+            # print(c)
+            # print(combined[curr_state][self.ALPHABET[c]])
+            # print("---")
+            if combined[curr_state][self.ALPHABET[c]] != 'E':
+                curr_state = combined[curr_state][self.ALPHABET[c]]
+            else:
+                last_i = i+1
+                break
+            last_i = i+2
+        if curr_state in self.T['+'].keys():
+            return ":M:"
+        
+        
+        return str(last_i)
 
         
 
@@ -407,13 +429,19 @@ if __name__ == "__main__":
     nfa2dfa = DFA_Converter(argv[1])
     dfa = nfa2dfa.export()
     
-    print(dfa)
     sigma = nfa2dfa.get_alphabet()
     
     optimizer = DFA_Optimizer(dfa,sigma)
-    print(optimizer.T)
 
     T = optimizer.run()
     optimizer.to_file(argv[2])
+
+    tok_check = TokenChecker(T,sigma)
+    
+    results = [tok_check.process_token(argv[i]) for i in range(3,len(argv[3:])+3)]
+    results = " ".join(results)
+    print(f"OUTPUT {results}")
+    
+
 
 
