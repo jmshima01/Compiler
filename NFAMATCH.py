@@ -368,9 +368,21 @@ class DFA_Optimizer():
         self.__delete_states(u+dead)
         self.__reorder_keys()
         self.print_T()
+        return self.T
+    
         
 class TokenChecker():
-    pass   
+    def __init__(self,T,alphabet):
+        self.T = T
+        self.ALPHABET = alphabet
+
+    def process_token_stream(self,*tokens):
+        for t in tokens:
+            process(t)
+
+    def __process_token(self,t):
+        for k,v in self.T['-']:
+            
         
 
 if __name__ == "__main__":
@@ -387,7 +399,7 @@ if __name__ == "__main__":
         optimizer = DFA_Optimizer(dfa,sigma)
         print(optimizer.T)
 
-        optimizer.run()
+        T = optimizer.run()
         optimizer.to_file(argv[2])
     
     except Exception as E:
