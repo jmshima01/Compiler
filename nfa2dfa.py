@@ -87,6 +87,16 @@ if __name__ == "__main__":
     
     print(f"\n\nN:{N}")
 
+    # REMOVE DEAD STATES                   
+    # for k,v in N.items():
+    #     for i,j in v.items():
+    #         if len(list(v.keys())) == 1 and i==k and k not in A: # Dead state
+    #             N.pop(k)
+
+    # print(f"\n\nN Deads Removed:{N}")
+
+
+
 
     T={} # Transition Function aka DFA
     L = deque()
@@ -116,9 +126,6 @@ if __name__ == "__main__":
     print()
     print(T)
 
-    with open("nfa2dfa.txt","w+") as f:
-        for k,v in T.items():
-            pass
     print(DFA_ACCEPT_STATES)
 
     new_keys = {}
@@ -171,12 +178,9 @@ if __name__ == "__main__":
             if k in new_accept:
                 line+= "+ " + k + " "
             else:
-                line+="- " + k + " "
+                line+= "- " + k + " "
             print(line + convert_row_to_dfa_list(v,ALPHABET))
             if k != list(T_final.keys())[-1]:
                 f.write(line + convert_row_to_dfa_list(v,ALPHABET) + "\n")
             else:
                 f.write(line + convert_row_to_dfa_list(v,ALPHABET))
-
-    
-    

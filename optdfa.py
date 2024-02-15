@@ -5,10 +5,10 @@ import re
 
 class DFA():
     def __init__(self, accept, non_accept, sigma):
-        self.T = {"+":accept, '-':non_accept}
         self.accept = accept
         self.non_accept = non_accept
         self.sigma=sigma
+        self.T = {"+":self.accept, '-':self.non_accept}
     
     def print_T(self):
         print()
@@ -31,6 +31,36 @@ class DFA():
                     f.write("+ " + k + " " + " ".join(v))
                 else:
                     f.write("+ " + k + " " + " ".join(v)+"\n")
+    
+    def reorder_keys(self):
+        print(self.accept)
+        print(self.non_accept)
+        new_k = [str(i) for i in range(len(self.accept)+len(self.non_accept))]
+        old_k = [i for i in self.non_accept] + [i for i in self.accept]
+        print(new_k)
+        print(old_k)
+        new_keys = {old_k[i]:new_k[i] for i in range(len(new_k))}
+        print(new_keys)
+        new_non_acc = {new_keys[k]:[] for k in self.non_accept}
+        new_acc = {new_keys[k]:[] for k in self.accept}
+        print(new_non_acc)
+        for k,v in self.non_accept.items():
+            l = ['E']*len(v)
+            for i in range(len(v)):
+                if v[i] != 'E':
+                    l[i] = new_keys[v[i]]
+            new_non_acc[new_keys[k]] = l
+        for k,v in self.accept.items():
+            l = ['E']*len(v)
+            for i in range(len(v)):
+                if v[i] != 'E':
+                    l[i] = new_keys[v[i]]
+            new_acc[new_keys[k]] = l
+        print(new_acc)
+
+        self.accept = new_acc
+        self.non_accept = new_non_acc
+        self.T = {"+":self.accept, '-':self.non_accept}
 
 
 def update_del(s,new_s,dfa):
@@ -127,8 +157,6 @@ if __name__ == "__main__":
         print("usage: python3 dfa.py file sigma")
         exit(-1) 
 
-    
-    # sigma = ['a','b','c','q','r','s','t','u','v']
     sigma = argv[2]
     sigma = [char for char in sigma]
 
@@ -145,5 +173,6 @@ if __name__ == "__main__":
 
     D = D_
     D.print_T()
+    D.reorder_keys()
     D.to_file(argv[1].strip(".txt") + "-optimzed.txt")
     print("iters:",count)
