@@ -33,17 +33,15 @@ class DFA():
                     f.write("+ " + k + " " + " ".join(v)+"\n")
     
     def reorder_keys(self):
-        print(self.accept)
-        print(self.non_accept)
+        
         new_k = [str(i) for i in range(len(self.accept)+len(self.non_accept))]
         old_k = [i for i in self.non_accept] + [i for i in self.accept]
-        print(new_k)
-        print(old_k)
+        
         new_keys = {old_k[i]:new_k[i] for i in range(len(new_k))}
-        print(new_keys)
+        
         new_non_acc = {new_keys[k]:[] for k in self.non_accept}
         new_acc = {new_keys[k]:[] for k in self.accept}
-        print(new_non_acc)
+        
         for k,v in self.non_accept.items():
             l = ['E']*len(v)
             for i in range(len(v)):
@@ -56,13 +54,86 @@ class DFA():
                 if v[i] != 'E':
                     l[i] = new_keys[v[i]]
             new_acc[new_keys[k]] = l
-        print(new_acc)
-
+        
         self.accept = new_acc
         self.non_accept = new_non_acc
         self.T = {"+":self.accept, '-':self.non_accept}
 
+    def find_unreachables(self):
+        print(self.accept)
+        print(self.non_accept)
+        combined = {**self.non_accept, **self.accept}
+        print(combined)
+    
+        S = [combined['0']]
+        seen = set('0')
+        
+        while(S):
+            R = S.pop()
+            for s in R:
+                if s!='E' and s not in seen:
+                    S.append(combined[s])
+                    seen.add(s)
+                    
+            print(S)
+        print(seen)
+        all_states = set([i for i in combined])
+        diff = list(all_states.difference(seen))
+        print(diff)
+        return diff
 
+    def find_dead(self):
+        dead = set()
+        acc_set = set([i for i in self.accept])
+        for k,v in self.non_accept.items():
+            S = [v]
+            seen = set(k)
+            while(S):
+                R = S.pop()
+                for s in R:
+                    if s!='E' and s not in seen:
+                        if s in self.non_accept:
+                            S.append(self.non_accept[s])
+                        seen.add(s)
+
+            # print(seen)
+            if len(acc_set.intersection(seen))==0:
+                dead.add(k)
+        print(dead)
+        return list(dead)
+            
+    def delete_states(self,states):
+        print(":::::::::::::::::::::")
+        S = set(states)
+        new_acc = copy.deepcopy(self.accept)
+        new_non_acc = copy.deepcopy(self.non_accept)
+        for k,v in self.non_accept.items():
+            if k in S:
+                new_non_acc.pop(k)
+                continue
+            
+            temp = ['E'] * len(v)
+            for i in range(len(v)):
+                if v[i] not in S or v[i]=='E':
+                    temp[i] = v[i]
+            
+            new_non_acc[k] = temp
+        for k,v in self.accept.items():
+            if k in S:
+                new_acc.pop(k)
+                continue
+            
+            temp = ['E'] * len(v)
+            for i in range(len(v)):
+                if v[i] not in S or v[i]=='E':
+                    temp[i] = v[i]
+            
+            new_acc[k] = temp
+        print(new_non_acc)
+        print(new_acc)
+        self.non_accept = new_non_acc
+        self.accept = new_acc
+ 
 def update_del(s,new_s,dfa):
     for k,lis in dfa.T['-'].items():
         for i in range(len(lis)):
@@ -151,7 +222,8 @@ def read_file(file_path,sigma) -> DFA:
 
 def equal_tables(d1,d2) -> bool:
     return (len(d1.T['-'])+len(d1.T['+'])) == (len(d2.T['-'])+len(d2.T['+']))
-        
+
+
 if __name__ == "__main__":
     if len(argv) != 3:
         print("usage: python3 dfa.py file sigma")
@@ -173,6 +245,13 @@ if __name__ == "__main__":
 
     D = D_
     D.print_T()
+    
+    
+    u = D.find_unreachables()
+    dead = D.find_dead()
+    
+    D.delete_states(u+dead)
     D.reorder_keys()
+    D.print_T()
     D.to_file(argv[1].strip(".txt") + "-optimzed.txt")
     print("iters:",count)
