@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from copy import copy,deepcopy
 from sys import argv
 from collections import deque
@@ -103,6 +104,7 @@ class DFA_Converter():
         L = deque()
 
         B = tuple(self.__follow_lambda(set(self.START_STATE)))
+        B = tuple(sorted(B))
         DFA_START_STATE = B
         DFA_ACCEPT_STATES = set() # lookup for accept states of Transition function
         T[B] = {}
@@ -115,6 +117,7 @@ class DFA_Converter():
             S = L.pop()
             for c in self.ALPHABET:
                 R = tuple(self.__follow_lambda(self.__follow_char(c,set(S))))
+                R = tuple(sorted(R))
                 if len(R)!=0: # save space in T (ignoring Save states)
                     T[S][c] = R
                 if (len(R)>0) and (R not in T.keys()):
@@ -122,7 +125,8 @@ class DFA_Converter():
                     if len(self.A.intersection(set(R))) != 0:
                         DFA_ACCEPT_STATES.add(R)
                     L.append(R)
-        
+        # print(T)
+        DFA_ACCEPT_STATES = set(sorted(DFA_ACCEPT_STATES))
         new_keys = {}
         for i,k in enumerate(T.keys()):
             new_keys[k] = str(i)
@@ -143,7 +147,7 @@ class DFA_Converter():
             new_accept.add(new_keys[i])
 
         T = T_final
-        DFA_ACCEPT_STATES = new_accept
+        DFA_ACCEPT_STATES = set(sorted(new_accept))
 
         return T, DFA_ACCEPT_STATES
 
@@ -166,6 +170,7 @@ class DFA_Converter():
             else:
                 line+= "- " + k + " "
             dfa.append(line + __convert_row(v,self.ALPHABET))
+        # print(dfa)
         return dfa
 
 
@@ -349,14 +354,14 @@ class DFA_Optimizer():
     def __merge_states(self):
         L = deque()
         M = []
-        n_sigma = copy(self.ALPHABET)
-        a_sigma = copy(self.ALPHABET)
+        n_sigma = deepcopy(self.ALPHABET)
+        a_sigma = deepcopy(self.ALPHABET)
         L.append((list(self.T['+'].keys()),a_sigma))
         L.append((list(self.T['-'].keys()),n_sigma))
         
         while L:
             S,C = L.pop()
-            C = copy(C)
+            C = deepcopy(C)
             c = C.pop(0)
             sets = self.__partition(S,c)
             for x_i in sets:
@@ -370,6 +375,7 @@ class DFA_Optimizer():
             self.__merge_row(s)
         
     def run(self):
+        self.__reorder_keys()
         original = deepcopy(self.T)
         while 1:
             self.__merge_states()
@@ -397,51 +403,43 @@ class TokenChecker():
     def process_token(self,tok):
         curr_state = '0'
         combined = {**self.T['-'],**self.T['+']}
-        # print("++++++++++\n")
-        # print(self.T)
-        # print(tok)
-        last_i = 0
         
+        last_i = 0
+        match = True
         for i,c in enumerate(tok):
-            # print('curr_st:',curr_state)
-            # print(c)
-            # print(combined[curr_state][self.ALPHABET[c]])
-            # print("---")
             if combined[curr_state][self.ALPHABET[c]] != 'E':
                 curr_state = combined[curr_state][self.ALPHABET[c]]
             else:
                 last_i = i+1
+                match = False
                 break
             last_i = i+2
-        if curr_state in self.T['+'].keys():
+        if curr_state in self.T['+'].keys() and match:
             return ":M:"
         
-        
         return str(last_i)
-
-        
 
 if __name__ == "__main__":
     if len(argv) < 3:
         print("Usage: python3 NFAMATCH.py nfa_file_path out_file_path token1 token2 ... tokenN ")
         exit(1)
-    
-    nfa2dfa = DFA_Converter(argv[1])
-    dfa = nfa2dfa.export()
-    
-    sigma = nfa2dfa.get_alphabet()
-    
-    optimizer = DFA_Optimizer(dfa,sigma)
+    try:
+        nfa2dfa = DFA_Converter(argv[1])
+        dfa = nfa2dfa.export()
+        
+        sigma = nfa2dfa.get_alphabet()
+        
+        optimizer = DFA_Optimizer(dfa,sigma)
 
-    T = optimizer.run()
-    optimizer.to_file(argv[2])
+        T = optimizer.run()
+        optimizer.to_file(argv[2])
 
-    tok_check = TokenChecker(T,sigma)
+        tok_check = TokenChecker(T,sigma)
+        
+        results = [tok_check.process_token(argv[i]) for i in range(3,len(argv[3:])+3)]
+        results = " ".join(results)
+        print(f"OUTPUT {results}")
     
-    results = [tok_check.process_token(argv[i]) for i in range(3,len(argv[3:])+3)]
-    results = " ".join(results)
-    print(f"OUTPUT {results}")
-    
-
-
-
+    except Exception as E:
+        print(E)
+        exit(1)
