@@ -1,0 +1,449 @@
+#!/usr/bin/python3
+from copy import copy,deepcopy
+from sys import argv
+from collections import deque
+import re
+
+class DFA_Converter():
+    def __init__(self,nfa_file_path):
+        self.header, self.nfa = self.__read_nfa(nfa_file_path)
+        self.NUM_STATES, self.ALPHABET, self.LAMBDA = self.__extract_header()
+        self.START_STATE = '0' # can always assume 0 is starting state...
+        self.A = self.__gen_accepting_states()
+        self.N = self.__gen_nfa()
+        self.T, self.DFA_Accept = self.__gen_T()
+
+    def __read_nfa(self,filepath):
+        nfa = ""
+        whitespace = lambda w: re.split(r"\s+",w)
+        try:
+            with open(filepath,"r+",newline="") as f:
+                nfa = list(map(whitespace, f.read().split('\n')))
+                header = nfa[0]
+                nfa = nfa[1:]
+            t = []
+            for i in nfa:
+                if i != ['']:
+                    t.append(i)
+            nfa = t
+
+        except Exception as E:
+            print(E)
+            exit(1)
+        return header, nfa
+    
+    def __extract_header(self):
+        # parse header:
+        NUM_STATES = int(self.header[0])
+        LAMBDA = self.header[1]
+        ALPHABET = self.header[2:]
+        
+        return NUM_STATES, ALPHABET, LAMBDA
+    
+    def __gen_accepting_states(self):
+        A=set() # set of accepting states
+        for row in self.nfa:
+            if row[0] == '+':
+                A.add(row[1])
+        return A
+    
+    def __gen_nfa(self):
+        unique_states = set()
+        for i in self.nfa:
+            unique_states.add(i[1])
+            unique_states.add(i[2])
+
+        N = {i:{} for i in unique_states} #NFA file in nice dict format
+        # print()
+        # print(self.nfa)
+        for row in self.nfa:
+            state = row[1]
+            transition_state = row[2]
+            if len(row) < 4:
+                transition_chars = []
+            else:
+                transition_chars = row[3:]
+            # print(state)
+            # print(transition_state)
+            # print(transition_chars)
+            N[state][transition_state] = transition_chars
+        return N
+    
+    def __get_transitions(self,c,state): # returns a set of trans_states where c is the trans char for a given state
+        trans_set = set()
+        for trans_state,t in self.N[state].items():
+            for i in t:
+                if i == c:
+                    trans_set.add(trans_state)
+        return trans_set
+
+    def __follow_char(self,c,states): # returns a set of transitions from all the states that have transition c
+        F = set()
+        for t in states:
+            for q in self.__get_transitions(c,t):
+                F.add(q)
+        return F
+    
+    def __follow_lambda(self, states): # returns condensed set of combined states to remove lambda transitions using a DFS
+        S = states
+        M = deque()
+        
+        for t in S:
+            M.append(t)
+        
+        while(M):
+            t = M.pop()
+            for q in self.__get_transitions(self.LAMBDA,t):
+                if q not in S:
+                    S.add(q)
+                    M.append(q)
+        return S
+
+    def __gen_T(self):
+        T = {} # Transition Function aka DFA
+        L = deque()
+
+        B = tuple(self.__follow_lambda(set(self.START_STATE)))
+        B = tuple(sorted(B))
+        DFA_START_STATE = B
+        DFA_ACCEPT_STATES = set() # lookup for accept states of Transition function
+        T[B] = {}
+        
+        if len(self.A.intersection(set(B))) != 0:
+            DFA_ACCEPT_STATES.add(B)
+        
+        L.append(B)
+        while(L):
+            S = L.pop()
+            for c in self.ALPHABET:
+                R = tuple(self.__follow_lambda(self.__follow_char(c,set(S))))
+                R = tuple(sorted(R))
+                if len(R)!=0: # save space in T (ignoring Save states)
+                    T[S][c] = R
+                if (len(R)>0) and (R not in T.keys()):
+                    T[R] = {}
+                    if len(self.A.intersection(set(R))) != 0:
+                        DFA_ACCEPT_STATES.add(R)
+                    L.append(R)
+        # print(T)
+        DFA_ACCEPT_STATES = set(sorted(DFA_ACCEPT_STATES))
+        new_keys = {}
+        for i,k in enumerate(T.keys()):
+            new_keys[k] = str(i)
+        
+        def convert_old_keys(new_keys, row):
+            n_row = {}
+            for k,v in row.items():
+                n_row[k] = new_keys[v]
+            return n_row
+
+        T_final = {k:{} for k in new_keys.values()}
+
+        for k,v in T.items():
+            T_final[new_keys[k]] = convert_old_keys(new_keys,v)
+        
+        new_accept = set()
+        for i in DFA_ACCEPT_STATES:
+            new_accept.add(new_keys[i])
+
+        T = T_final
+        DFA_ACCEPT_STATES = set(sorted(new_accept))
+
+        return T, DFA_ACCEPT_STATES
+
+    def get_alphabet(self):
+        return self.ALPHABET
+
+    def export(self):
+        def __convert_row(row,alphabet):
+            row_to_write = {i:'E' for i in alphabet}
+            for k,v in row.items():
+                row_to_write[k] = v
+            
+            return " ".join(row_to_write.values())
+        
+        dfa = []
+        for k,v in self.T.items():
+            line = ""
+            if k in self.DFA_Accept:
+                line+= "+ " + k + " "
+            else:
+                line+= "- " + k + " "
+            dfa.append(line + __convert_row(v,self.ALPHABET))
+        # print(dfa)
+        return dfa
+
+
+class DFA_Optimizer():
+    def __init__(self,dfa_list,alphabet):
+        self.ALPHABET = alphabet
+        self.T, self.accept, self.non_accept = self.__process_input(dfa_list)
+    
+    def __process_input(self,dfa_list):
+        accepting = {}
+        nonacc = {}
+        for i in dfa_list:
+            i = re.split(r"\s+", i)
+            if i[0] == '+':
+                accepting[i[1]] = i[2:]
+            else:
+                nonacc[i[1]] = i[2:]
+        return {"+" : accepting,"-" : nonacc}, accepting, nonacc
+    
+    def __eq_T(self,target):
+        return (len(self.T['-'])+len(self.T['+'])) == (len(target['-'])+len(target['+']))
+    
+    def print_T(self):
+        print()
+        print(self.ALPHABET)
+        for k,v in self.T['-'].items():
+            print(f"{k} : {v}")
+        print("----")
+        for k,v in self.T['+'].items():
+            print(f"{k} : {v}")
+        print()
+    
+    def to_file(self,filename):
+        with open(filename,"w+") as f: 
+            for k,v in self.T['-'].items():
+                f.write("- " + k + " " + " ".join(v)+"\n")
+            i = 0
+            for k,v in self.T['+'].items():
+                i+=1
+                # if i==len(self.T['+'].items()):
+                #     f.write("+ " + k + " " + " ".join(v))
+                # else:
+                f.write("+ " + k + " " + " ".join(v)+"\n")
+    
+    def __reorder_keys(self):
+        new_k = [str(i) for i in range(len(self.accept)+len(self.non_accept))]
+        old_k = [i for i in self.non_accept] + [i for i in self.accept]
+        
+        new_keys = {old_k[i]:new_k[i] for i in range(len(new_k))}
+        
+        new_non_acc = {new_keys[k]:[] for k in self.non_accept}
+        new_acc = {new_keys[k]:[] for k in self.accept}
+        
+        for k,v in self.non_accept.items():
+            l = ['E']*len(v)
+            for i in range(len(v)):
+                if v[i] != 'E':
+                    l[i] = new_keys[v[i]]
+            new_non_acc[new_keys[k]] = l
+        for k,v in self.accept.items():
+            l = ['E']*len(v)
+            for i in range(len(v)):
+                if v[i] != 'E':
+                    l[i] = new_keys[v[i]]
+            new_acc[new_keys[k]] = l
+        
+        self.accept = new_acc
+        self.non_accept = new_non_acc
+        self.T = {"+":self.accept, '-':self.non_accept}
+
+    def __find_unreachables(self):
+        combined = {**self.non_accept, **self.accept}
+        S = [combined['0']]
+        seen = set('0')
+        
+        while(S):
+            R = S.pop()
+            for s in R:
+                if s!='E' and s not in seen:
+                    S.append(combined[s])
+                    seen.add(s)
+                    
+        all_states = set([i for i in combined])
+        diff = list(all_states.difference(seen))
+        
+        return diff
+
+    def __find_dead(self):
+        dead = set()
+        acc_set = set([i for i in self.accept])
+        for k,v in self.non_accept.items():
+            S = [v]
+            seen = set(k)
+            while(S):
+                R = S.pop()
+                for s in R:
+                    if s!='E' and s not in seen:
+                        if s in self.non_accept:
+                            S.append(self.non_accept[s])
+                        seen.add(s)
+
+            # print(seen)
+            if len(acc_set.intersection(seen))==0:
+                dead.add(k)
+        # print(dead)
+        return list(dead)
+            
+    def __delete_states(self,states):
+        S = set(states)
+        new_acc = deepcopy(self.accept)
+        new_non_acc = deepcopy(self.non_accept)
+        for k,v in self.non_accept.items():
+            if k in S:
+                new_non_acc.pop(k)
+                continue
+            
+            temp = ['E'] * len(v)
+            for i in range(len(v)):
+                if v[i] not in S or v[i]=='E':
+                    temp[i] = v[i]
+            
+            new_non_acc[k] = temp
+        for k,v in self.accept.items():
+            if k in S:
+                new_acc.pop(k)
+                continue
+            
+            temp = ['E'] * len(v)
+            for i in range(len(v)):
+                if v[i] not in S or v[i]=='E':
+                    temp[i] = v[i]
+            
+            new_acc[k] = temp
+        
+        self.non_accept = new_non_acc
+        self.accept = new_acc
+    
+    def __update_del(self,s,new_s):
+        for k,lis in self.T['-'].items():
+            for i in range(len(lis)):
+                if lis[i]==s:
+                    self.T['-'][k][i]=new_s
+        
+        for k,lis in self.T['+'].items():
+            for i in range(len(lis)):
+                if lis[i]==s:
+                    self.T['+'][k][i]=new_s
+    
+    #TODO
+    def __find_redundant_accept(self):
+        pass
+
+    def __merge_row(self,s):
+        if s == []:
+            print("err: s_e")
+            exit(1)
+        s = s[::-1]
+        for i in range(len(s)-1):
+            if s[i] in self.accept:
+                del self.T['+'][s[i]]
+            else:
+                del self.T['-'][s[i]]
+            
+            self.__update_del(s[i],s[-1])
+
+    def __partition(self,S,c):
+        t = '-'
+        if S == []:
+            return []
+        if S[0] in self.accept.keys():
+            t = '+'
+        res = {}
+        
+        for s in S:
+            if self.T[t][s][self.ALPHABET.index(c)] in res.keys():
+                res[self.T[t][s][self.ALPHABET.index(c)]].append(s)
+            else:
+                res[self.T[t][s][self.ALPHABET.index(c)]] = [s]
+        return list(res.values())
+
+    def __merge_states(self):
+        L = deque()
+        M = []
+        n_sigma = deepcopy(self.ALPHABET)
+        a_sigma = deepcopy(self.ALPHABET)
+        L.append((list(self.T['+'].keys()),a_sigma))
+        L.append((list(self.T['-'].keys()),n_sigma))
+        
+        while L:
+            S,C = L.pop()
+            C = deepcopy(C)
+            c = C.pop(0)
+            sets = self.__partition(S,c)
+            for x_i in sets:
+                if(not (len(x_i)>1)):
+                    continue
+                if C==[]:
+                    M.append(x_i)
+                else:
+                    L.append((x_i,C))
+        for s in M:
+            self.__merge_row(s)
+        
+    def run(self):
+        self.__reorder_keys()
+        original = deepcopy(self.T)
+        while 1:
+            self.__merge_states()
+            if self.__eq_T(original):
+                break
+            original = deepcopy(self.T)
+            
+            # self.print_T()
+    
+    
+        u = self.__find_unreachables()
+        dead = self.__find_dead()
+        
+        self.__delete_states(u+dead)
+        self.__reorder_keys()
+        # self.print_T()
+        return self.T
+    
+        
+class TokenChecker():
+    def __init__(self,T,alphabet):
+        self.T = T
+        self.ALPHABET = {v:i for i,v in enumerate(alphabet)}
+
+    def process_token(self,tok):
+        curr_state = '0'
+        combined = {**self.T['-'],**self.T['+']}
+        
+        last_i = 0
+        match = True
+        for i,c in enumerate(tok):
+            if combined[curr_state][self.ALPHABET[c]] != 'E':
+                curr_state = combined[curr_state][self.ALPHABET[c]]
+            else:
+                last_i = i+1
+                match = False
+                break
+            last_i = i+2
+        if curr_state in self.T['+'].keys() and match:
+            return ":M:"
+        
+        return str(last_i)
+
+if __name__ == "__main__":
+    if len(argv) < 3:
+        print("Usage: python3 NFAMATCH.py nfa_file_path out_file_path token1 token2 ... tokenN ")
+        exit(1)
+    try:
+        nfa2dfa = DFA_Converter(argv[1])
+        dfa = nfa2dfa.export()
+        
+        sigma = nfa2dfa.get_alphabet()
+        
+        optimizer = DFA_Optimizer(dfa,sigma)
+
+        T = optimizer.run()
+        optimizer.to_file(argv[2])
+
+        tok_check = TokenChecker(T,sigma)
+        
+        results = [tok_check.process_token(argv[i]) for i in range(3,len(argv[3:])+3)]
+        results = " ".join(results)
+        print(f"OUTPUT {results}")
+    
+    except Exception as E:
+        print(E)
+        exit(1)
+    
+
+
+
