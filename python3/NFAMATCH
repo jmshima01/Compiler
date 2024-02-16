@@ -63,9 +63,7 @@ class DFA_Converter():
                 transition_chars = []
             else:
                 transition_chars = row[3:]
-            # print(state)
-            # print(transition_state)
-            # print(transition_chars)
+
             N[state][transition_state] = transition_chars
         return N
     
@@ -125,8 +123,7 @@ class DFA_Converter():
                     if len(self.A.intersection(set(R))) != 0:
                         DFA_ACCEPT_STATES.add(R)
                     L.append(R)
-        # print(T)
-        DFA_ACCEPT_STATES = set(sorted(DFA_ACCEPT_STATES))
+        
         new_keys = {}
         for i,k in enumerate(T.keys()):
             new_keys[k] = str(i)
@@ -147,7 +144,7 @@ class DFA_Converter():
             new_accept.add(new_keys[i])
 
         T = T_final
-        DFA_ACCEPT_STATES = set(sorted(new_accept))
+        DFA_ACCEPT_STATES = new_accept
 
         return T, DFA_ACCEPT_STATES
 
