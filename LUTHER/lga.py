@@ -48,8 +48,6 @@ if __name__ == "__main__":
     # print()
     # print(prod_rules)
             
-
-
     print("Grammar Non-Terminals")        
     print(nonTeminals)
     
@@ -66,3 +64,5 @@ if __name__ == "__main__":
                 num+=1
     print()
     print(f"Grammar Start Symbol or Goal: {START_SYMBOL}")
+    print()
+    print(prod_rules)
