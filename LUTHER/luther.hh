@@ -5,6 +5,7 @@
 #include <bits/stdc++.h> 
 #include <set>
 
+
 std::vector<std::string> split(std::string s, std::string delimiter){
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
@@ -19,6 +20,12 @@ std::vector<std::string> split(std::string s, std::string delimiter){
     return res;
 }
 
+std::set<std::string> setUnion(std::set<std::string> a, std::set<std::string> b){
+    std::set<std::string> res = a;
+    res.insert(b.begin(),b.end());
+    return res;
+}
+
 
 class CFG{
     public:
@@ -27,7 +34,15 @@ class CFG{
         std::string start_state;
         std::set<std::string> non_terminals;
         
+
+
         std::vector<std::pair<std::string,std::string>> rules;
+        
+        struct xb{
+            std::string X;
+            std::string B;
+        };
+        
         CFG(std::vector<std::string> file_data){
             
             this->file_data = file_data;
@@ -40,6 +55,7 @@ class CFG{
 
         void print_cfg(void);
         bool derivesToLambda(std::string n, std::vector<std::string> T);
+        std::pair<std::set<std::string>,std::set<std::string>> firstSet(xb XB,std::set<std::string> T);
 
     private:
         bool _isNonTerminal(std::string s);
@@ -81,7 +97,6 @@ std::set<std::string> CFG::_getNonTerminals(void){
     }
     return nonterms;
 }
-
 
 std::vector<std::pair<std::string,std::string>> CFG::_makeProdRules(void){
     
@@ -146,8 +161,6 @@ std::unordered_map<std::string,std::vector<std::string>> CFG::_makeCFG(void){
     return m;
 }
 
-
-
 bool CFG::_containsTerminal(std::string s){
     std::vector<std::string> st = split(s,std::string(" "));
     for (std::string x : st){
@@ -157,8 +170,6 @@ bool CFG::_containsTerminal(std::string s){
     }
     return false;
 }
-
-
 
 bool CFG::derivesToLambda(std::string n, std::vector<std::string> T){
     for(std::string p : this->cfg.at(n)){
@@ -185,4 +196,50 @@ bool CFG::derivesToLambda(std::string n, std::vector<std::string> T){
     return false;
 }
 
+CFG::xb makeXB(std::string s){
+    CFG::xb XB = {};
+    if(s.length() == 0){
+        XB.X = ""; 
+        XB.B = "";
+    }
+    
+    else if(s.length() == 1){
+        XB.X = s[0]; 
+        XB.B = "";
+    }
+    else{
+        XB.X = s[0];
+        std::string b;
+        for(char c : s){
+            b+=c;
+        }
+        XB.B = b;
+    }
+    return XB;
 
+}
+
+
+std::pair<std::set<std::string>,std::set<std::string>> CFG::firstSet(CFG::xb XB, std::set<std::string> T){
+
+    if(!this->_isNonTerminal(XB.X)){
+        std::set<std::string> x;
+        x.insert(XB.X);
+        return {x,T};
+    }
+
+    std::set<std::string> F;
+    if(T.count(XB.X)){
+        T.insert(XB.X);
+        for(std::string p : this->cfg.at(XB.X)){
+            auto G = this->firstSet(makeXB(p),T);
+            F = setUnion(F,G.first);
+        }
+    }
+
+    if(this->derivesToLambda(XB.X,std::vector<std::string>()) && XB.B.length()>0){
+        auto G = this->firstSet(makeXB(XB.B),T);
+        F = setUnion(F,G.first);
+    }
+    return {F,T};
+}
