@@ -26,27 +26,33 @@ class CFG{
         std::vector<std::string> file_data;
         std::string start_state;
         std::set<std::string> non_terminals;
-        std::string raw_file;
-        CFG(std::vector<std::string> file_data, std::string raw_data){
-            this->raw_file = raw_data;
+        
+        std::vector<std::pair<std::string,std::string>> rules;
+        CFG(std::vector<std::string> file_data){
+            
             this->file_data = file_data;
             this->start_state = this->_getStartState();
             this->non_terminals = this->_getNonTerminals();
-            this->_makeCFG();
+            this->rules = this->_makeProdRules();
+            this->cfg = this->_makeCFG();
         }
         ~CFG();
 
         void print_cfg(void);
-        private:
-            
-            bool _isNonTerminal(std::string s);
-            std::string _getStartState(void);
-            std::set<std::string> _getNonTerminals(void);
-            void _makeCFG(void);
+        bool derivesToLambda(std::string n, std::vector<std::string> T);
+
+    private:
+        bool _isNonTerminal(std::string s);
+        std::string _getStartState(void);
+        std::set<std::string> _getNonTerminals(void);
+        std::vector<std::pair<std::string,std::string>> _makeProdRules(void);
+        std::unordered_map<std::string,std::vector<std::string>> _makeCFG(void);
+        bool _containsTerminal(std::string s);
 };
 
 CFG::~CFG(){ 
 };
+
 
 bool CFG::_isNonTerminal(std::string s){
     for(char c : s){
@@ -77,9 +83,9 @@ std::set<std::string> CFG::_getNonTerminals(void){
 }
 
 
-void CFG::_makeCFG(void){
+std::vector<std::pair<std::string,std::string>> CFG::_makeProdRules(void){
     
-    std::vector<std::pair<std::string,std::string>> cfg;
+    std::vector<std::pair<std::string,std::string>> pr;
     std::string curr;
     for (auto s : this->file_data){
         std::vector<std::string> f = split(s,std::string(" -> "));
@@ -87,46 +93,22 @@ void CFG::_makeCFG(void){
             curr = f[0];
             std::vector<std::string> bars = split(f[1],std::string(" | "));
             for(std::string b : bars){
-                cfg.push_back(std::make_pair(curr,b));
+                pr.push_back(std::make_pair(curr,b));
             }
             
         }
-        else{
+        else {
             std::string x = f[0].substr(2,f[0].length()-2);
             
             std::vector<std::string> br = split(x,std::string(" | "));
             for(std::string t : br){
-                cfg.push_back(std::make_pair(curr,t));
+                pr.push_back(std::make_pair(curr,t));
             }
         }
     }
-    for(auto i : cfg){
-        std::cout << i.first << " -> " << i.second << std::endl;
-    }
+    return pr;       
+}
     
-
-    // std::ordered_map<std::string,std::vector<std::string>> m;
-    // for (std::string s : this->non_terminals) {
-    //     m[s]=std::vector<std::string>();
-    // }
-    // int ind = 0;
-    // std::string curr = this->start_state;
-    // for(std::string s : this->file_data){
-    //     std::vector<std::string> x = split(s,std::string(" -> "));
-    //     ind = 0;
-    //     if(this->non_terminals.count(x[0])){
-    //         curr = x[0];
-    //         ind = 1;
-    //     }   
-        
-    //     m[curr].push_back(x[ind]);
-        
-    }
-    
-    
-    // return m;
-
-
 void CFG::print_cfg(void){
     std::cout << this->start_state << std::endl;
     std::cout << "Nonterminals: { ";
@@ -136,11 +118,71 @@ void CFG::print_cfg(void){
         std::cout << s << " ";
     } std::cout << "}" << std::endl;
 
+    for(auto i : this->rules){
+        std::cout << i.first << " -> " << i.second << std::endl;
+    }
+    printf("\n");
+    for(auto p : this->cfg){
+        std::cout << p.first << ": ";
+        for(auto s : p.second){
+            std::cout << s << " | ";
+        }std::cout << std::endl;
+    }
+    
+}
 
-    
 
-    
-    
+std::unordered_map<std::string,std::vector<std::string>> CFG::_makeCFG(void){
+    std::unordered_map<std::string,std::vector<std::string>> m;
+    for(std::pair<std::string,std::string> p : this->rules){
+        if(m.count(p.first)){
+            m[p.first].push_back(p.second);
+        }
+        else{
+            m[p.first] = std::vector<std::string>();
+            m[p.first].push_back(p.second);
+        }
+    }
+    return m;
+}
+
+
+
+bool CFG::_containsTerminal(std::string s){
+    std::vector<std::string> st = split(s,std::string(" "));
+    for (std::string x : st){
+        if(!this->_isNonTerminal(x)){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+bool CFG::derivesToLambda(std::string n, std::vector<std::string> T){
+    for(std::string p : this->cfg.at(n)){
+        if(std::find(T.begin(), T.end(), p) != T.end()){
+            continue;
+        }
+        if(p == "lambda"){
+            return true;
+        }
+        if(this->_containsTerminal(p)){
+            continue;
+        }
+        bool allderivelambda = true;
+        std::vector<std::string> terms = split(p,std::string(" ")); 
+        for(std::string x : terms){
+            T.push_back(p);
+            allderivelambda = this->derivesToLambda(x,T);
+            T.pop_back();
+            if(!allderivelambda) break;
+        }
+        if(allderivelambda) return true;
+
+    }
+    return false;
 }
 
 

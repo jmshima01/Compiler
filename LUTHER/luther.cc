@@ -1,4 +1,3 @@
-
 #include "luther.hh"
 
 int main(int argc, char* argv[]){
@@ -18,13 +17,18 @@ int main(int argc, char* argv[]){
     
     file.close();
 
-    CFG cfg = CFG(lines,raw_data); 
+    CFG cfg = CFG(lines); 
 
     for(std::string s : cfg.file_data){
         std::cout << s << std:: endl;
     }
-
+    printf("\n------------\n");
     cfg.print_cfg();
+    printf("\n------------\n");
+    for(auto s : cfg.non_terminals){
+        std::cout << s << ": derives2lambda -> ";
+        std::cout << cfg.derivesToLambda(s,std::vector<std::string>()) << std::endl;
+    }
 
     return 0;
 }
