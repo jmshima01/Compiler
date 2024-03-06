@@ -5,16 +5,8 @@ import (
 	"os"
 	"strings"
 	"unicode"
-	// "regexp"
+	
 )
-
-// ============== TYPES ===============
-type production_rule struct{
-	LHS string;
-	RHS []string;
-
-};
-
 
 // ============== Helpers =============
 
@@ -27,15 +19,7 @@ func isNonTerminal(s string) bool {
     return false
 }
 
-func containsTerminal(rhs []string) bool{
-	for _,v := range rhs{
-		if !isNonTerminal(v) && v!= "lambda" {
-			return true
-		}
-	}
-	return false
 
-}
 
 func findStartState(P []production_rule) string{
 	seen := map[string]bool{}
@@ -58,62 +42,10 @@ func findStartState(P []production_rule) string{
 			} 
 		}
 	}
-
 	fmt.Println("No Start State in grammar!")
 	return ""
 }
-// =============== LAMBDA/FIRST/FOLLOW ================
 
-func derivesToLambda(nonterm string, P []production_rule) bool {
-	nullable := make(map[string]bool)
-	for _,p := range P{
-		nullable[p.LHS] = false
-	}
-	for _,p := range P{
-		if containsTerminal(p.RHS){
-			continue;
-		} 
-		if p.RHS[0] == "lambda"{
-			nullable[p.LHS] = true
-		}
-	}
-	for _,p := range P{
-		if p.LHS == nonterm{
-			
-			if containsTerminal(p.RHS){
-				continue
-			} else if p.RHS[0] == "lambda"{
-				return true
-			} else{
-				res := true
-				for _,v:=range p.RHS{
-					if !nullable[v]{
-						res=false
-					}
-				}
-				if !res{
-					continue
-				}
-				return true
-			}
-			
-		}
-	}
-	return false
-}
-
-func first(P []production_rule)map[string]bool{
-	// first_set := map[string]bool{}
-
-}
-
-func follow(){
-	fmt.Println("TODO")
-}
-
-func predict(){
-	fmt.Println()
-}
 
 
 func main() {
@@ -138,10 +70,10 @@ func main() {
 	
 	P := make([]production_rule,0)
 	curr_rhs := ""
+	
 	TERMINALS := map[string]bool{} // set in golang
 	NON_TERMINALS := map[string]bool{}
 	GRAMMAR_SYMBOLS := map[string]bool{}
-	START_SYMBOL := ""
 
 	// get terminals and non-terminals
 	for _,v := range lines{
@@ -160,8 +92,8 @@ func main() {
 
 	}
 
-	fmt.Println(NON_TERMINALS)
-	fmt.Println(TERMINALS)
+	// fmt.Println(NON_TERMINALS)
+	// fmt.Println(TERMINALS)
 
 	for _,v := range lines{
 		s := strings.Split(v," -> ")
@@ -178,27 +110,23 @@ func main() {
 			curr_rhs = s[0]
 		}
 	}
-	START_SYMBOL = findStartState(P)
+	
+	cfg := CFG{sigma:TERMINALS, S:findStartState(P), P:P, N:NON_TERMINALS, derivestoLambda: nil, symbols:GRAMMAR_SYMBOLS, nullable:nil}
+	cfg.nullable = make(map[string]bool)
 
-	fmt.Println(START_SYMBOL)
-	fmt.Println()
-	DERIVES_TO_LAMBDA := make(map[string]bool) // cache all the values
 	for _,p := range P{
-		DERIVES_TO_LAMBDA[p.LHS] = derivesToLambda(p.LHS,P)
+		_,ok := cfg.nullable[p.LHS]
+		if !ok{
+			cfg.nullable[p.LHS]=false
+		}
+		if p.RHS[0] == "lambda"{
+			cfg.nullable[p.LHS] = true
+		}
 	}
-	fmt.Println(DERIVES_TO_LAMBDA)
+	
+	cfg.derivestoLambda = cfg.genLambda()
+
+	cfg.printCFG()
 	// fmt.Println("Rule",derivesToLambda("Rule",P))
 
-
-
-
-
-
-
-
-
-
-	
-
-	
 }
