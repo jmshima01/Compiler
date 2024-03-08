@@ -128,5 +128,5 @@ func main() {
 
 	cfg.printCFG()
 	// fmt.Println("Rule",derivesToLambda("Rule",P))
-
+	
 }
