@@ -1,6 +1,6 @@
 .PHONY: all clean run
 
-BIN_NAME=LUTHOR
+BIN_NAME=LGA
 
 build:
 	@go build -o $(BIN_NAME) main.go
