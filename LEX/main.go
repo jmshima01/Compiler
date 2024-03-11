@@ -199,9 +199,7 @@ func getLine(src []byte, start int)string{
 	return strconv.Itoa(line) + " " + strconv.Itoa(result)
 }
 
-
 // =========== MAIN ===============
-
 func main(){
 
 	args := os.Args
