@@ -42,10 +42,10 @@ func (dfa DFA) matchSeq(seq []byte)(bool,int){
 	curr_row := dfa.startState
 	
 	for _,c := range seq{
-	
+		if c==0{return false,0}
 		_,ok := dfa.rows[curr_row].transitions[c]
 		if !ok{
-			println(string(c),"not in alphabet!")
+			println(c,"not in alphabet!")
 			os.Exit(1)
 		}
 
