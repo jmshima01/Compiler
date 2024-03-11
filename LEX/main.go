@@ -45,7 +45,8 @@ func (dfa DFA) matchSeq(seq []byte)(bool,int){
 	
 		_,ok := dfa.rows[curr_row].transitions[c]
 		if !ok{
-			return false,0
+			println(string(c),"not in alphabet!")
+			os.Exit(1)
 		}
 
 		t := dfa.rows[curr_row].transitions[c] // transition
@@ -135,7 +136,7 @@ func parseAlphabetEncoding(s string)[]byte{
 func readLines(path string)[]string{
 	f,err := os.ReadFile(path)
 	if err!=nil{
-		fmt.Println(err)
+		println(err)
 		os.Exit(1)
 	}
 	return strings.Split(string(strings.Trim(string(f),"\n")),"\n")
@@ -149,7 +150,7 @@ func writeLines(path string, data []string){
 	}
 	err := os.WriteFile(path,toByteSlice(result),0644)
 	if err != nil{
-		fmt.Println("Could not write results to",path)
+		println("Could not write results to",path)
 		os.Exit(1)
 	}
 }
@@ -158,7 +159,7 @@ func writeLines(path string, data []string){
 func readSrc(path string) []byte{
 	data,err := os.ReadFile(path)
 	if err!=nil{
-		fmt.Println(err)
+		println(err)
 		os.Exit(1)
 	}
 	return data
@@ -205,7 +206,7 @@ func main(){
 
 	args := os.Args
 	if len(args) < 3{
-		fmt.Println("Usage: go run go.main <scanningPath> <scrPath> <outFilePath>")
+		println("Usage: go run go.main <scanningPath> <scrPath> <outFilePath>")
 		os.Exit(1)
 	}
 
