@@ -182,19 +182,27 @@ func maxMatch(m []int)(int,int){
 }
 
 // Returns the line number and start number of a token given its index in the byte stream
-func getLine(src []byte, start int)string{
+func getLine(lineRange [][]int, start int)string{
 	line := 1
-	result := 1
-	for i := range src{
-		if i == start{
+	result := 0
+	toSub := 0
+
+	for _,v := range lineRange{
+		
+		l:=v[0]
+		r:=v[1]
+		if start <= r{
+			line=l
+			result=start-toSub
+			if l==1{result++}
 			break
+
 		}
-		if src[i] == 10{ // newline in decimal
-			line++
-			result=0
-		}
-		result++
+		toSub=r
 	}
+	
+
+
 	return strconv.Itoa(line) + " " + strconv.Itoa(result)
 }
 
@@ -253,6 +261,19 @@ func main(){
 		dfaResults[v.tokenID] = false
 	}
 
+	lineRange := make([][]int,0)
+	line:=1
+	for i,c := range srcData{
+		if c == 10{ // newline in decimal
+			r:= []int{line,i}
+			lineRange = append(lineRange, r)
+			line++
+		}
+
+	}
+	
+	// fmt.Println(lineRange)
+
 	EOF := byte(0) // assuming NUL 0x00 is not part of any alphabet provided so that can terminate loop below as all tokens will fail
 	srcData = append(srcData,EOF)
 	stream :=srcData
@@ -299,7 +320,7 @@ func main(){
 				longestMatch[s]=0
 			}
 
-			line:= getLine(srcData,streamStrt)
+			line:= getLine(lineRange,streamStrt)
 			_,ok := optionalData[tokenInds[ind]]
 			if ok{
 				s := ""
