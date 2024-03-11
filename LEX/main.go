@@ -227,7 +227,7 @@ func main(){
 			asciiAlphabet = parseAlphabetEncoding(v)
 		} else{
 			tt := strings.Fields(v)
-			fmt.Println(tt)
+			// fmt.Println(tt)
 			ttPath := tt[0]
 			ttData := readLines(ttPath)
 			dfa := makeDFA(ttData,asciiAlphabet,tt[1])
@@ -323,5 +323,4 @@ func main(){
 
 	// fmt.Println(tokens)
 	writeLines(outPath,tokens) // OUTPUT
-
 }
