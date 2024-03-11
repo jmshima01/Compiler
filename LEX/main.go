@@ -6,10 +6,11 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
 )
 
-type DFA struct{
+// ====== Data Structures ============
+
+type DFA struct{ // Deterministic finite automa (aka regexp)
 	transition_chars []byte;
 	rows map[string]row;
 	tokenID string;
@@ -23,6 +24,11 @@ type row struct{
 	transitions map[byte]string;
 }
 
+
+// ============ Helpers ==========
+
+
+// Converts string to byte array 
 func toByteSlice(s string) []byte{
 	res := make([]byte,0)
 	for _,v := range s{
@@ -31,6 +37,7 @@ func toByteSlice(s string) []byte{
 	return res
 }
 
+// Matches a given byte stream seq to a dfa and returns if it can continue (i.e) not an E transition and the match length
 func (dfa DFA) matchSeq(seq []byte)(bool,int){
 	curr_row := dfa.startState
 	
@@ -52,7 +59,7 @@ func (dfa DFA) matchSeq(seq []byte)(bool,int){
 	if dfa.rows[curr_row].isAccept{return true,len(seq)} else {return true,0}
 }
 
-
+// DFA constuctor given an correct row from the scan.u file
 func makeDFA(tt []string, alphabet []byte, tokenID string) DFA{
 	rows := map[string]row{}
 	for _,line := range tt{
@@ -73,6 +80,7 @@ func makeDFA(tt []string, alphabet []byte, tokenID string) DFA{
 	return DFA{transition_chars:alphabet,rows:rows,tokenID: tokenID, startState: "0"}
 }
 
+// For debuging
 func(dfa DFA)printDFA(){
 	fmt.Println("-------------- Token ID:",dfa.tokenID)
 	fmt.Println("                                    ",dfa.transition_chars)
@@ -82,6 +90,7 @@ func(dfa DFA)printDFA(){
 	fmt.Println("--------------")
 }
 
+// Converts a string to its coresponding "Alphabet Encoding" i.e weird hex format by keith
 func toAlphabetEncoding(s string)string{
 	result := ""
 	for _,c := range s{
@@ -100,6 +109,7 @@ func toAlphabetEncoding(s string)string{
 	return result
 }
 
+// Converts weird hex format string to byte array
 func parseAlphabetEncoding(s string)[]byte{
 	s = strings.Join(strings.Fields(s),"")
 	ascii_permited := make([]byte,0)
@@ -121,6 +131,7 @@ func parseAlphabetEncoding(s string)[]byte{
 	return ascii_permited
 }
 
+// Read a file into list of its lines
 func readLines(path string)[]string{
 	f,err := os.ReadFile(path)
 	if err!=nil{
@@ -130,6 +141,20 @@ func readLines(path string)[]string{
 	return strings.Split(string(strings.Trim(string(f),"\n")),"\n")
 }
 
+// Write array of lines to a file
+func writeLines(path string, data []string){
+	result := ""
+	for _,l := range data{
+		result+=l+"\n"	
+	}
+	err := os.WriteFile(path,toByteSlice(result),0644)
+	if err != nil{
+		fmt.Println("Could not write results to",path)
+		os.Exit(1)
+	}
+}
+
+// Read Src file for char stream
 func readSrc(path string) []byte{
 	data,err := os.ReadFile(path)
 	if err!=nil{
@@ -139,6 +164,7 @@ func readSrc(path string) []byte{
 	return data
 }
 
+// Finds max of int array and returns the value and its index (used for finding the max token length/index)
 func maxMatch(m []int)(int,int){
 	result := -1
 	ind := 0
@@ -155,31 +181,46 @@ func maxMatch(m []int)(int,int){
 	return result,ind
 }
 
+// Returns the line number and start number of a token given its index in the byte stream
+func getLine(src []byte, start int)string{
+	line := 1
+	result := 1
+	for i := range src{
+		if i == start{
+			break
+		}
+		if src[i] == 10{ // newline in decimal
+			line++
+			result=0
+		}
+		result++
+	}
+	return strconv.Itoa(line) + " " + strconv.Itoa(result)
+}
 
 
-// ======================================
-//              MAIN DRIVER
-// ======================================
+// =========== MAIN ===============
+
 func main(){
+
 	args := os.Args
-	
 	if len(args) < 3{
-		fmt.Println("Usage: go run go.main <scanningPath> <scrPath> <optional_destination>")
+		fmt.Println("Usage: go run go.main <scanningPath> <scrPath> <outFilePath>")
 		os.Exit(1)
 	}
 
 	scanningPath := args[1]
 	srcPath := args[2]
-	// output_to_path := args[3]
+	outPath := args[3]
 
 	scanningData := readLines(scanningPath)
-	scrData := readSrc(srcPath)
-	 
-	asciiAlphabet := make([]byte,0)
-	dfaArray := make([]DFA, 0)
-	tokenLabels := map[string]int{}
-	tokenInds := map[int]string{}
-	optionalData := map[string]string{}
+	srcData := readSrc(srcPath)
+
+	asciiAlphabet := make([]byte,0) // Alphabet 
+	dfaArray := make([]DFA, 0) // array of each dfa
+	tokenLabels := map[string]int{} // lookup table (token -> order)
+	tokenInds := map[int]string{} // lookup table (order -> token)
+	optionalData := map[string]string{} // 3rd optional value per token value 
 
 	for i,v := range scanningData{
 		if i == 0{
@@ -194,7 +235,6 @@ func main(){
 			tokenLabels[dfa.tokenID] = i-1
 			tokenInds[i-1] = dfa.tokenID
 			
-			
 			switch len(tt){
 				case 2:
 				case 3:
@@ -207,26 +247,24 @@ func main(){
 		}
 	}
 	
-	tokenMap := map[string]DFA{}
-	
-	dfaResults := map[string]bool{}
-	longestMatch := make([]int,len(dfaArray))
+	tokenMap := map[string]DFA{} // tokenID -> dfa
+	dfaResults := map[string]bool{} // MATCHING SET when all false then decision can be made
+	longestMatch := make([]int,len(dfaArray)) // keeps track of token index and match lengths
+
 	for _,v := range dfaArray{
 		tokenMap[v.tokenID] = v
 		dfaResults[v.tokenID] = false
 	}
 
-	EOF := byte(0)
-	scrData = append(scrData,EOF)
-	stream :=scrData
+	EOF := byte(0) // assuming NUL 0x00 is not part of any alphabet provided so that can terminate loop below as all tokens will fail
+	srcData = append(srcData,EOF)
+	stream :=srcData
 	streamStrt := 0
 	streamEnd := 1
-	
-	tokens := make([]string,0)
-
-	for streamStrt<len(scrData)-1{
+	tokens := make([]string,0) // FINAL RESULT
+	for streamStrt<len(srcData)-1{
 		
-		stream = scrData[streamStrt:streamEnd]
+		stream = srcData[streamStrt:streamEnd]
 		
 		// fmt.Println(stream)
 		
@@ -238,64 +276,52 @@ func main(){
 			tokenPos:=tokenLabels[v.tokenID] // lookup table for token label ind
 			
 			// fmt.Println(v.tokenID,matchLen,match)
-			if match && (matchLen >= longestMatch[tokenPos]){
+			if match && (matchLen >= longestMatch[tokenPos]){ // set max of a token
 				longestMatch[tokenPos] = matchLen
 			}
 		}
-		// fmt.Println(dfaResults)
-		// itered through each dfa 
+		
+		// gone through each dfa 
 		atLeastOneMatch := false
-		for _,x := range dfaResults{ // check all false 
+		for _,x := range dfaResults{ // check all if false 
 			if x{
 				atLeastOneMatch = true
 			}
 		}
 
-		if !atLeastOneMatch{
+		if !atLeastOneMatch{ // all false make token choice 
 			
-			l,ind := maxMatch(longestMatch)
+			l,ind := maxMatch(longestMatch) // find max length 
 			
-			// if l==0{ // no more matches possible in stream (I think)
-			// 	break
-			// }
-
-			fmt.Println("----------------")
-			fmt.Println("all failed on,",stream)
+			// fmt.Println("----------------")
+			// fmt.Println("all failed on,",stream)
+			// fmt.Println(longestMatch)
 			
-			
-			fmt.Println(longestMatch)
-
-			for s := range longestMatch{
+			for s := range longestMatch{ // reset match lengths
 				longestMatch[s]=0
 			}
+
+			line:= getLine(srcData,streamStrt)
 			_,ok := optionalData[tokenInds[ind]]
 			if ok{
-				s:= tokenInds[ind] + optionalData[tokenInds[ind]] 
+				s := ""
+				s += tokenInds[ind]+ " " + optionalData[tokenInds[ind]] + " " + line
 				tokens = append(tokens, s)
 				// fmt.Println("=============\nMAX:",tokenInds[ind],l,optionalData[tokenInds[ind]],streamStrt,lineNum,"\n======================")
 			} else{
-				s:= tokenInds[ind] + toAlphabetEncoding(string(scrData[streamStrt:streamStrt+l]))
+				s:= ""
+				s += tokenInds[ind]+ " " + toAlphabetEncoding(string(srcData[streamStrt:streamStrt+l])) + " " + line
 				tokens= append(tokens, s)
-				// fmt.Println("=============\nMAX:",tokenInds[ind],l,toAlphabetEncoding(string(scrData[streamStrt:streamStrt+l])),streamStrt,lineNum,"\n======================")
+				// fmt.Println("=============\nMAX:",tokenInds[ind],l,toAlphabetEncoding(string(srcData[streamStrt:streamStrt+l])),streamStrt,lineNum,"\n======================")
 			}
 
 			streamStrt += l
 			streamEnd = streamStrt+1
 			 
-		} else {
-			streamEnd++	
-		}
+		} else {streamEnd++} // not all false, continue stream +1 next char
 	}
-	// fmt.Println(scrData)
-	// fmt.Println(len(scrData))
-	// fmt.Println(cap(scrData))
 
-	fmt.Println(tokens)
+	// fmt.Println(tokens)
+	writeLines(outPath,tokens) // OUTPUT
 
-
-	// two := tokenMap["twosmallwords"]
-	// m,l := two.matchSeq(toByteSlice("rop rop "))
-	// fmt.Println(m,l)
-	// s:=toAlphabetEncoding("rop rop ")
-	// fmt.Println(s)
 }
