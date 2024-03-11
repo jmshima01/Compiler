@@ -200,9 +200,6 @@ func getLine(lineRange [][]int, start int)string{
 		}
 		toSub=r
 	}
-	
-
-
 	return strconv.Itoa(line) + " " + strconv.Itoa(result)
 }
 
