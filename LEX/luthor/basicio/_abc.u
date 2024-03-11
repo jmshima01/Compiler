@@ -1,5 +1,5 @@
 x0a a
-luthor/basicio/adot.tt           a
-luthor/basicio/aadot.tt          aa
-luthor/basicio/aaadot.tt         aaa
-luthor/basicio/anyone.tt         IGNORE
+_luthortest/adot.tt           a
+_luthortest/aadot.tt          aa
+_luthortest/aaadot.tt         aaa
+_luthortest/anyone.tt         IGNORE
