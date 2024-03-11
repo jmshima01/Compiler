@@ -24,9 +24,7 @@ type row struct{
 	transitions map[byte]string;
 }
 
-
 // ============ Helpers ==========
-
 
 // Converts string to byte array 
 func toByteSlice(s string) []byte{
@@ -43,6 +41,7 @@ func (dfa DFA) matchSeq(seq []byte)(bool,int){
 	
 	for _,c := range seq{
 		if c==0{return false,0}
+		
 		_,ok := dfa.rows[curr_row].transitions[c]
 		if !ok{
 			println(c,"not in alphabet!")
@@ -136,7 +135,7 @@ func parseAlphabetEncoding(s string)[]byte{
 func readLines(path string)[]string{
 	f,err := os.ReadFile(path)
 	if err!=nil{
-		println(err)
+		println("Can't read file",path)
 		os.Exit(1)
 	}
 	return strings.Split(string(strings.Trim(string(f),"\n")),"\n")
@@ -159,7 +158,7 @@ func writeLines(path string, data []string){
 func readSrc(path string) []byte{
 	data,err := os.ReadFile(path)
 	if err!=nil{
-		println(err)
+		println("Can't read src file",err)
 		os.Exit(1)
 	}
 	return data
@@ -239,10 +238,9 @@ func main(){
 				case 3:
 					optionalData[tt[1]] = tt[2]
 				default:
-					fmt.Println("error in reading tt file row only has len",len(tt))
+					println("error in reading tt file row only has len",len(tt))
 					os.Exit(1)
 			}
-			
 		}
 	}
 	
@@ -264,9 +262,7 @@ func main(){
 	for streamStrt<len(srcData)-1{
 		
 		stream = srcData[streamStrt:streamEnd]
-		
 		// fmt.Println(stream)
-		
 		for _,v := range tokenMap{
 			match,matchLen:=v.matchSeq(stream)
 			
@@ -295,6 +291,9 @@ func main(){
 			// fmt.Println("----------------")
 			// fmt.Println("all failed on,",stream)
 			// fmt.Println(longestMatch)
+			if l==0{
+				break
+			}
 			
 			for s := range longestMatch{ // reset match lengths
 				longestMatch[s]=0
