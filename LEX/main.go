@@ -221,8 +221,9 @@ func main(){
 	stream :=scrData
 	streamStrt := 0
 	streamEnd := 1
-	// EOF := false
-	lineNum := 1
+	
+	tokens := make([]string,0)
+
 	for streamStrt<len(scrData)-1{
 		
 		stream = scrData[streamStrt:streamEnd]
@@ -269,25 +270,28 @@ func main(){
 			}
 			_,ok := optionalData[tokenInds[ind]]
 			if ok{
-				fmt.Println("=============\nMAX:",tokenInds[ind],l,optionalData[tokenInds[ind]],streamStrt,lineNum,"\n======================")
+				s:= tokenInds[ind] + optionalData[tokenInds[ind]] 
+				tokens = append(tokens, s)
+				// fmt.Println("=============\nMAX:",tokenInds[ind],l,optionalData[tokenInds[ind]],streamStrt,lineNum,"\n======================")
 			} else{
-				fmt.Println("=============\nMAX:",tokenInds[ind],l,toAlphabetEncoding(string(scrData[streamStrt:streamStrt+l])),streamStrt,lineNum,"\n======================")
+				s:= tokenInds[ind] + toAlphabetEncoding(string(scrData[streamStrt:streamStrt+l]))
+				tokens= append(tokens, s)
+				// fmt.Println("=============\nMAX:",tokenInds[ind],l,toAlphabetEncoding(string(scrData[streamStrt:streamStrt+l])),streamStrt,lineNum,"\n======================")
 			}
 
 			streamStrt += l
 			streamEnd = streamStrt+1
 			 
 		} else {
-			if scrData[streamEnd] == 10{
-				lineNum++
-				fmt.Println("line found!",lineNum,stream)
-			}
 			streamEnd++	
 		}
 	}
-	fmt.Println(scrData)
-	fmt.Println(len(scrData))
-	fmt.Println(cap(scrData))
+	// fmt.Println(scrData)
+	// fmt.Println(len(scrData))
+	// fmt.Println(cap(scrData))
+
+	fmt.Println(tokens)
+
 
 	// two := tokenMap["twosmallwords"]
 	// m,l := two.matchSeq(toByteSlice("rop rop "))
