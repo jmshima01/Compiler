@@ -188,7 +188,6 @@ func getLine(lineRange [][]int, start int)string{
 	toSub := 0
 
 	for _,v := range lineRange{
-		
 		l:=v[0]
 		r:=v[1]
 		if start <= r{
@@ -196,7 +195,6 @@ func getLine(lineRange [][]int, start int)string{
 			result=start-toSub
 			if l==1{result++}
 			break
-
 		}
 		toSub=r
 	}
@@ -266,7 +264,6 @@ func main(){
 			lineRange = append(lineRange, r)
 			line++
 		}
-
 	}
 	
 	// fmt.Println(lineRange)
