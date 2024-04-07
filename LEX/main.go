@@ -275,7 +275,6 @@ func main(){
 	streamEnd := 1
 	tokens := make([]string,0) // FINAL RESULT
 	for streamStrt<len(srcData)-1{
-		
 		stream = srcData[streamStrt:streamEnd]
 		// fmt.Println(stream)
 		for _,v := range tokenMap{

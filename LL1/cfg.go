@@ -4,12 +4,7 @@ import (
 		"fmt"
 	)
 
-type production_rule struct{
-	LHS string;
-	RHS []string;
-};
-
-func set_union(s1 map[string]bool, s2 map[string]bool)map[string]bool{
+func setUnion(s1 map[string]bool, s2 map[string]bool)map[string]bool{
 	s_union := map[string]bool{}
 	for k, _ := range s1{
 		s_union[k] = true
@@ -19,8 +14,6 @@ func set_union(s1 map[string]bool, s2 map[string]bool)map[string]bool{
 	}
 	return s_union
 }
-
-
 
 type CFG struct{
 	P []production_rule; // prod rules
@@ -37,13 +30,13 @@ type CFG struct{
 
 
 // ========== Methods ===========
-func (self CFG) printCFG(){
-	fmt.Println("Starting Goal:",self.S)
-	fmt.Println("Nonterminals:",self.N)
-	fmt.Println("Symbols:",self.symbols)
-	fmt.Println("Rules:",self.P)
-	fmt.Println("Nullable:",self.nullable)
-	fmt.Println("Derv2Lambda:",self.derivestoLambda)
+func (cfg CFG) printCFG(){
+	fmt.Println("Starting Goal:",cfg.S)
+	fmt.Println("Nonterminals:",cfg.N)
+	fmt.Println("Symbols:",cfg.symbols)
+	fmt.Println("Rules:",cfg.P)
+	fmt.Println("Nullable:",cfg.nullable)
+	fmt.Println("Derv2Lambda:",cfg.derivestoLambda)
 }
 
 func (self CFG) containsTerminal(rhs []string) bool{
@@ -54,20 +47,19 @@ func (self CFG) containsTerminal(rhs []string) bool{
 		}
 	}
 	return false
-
 }
 
-func (self CFG) DerivesToLambda(nonterm string) bool {
-	for _,p := range self.P{
+func (cfg CFG) DerivesToLambda(nonterm string) bool {
+	for _,p := range cfg.P{
 		if p.LHS == nonterm{
-			if self.containsTerminal(p.RHS){
+			if cfg.containsTerminal(p.RHS){
 				continue
 			} else if p.RHS[0] == "lambda"{
 				return true
 			} else{
 				res := true
 				for _,v:=range p.RHS{
-					if !self.nullable[v]{
+					if !cfg.nullable[v]{
 						res=false
 					}
 				}
@@ -76,28 +68,36 @@ func (self CFG) DerivesToLambda(nonterm string) bool {
 				}
 				return true
 			}
-			
 		}
 	}
 	return false
 }
 
-func (self CFG) genLambda()map[string]bool{
+func (cfg CFG) makeLambda()map[string]bool{
 	derives_lambda_cache := make(map[string]bool) // cache all the values
-	for _,p := range self.P{
-		derives_lambda_cache[p.LHS] = self.DerivesToLambda(p.LHS)
+	for _,p := range cfg.P{
+		derives_lambda_cache[p.LHS] = cfg.DerivesToLambda(p.LHS)
 	}
 	return derives_lambda_cache
 }
 
-
-
-func (self CFG) first(n []string)map[string]bool{
+func (cfg CFG) first(n []string)map[string]bool{
 	first_set := map[string]bool{}
+	for _,v := range n{
+		_,ok := cfg.sigma[v]
+		if ok{
+			first_set[v] =true
+			return first_set
+		}
+		
+	}
+	
 	return first_set
 }
 
 func (self CFG) follow(n []string)map[string]bool{
+
+
 	return nil
 }
 
@@ -114,6 +114,3 @@ func (cfg CFG) predict(n string)map[string]bool{
 	}
 	return predict
 }
-
-
-
