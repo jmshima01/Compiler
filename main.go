@@ -57,34 +57,11 @@ func setUnion(s1 set, s2 set)set{
 type Grammar struct{
 	raw []string;
 	P []ProductionRule;
-	N set; // Nonterminals
-	sigma set; // terminals
-	symbols set;
 	// Caches for memoization (maps of sets)
-	dervToLamb set;
+	dervToLamb map[string]set;
 	firstSets map[string]set;
 	followSets map[string]set;
 	predictSets map[string]set; // N -> predict(N) 
-}
-func makeGrammar(cfg []string) Grammar{
-	P := makeProductionRules(cfg)
-	
-	nonTerminals := makeSet()
-	terminals := makeSet()
-	for _,line := range cfg{
-		v := strings.Split(line, " ")
-		for _,s := range v{
-			if isNonTerminal(s){
-				nonTerminals.add(s)
-			} else if isTerminal(s){
-				terminals.add(s)
-			}
-		}
-	}
-	symbols := setUnion(terminals,nonTerminals)
-	symbols.add("$")
-	d := makeDerivesToLambda(P)
-	return Grammar{raw:cfg, P:P, N:nonTerminals, symbols:symbols, sigma:terminals,dervToLamb:d, firstSets: make(map[string]set,0),followSets: make(map[string]set,0),predictSets: make(map[string]set,0)}
 }
 
 // =============== Helpers ==========
@@ -106,6 +83,8 @@ func isTerminal(s string)bool{
     }
     return true
 }
+
+
 
 func makeProductionRules(cfg []string) []ProductionRule{
 	productionRules := make([]ProductionRule,0)
@@ -201,7 +180,7 @@ func derivesToLambda(N string, P []ProductionRule)bool{
 }
 
 
-func (G Grammar) first(N string, firstSet set, seen set) set{
+func first(N string, P []ProductionRule, dervLambda set, firstSet set, seen set) set{
 	_,ok := seen.items[N]
 	if ok{
 		return firstSet
@@ -213,7 +192,7 @@ func (G Grammar) first(N string, firstSet set, seen set) set{
 		return set{items:map[string]bool{N:true}}
 	}
 	seen.items[N]=true
-	for _,p := range G.P{
+	for _,p := range P{
 		if p.lhs == N{
 			for i,v := range p.rhs{
 				if i==0 && isTerminal(v){
@@ -222,9 +201,9 @@ func (G Grammar) first(N string, firstSet set, seen set) set{
 				} else{
 					if v == "lambda" {break}
 					
-					firstSet = G.first(v,firstSet,seen)
+					firstSet = first(v,P,dervLambda,firstSet,seen)
 					
-					if !G.dervToLamb.items[v]{
+					if !dervLambda.items[v]{
 						break
 					}
 				}
@@ -234,13 +213,13 @@ func (G Grammar) first(N string, firstSet set, seen set) set{
 	return firstSet	
 }
 
-func (G Grammar) follow(N string, followSet set, seen set) set{
+func follow(N string, P []ProductionRule, dervLambda set, firsts map[string]set, followSet set, seen set) set{
 	_,ok := seen.items[N]
 	if ok{
 		return followSet
 	}
 	seen.add(N)
-	for _,p := range G.P{
+	for _,p := range P{
 		flag := false
 		last := p.lhs
 		for _,v := range p.rhs{
@@ -250,8 +229,8 @@ func (G Grammar) follow(N string, followSet set, seen set) set{
 				continue
 			}
 			if flag{
-				followSet = setUnion(followSet,G.firstSets[v])
-				if !G.dervToLamb.items[v]{
+				followSet = setUnion(followSet,firsts[v])
+				if !dervLambda.items[v]{
 					flag = false
 					break
 				}
@@ -259,43 +238,35 @@ func (G Grammar) follow(N string, followSet set, seen set) set{
 		}
 		if flag{
 			N=last
-			followSet = G.follow(N,followSet,seen)
+			followSet = follow(N,P,dervLambda,firsts,followSet,seen)
 		}
 	}
 	return followSet
 }
 
-func (G Grammar) predict(p ProductionRule)set{
+func predict(p ProductionRule, dervLambda set, firsts map[string]set, follows map[string]set)set{
 	predictSet := set{}
 	flag := true
 	for _,v := range p.rhs{
 		if v == "lambda"{
 			flag = false
-			predictSet = G.followSets[p.lhs]
+			predictSet = follows[p.lhs]
 			break
 		}
 		
-		predictSet = setUnion(predictSet,G.firstSets[v])
+		predictSet = setUnion(predictSet,firsts[v])
 		
-		if !G.dervToLamb.items[v]{
+		if !dervLambda.items[v]{
 			flag = false
 			break
 		}
 	}
 	if flag{
-		predictSet = setUnion(predictSet,G.followSets[p.lhs])
+		predictSet = setUnion(predictSet,follows[p.lhs])
 	}
 	return predictSet
 
 
-}
-
-func makeDerivesToLambda(P []ProductionRule)set{
-	lookup := makeSet()
-	for _,p := range P{
-		lookup.items[p.lhs] = derivesToLambda(p.lhs,P)
-	}
-	return lookup
 }
 
 
@@ -339,18 +310,57 @@ func main(){
 		grammar[i] = strings.TrimSpace(v)
 	}
 
-
-	cfg := makeGrammar(grammar)
-
-	P := cfg.P
-	fmt.Println(P)
+	nonTerminals := makeSet()
+	terminals := makeSet()
 	
+	for _,line := range grammar{
+		v := strings.Split(line, " ")
+		for _,s := range v{
+			if isNonTerminal(s){
+				nonTerminals.add(s)
+			} else if isTerminal(s){
+				terminals.add(s)
+			}
+		}
+	}
+	fmt.Println(terminals)
+	fmt.Println(nonTerminals)
+
+	symbols := setUnion(terminals,nonTerminals)
+	symbols.add("$")
+
+	productionRules := makeProductionRules(grammar)
+	fmt.Println(productionRules)
+	startState := getStartState(productionRules)
+	fmt.Println(startState)
+	fmt.Println()
+
+	dervLambdaCache := makeSet()
+	for k,_ := range nonTerminals.items{
+		fmt.Println(k,"derv->",derivesToLambda(k,productionRules))
+		dervLambdaCache.items[k] = derivesToLambda(k,productionRules)
+	}
+	fmt.Println()
+	firstCache := map[string]set{}
+	for k,_ := range symbols.items{
+		firstCache[k] = first(k,productionRules,dervLambdaCache,makeSet(),makeSet())
+		fmt.Println("first->",k,first(k,productionRules,dervLambdaCache,makeSet(),makeSet()).getValues())
+	}
+
+	fmt.Println()
+
+	followCache := map[string]set{}
+	for k,_ := range nonTerminals.items{
+		fmt.Println("follow->",k,follow(k,productionRules,dervLambdaCache,firstCache,makeSet(),makeSet()).getValues())
+		followCache[k]=follow(k,productionRules,dervLambdaCache,firstCache,makeSet(),makeSet())
+	}
+	fmt.Println()
+	for _,p := range productionRules{
+		fmt.Println("predict->",p,predict(p,dervLambdaCache,firstCache,followCache).getValues())
+	}
+
+
 	
-
-
-
-
-
 
 
 }
