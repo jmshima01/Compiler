@@ -14,6 +14,16 @@ type ProductionRule struct{
 	rhs []string;
 };
 
+func (P ProductionRule) toString() string{
+	s:= ""
+	s+=P.lhs
+	s+=" -> "
+	for _,v:= range P.rhs{
+		s+= v + " "
+	}
+	return s[:len(s)-1] 
+}
+
 // for first, follow, & predict sets 
 type set struct{
 	items map[string]bool;
@@ -359,9 +369,9 @@ func main(){
 		fmt.Println("predict->",p,predict(p,dervLambdaCache,firstCache,followCache).getValues())
 	}
 
-	ruleLookup := map[int]ProductionRule{}
+	ruleLookup := map[string]int{}
 	for i,p := range productionRules{
-		ruleLookup[i+1]=p
+		ruleLookup[p.toString()]=i+1
 	}
 
 	fmt.Println(ruleLookup)
@@ -371,8 +381,8 @@ func main(){
 	sort.Strings(columnValues)
 	columnValues = append(columnValues, "$")
 
-	columnLookup := map[int]string{}
-	rowLookup := map[int]string{}
+	columnLookup := map[string]int{}
+	rowLookup := map[string]int{}
 
 	rowValues := make([]string,0)
 	temp := makeSet()
@@ -385,18 +395,29 @@ func main(){
 	}
 
 	for i,v:= range rowValues{
-		rowLookup[i]=v
+		rowLookup[v]=i
 	}
 	for i,v:= range columnValues{
-		columnLookup[i]=v
+		columnLookup[v]=i
 	}
 
 	fmt.Println(rowValues)
 	fmt.Println(columnValues)
 	fmt.Println(columnLookup)
 	fmt.Println(rowLookup)
+	LLTable := make([][]int,len(rowLookup))
+	for _,i := range rowLookup{
+		LLTable[i] = make([]int, len(columnLookup))
+	}
+	fmt.Println(LLTable)
 
+	for _,p := range productionRules{
+		t := predict(p,dervLambdaCache,firstCache,followCache)
+		for v,_ :=range t.items{
+			LLTable[rowLookup[p.lhs]][columnLookup[v]] = ruleLookup[p.toString()]	
+		}
 
-	
-
+		
+	}
+	fmt.Println(LLTable)
 }
