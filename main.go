@@ -3,13 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"unicode"
-
-
 )
 
-// ============ Types ============== 
+// ============ Types ==============
 type ProductionRule struct{
 	lhs string;
 	rhs []string;
@@ -188,14 +187,14 @@ func first(N string, P []ProductionRule, dervLambda set, firstSet set, seen set)
 	if N == "lambda"{
 		return set{}
 	}
-	if isTerminal(N){
+	if isTerminal(N) || N == "$"{
 		return set{items:map[string]bool{N:true}}
 	}
 	seen.items[N]=true
 	for _,p := range P{
 		if p.lhs == N{
 			for i,v := range p.rhs{
-				if i==0 && isTerminal(v){
+				if i==0 && (isTerminal(v)){
 					firstSet.add(v)
 					break
 				} else{
@@ -271,6 +270,7 @@ func predict(p ProductionRule, dervLambda set, firsts map[string]set, follows ma
 
 
 func makeLL1Table(G Grammar){
+
 
 }
 
@@ -359,8 +359,44 @@ func main(){
 		fmt.Println("predict->",p,predict(p,dervLambdaCache,firstCache,followCache).getValues())
 	}
 
+	ruleLookup := map[int]ProductionRule{}
+	for i,p := range productionRules{
+		ruleLookup[i+1]=p
+	}
+
+	fmt.Println(ruleLookup)
+
+	// LLTable := make([][]int,0)
+	columnValues:= terminals.getValues()
+	sort.Strings(columnValues)
+	columnValues = append(columnValues, "$")
+
+	columnLookup := map[int]string{}
+	rowLookup := map[int]string{}
+
+	rowValues := make([]string,0)
+	temp := makeSet()
+	for _,p := range productionRules{
+		_,ok := temp.items[p.lhs]
+		if !ok{
+			rowValues = append(rowValues, p.lhs)
+		}
+		temp.add(p.lhs)
+	}
+
+	for i,v:= range rowValues{
+		rowLookup[i]=v
+	}
+	for i,v:= range columnValues{
+		columnLookup[i]=v
+	}
+
+	fmt.Println(rowValues)
+	fmt.Println(columnValues)
+	fmt.Println(columnLookup)
+	fmt.Println(rowLookup)
+
 
 	
-
 
 }
