@@ -25,40 +25,32 @@ func (P ProductionRule) toString() string{
 }
 
 // for first, follow, & predict sets 
-type set struct{
-	items map[string]bool;
-};
+type set map[string]bool;
 
-func makeSet() set{
-	var s set
-	s.items = make(map[string]bool,0)
-	return s
-}
 
 func (s set)add(v string){
-	if s.items == nil{
+	if s == nil{
 		return
 	}
-	s.items[v] = true
-
+	s[v] = true
 }
 
 // only want keys of the set/map
 func (s set)getValues() []string{
 	res := make([]string,0)
-	for k,_ := range s.items{
+	for k,_ := range s{
 		res = append(res, k)
 	}
 	return res
 }
 
 func setUnion(s1 set, s2 set)set{
-	union := makeSet()
-	for k, _ := range s1.items{
-		union.items[k] = true
+	union := make(set)
+	for k, _ := range s1{
+		union[k] = true
 	}
-	for k, _ := range s2.items{
-		union.items[k] = true
+	for k, _ := range s2{
+		union[k] = true
 	}
 	return union
 }
@@ -190,17 +182,19 @@ func derivesToLambda(N string, P []ProductionRule)bool{
 
 
 func first(N string, P []ProductionRule, dervLambda set, firstSet set, seen set) set{
-	_,ok := seen.items[N]
+	_,ok := seen[N]
 	if ok{
 		return firstSet
 	}
 	if N == "lambda"{
-		return set{}
+		return nil
 	}
 	if isTerminal(N) || N == "$"{
-		return set{items:map[string]bool{N:true}}
+		s := make(set)
+		s.add(N)
+		return s
 	}
-	seen.items[N]=true
+	seen.add(N)
 	for _,p := range P{
 		if p.lhs == N{
 			for i,v := range p.rhs{
@@ -212,7 +206,7 @@ func first(N string, P []ProductionRule, dervLambda set, firstSet set, seen set)
 					
 					firstSet = first(v,P,dervLambda,firstSet,seen)
 					
-					if !dervLambda.items[v]{
+					if !dervLambda[v]{
 						break
 					}
 				}
@@ -223,7 +217,7 @@ func first(N string, P []ProductionRule, dervLambda set, firstSet set, seen set)
 }
 
 func follow(N string, P []ProductionRule, dervLambda set, firsts map[string]set, followSet set, seen set) set{
-	_,ok := seen.items[N]
+	_,ok := seen[N]
 	if ok{
 		return followSet
 	}
@@ -239,7 +233,7 @@ func follow(N string, P []ProductionRule, dervLambda set, firsts map[string]set,
 			}
 			if flag{
 				followSet = setUnion(followSet,firsts[v])
-				if !dervLambda.items[v]{
+				if !dervLambda[v]{
 					flag = false
 					break
 				}
@@ -265,7 +259,7 @@ func predict(p ProductionRule, dervLambda set, firsts map[string]set, follows ma
 		
 		predictSet = setUnion(predictSet,firsts[v])
 		
-		if !dervLambda.items[v]{
+		if !dervLambda[v]{
 			flag = false
 			break
 		}
@@ -320,8 +314,8 @@ func main(){
 		grammar[i] = strings.TrimSpace(v)
 	}
 
-	nonTerminals := makeSet()
-	terminals := makeSet()
+	nonTerminals := make(set)
+	terminals := make(set)
 	
 	for _,line := range grammar{
 		v := strings.Split(line, " ")
@@ -345,24 +339,24 @@ func main(){
 	fmt.Println(startState)
 	fmt.Println()
 
-	dervLambdaCache := makeSet()
-	for k,_ := range nonTerminals.items{
+	dervLambdaCache := make(set)
+	for k,_ := range nonTerminals{
 		fmt.Println(k,"derv->",derivesToLambda(k,productionRules))
-		dervLambdaCache.items[k] = derivesToLambda(k,productionRules)
+		dervLambdaCache[k] = derivesToLambda(k,productionRules)
 	}
 	fmt.Println()
 	firstCache := map[string]set{}
-	for k,_ := range symbols.items{
-		firstCache[k] = first(k,productionRules,dervLambdaCache,makeSet(),makeSet())
-		fmt.Println("first->",k,first(k,productionRules,dervLambdaCache,makeSet(),makeSet()).getValues())
+	for k,_ := range symbols{
+		firstCache[k] = first(k,productionRules,dervLambdaCache,make(set),make(set))
+		fmt.Println("first->",k,first(k,productionRules,dervLambdaCache,make(set),make(set)).getValues())
 	}
 
 	fmt.Println()
 
 	followCache := map[string]set{}
-	for k,_ := range nonTerminals.items{
-		fmt.Println("follow->",k,follow(k,productionRules,dervLambdaCache,firstCache,makeSet(),makeSet()).getValues())
-		followCache[k]=follow(k,productionRules,dervLambdaCache,firstCache,makeSet(),makeSet())
+	for k,_ := range nonTerminals{
+		fmt.Println("follow->",k,follow(k,productionRules,dervLambdaCache,firstCache,make(set),make(set)).getValues())
+		followCache[k]=follow(k,productionRules,dervLambdaCache,firstCache,make(set),make(set))
 	}
 	fmt.Println()
 	for _,p := range productionRules{
@@ -385,9 +379,9 @@ func main(){
 	rowLookup := map[string]int{}
 
 	rowValues := make([]string,0)
-	temp := makeSet()
+	temp := make(set)
 	for _,p := range productionRules{
-		_,ok := temp.items[p.lhs]
+		_,ok := temp[p.lhs]
 		if !ok{
 			rowValues = append(rowValues, p.lhs)
 		}
@@ -413,7 +407,7 @@ func main(){
 
 	for _,p := range productionRules{
 		t := predict(p,dervLambdaCache,firstCache,followCache)
-		for v,_ :=range t.items{
+		for v,_ :=range t{
 			LLTable[rowLookup[p.lhs]][columnLookup[v]] = ruleLookup[p.toString()]	
 		}
 
