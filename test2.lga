@@ -7,5 +7,5 @@ LHS -> nonterm arrow
      | alt
 RHS -> RHS Symbol
      | Symbol
-     | lambda
+     | lambdasymbol
 Symbol -> nonterm | term 

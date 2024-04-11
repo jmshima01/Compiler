@@ -1,0 +1,9 @@
+S -> H C $
+C -> g
+C -> lambda
+H -> w B C d B
+H -> B Q
+H -> lambda
+B -> m B
+B -> d
+Q -> j

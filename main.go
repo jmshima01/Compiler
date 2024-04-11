@@ -9,6 +9,60 @@ import (
 )
 
 // ============ Types ==============
+type ParseTree struct{
+	root *Node
+}
+
+type Node struct{
+	data string;
+	parent *Node;
+	
+	children []*Node;
+}
+
+func makeNode(s string,parent *Node) *Node{
+	n := Node{parent: parent, data:s}
+	n.children = make([]*Node, 0)
+	return &n
+}
+
+func addChild(t *Node, child *Node){
+	t.children = append(t.children, child)
+}
+
+
+func printChildren(c []*Node){
+	res := "children->["
+	for _,v := range c{
+		res+=v.data + " "
+	}
+	res+="]"
+	fmt.Println(res) 
+}
+
+func (t Node) debug(){
+	if t.parent != nil{
+		fmt.Println("Parent:",t.parent.data)
+	}
+	fmt.Println("data",t.data)
+	printChildren(t.children)
+}
+
+func printTree(t *Node){
+	if t == nil{
+		return
+	}
+	
+	v := *(t)
+	v.debug()
+	for _,x := range t.children{
+		printTree(x)
+	}
+	return
+}
+
+
+
 type ProductionRule struct{
 	lhs string;
 	rhs []string;
@@ -26,6 +80,28 @@ func (P ProductionRule) toString() string{
 
 // for first, follow, & predict sets 
 type set map[string]bool;
+
+type deque []string;
+
+func popfront(d deque)(deque,string){
+	if len(d)==0{
+		return d,""
+	}
+	
+	front :=d[0] 
+	d = d[1:]
+	return d,front
+}
+
+func pop(d deque)(deque,string){
+	if len(d)==0{
+		return d,""
+	}
+	
+	back :=d[len(d)-1] 
+	d = d[:len(d)-1]
+	return d,back
+}
 
 
 func (s set)add(v string){
@@ -157,6 +233,8 @@ func hasLambdaRule(N string, P []ProductionRule)bool{
 }
 
 func derivesToLambda(N string, P []ProductionRule)bool{
+	if !isNonTerminal(N){return false}
+	
 	for _,p := range P{
 		if p.lhs == N{
 			if containsTerminal(p.rhs){
@@ -216,39 +294,58 @@ func first(N string, P []ProductionRule, dervLambda set, firstSet set, seen set)
 	return firstSet	
 }
 
+func needUnionFollow(dervLambda set, seq []string)bool{
+	for _,v := range seq{
+		if !dervLambda[v] && isNonTerminal(v){
+			return false
+		}
+	}
+	return true    
+}
+
+
 func follow(N string, P []ProductionRule, dervLambda set, firsts map[string]set, followSet set, seen set) set{
 	_,ok := seen[N]
 	if ok{
 		return followSet
 	}
 	seen.add(N)
+	needFollows := make(set)
 	for _,p := range P{
-		flag := false
-		last := p.lhs
-		for _,v := range p.rhs{
-			
+		foundN := false
+		needFollow := false
+		last := p
+		for i,v := range p.rhs{
 			if v == N{
-				flag = true
+				foundN = true
+				if i == len(p.rhs)-1{
+					needFollow = true
+				}
 				continue
 			}
-			if flag{
+			if foundN{	
 				followSet = setUnion(followSet,firsts[v])
+				// fmt.Println(v,dervLambda[v])
 				if !dervLambda[v]{
-					flag = false
-					break
-				}
+					needFollow = false
+					break	
+				}	
 			}
 		}
-		if flag{
-			N=last
-			followSet = follow(N,P,dervLambda,firsts,followSet,seen)
-		}
+		if needFollow{
+			needFollows.add(last.lhs)
+		}	
 	}
+
+	for s,_ := range needFollows{	
+		followSet = follow(s,P,dervLambda,firsts,followSet,seen)
+	}
+
 	return followSet
 }
 
 func predict(p ProductionRule, dervLambda set, firsts map[string]set, follows map[string]set)set{
-	predictSet := set{}
+	predictSet := make(set)
 	flag := true
 	for _,v := range p.rhs{
 		if v == "lambda"{
@@ -268,8 +365,6 @@ func predict(p ProductionRule, dervLambda set, firsts map[string]set, follows ma
 		predictSet = setUnion(predictSet,follows[p.lhs])
 	}
 	return predictSet
-
-
 }
 
 
@@ -306,7 +401,7 @@ func writeToFile(path string,asm string){
 func main(){
 	args := os.Args
 	fmt.Println(args)
-
+	
 	grammar := readLines(args[1])
 	
 	// trim whitespace
@@ -340,7 +435,7 @@ func main(){
 	fmt.Println()
 
 	dervLambdaCache := make(set)
-	for k,_ := range nonTerminals{
+	for k,_ := range symbols{
 		fmt.Println(k,"derv->",derivesToLambda(k,productionRules))
 		dervLambdaCache[k] = derivesToLambda(k,productionRules)
 	}
@@ -348,24 +443,29 @@ func main(){
 	firstCache := map[string]set{}
 	for k,_ := range symbols{
 		firstCache[k] = first(k,productionRules,dervLambdaCache,make(set),make(set))
-		fmt.Println("first->",k,first(k,productionRules,dervLambdaCache,make(set),make(set)).getValues())
+		if isNonTerminal(k){
+			fmt.Println("first->",k,first(k,productionRules,dervLambdaCache,make(set),make(set)).getValues())
+		}
+		
 	}
 
 	fmt.Println()
 
 	followCache := map[string]set{}
 	for k,_ := range nonTerminals{
+		// if(k=="RHS"){
 		fmt.Println("follow->",k,follow(k,productionRules,dervLambdaCache,firstCache,make(set),make(set)).getValues())
 		followCache[k]=follow(k,productionRules,dervLambdaCache,firstCache,make(set),make(set))
+		
 	}
 	fmt.Println()
 	for _,p := range productionRules{
 		fmt.Println("predict->",p,predict(p,dervLambdaCache,firstCache,followCache).getValues())
 	}
 
-	ruleLookup := map[string]int{}
+	ruleLookup := map[int]ProductionRule{}
 	for i,p := range productionRules{
-		ruleLookup[p.toString()]=i+1
+		ruleLookup[i+1] = p
 	}
 
 	fmt.Println(ruleLookup)
@@ -403,15 +503,51 @@ func main(){
 	for _,i := range rowLookup{
 		LLTable[i] = make([]int, len(columnLookup))
 	}
-	fmt.Println(LLTable)
+	
 
-	for _,p := range productionRules{
+	for i,p := range productionRules{
 		t := predict(p,dervLambdaCache,firstCache,followCache)
 		for v,_ :=range t{
-			LLTable[rowLookup[p.lhs]][columnLookup[v]] = ruleLookup[p.toString()]	
+			LLTable[rowLookup[p.lhs]][columnLookup[v]] = i+1	
 		}
 
 		
 	}
+	test4:= "bghm$"
+	S := make(deque,0)
+	Q := make(deque,0)
+	S = append(S, startState)
+	for _,v := range test4{
+		Q = append(Q, string(v))
+	} 
 	fmt.Println(LLTable)
+	fmt.Println(S)
+	fmt.Println(Q)
+	
+
+	root := makeNode("ROOT",nil)
+	current := root
+	current.debug()
+	
+	nextRule:= ruleLookup[ LLTable[ rowLookup[S[len(S)-1]] ][ columnLookup[Q[0]] ] ]
+	fmt.Println(nextRule)
+	S,top := pop(S)
+	
+	newNode := makeNode(top,current)
+	addChild(current,newNode)
+	current.debug()
+	current = newNode
+
+	current.debug()
+
+	S = append(S, "*")
+	for i:= len(nextRule.rhs)-1; i>=0; i--{
+		S = append(S, nextRule.rhs[i])
+	}
+	fmt.Println(S)
+	
+
+
+	
+	
 }
