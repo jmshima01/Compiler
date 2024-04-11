@@ -80,29 +80,60 @@ func (P ProductionRule) toString() string{
 
 // for first, follow, & predict sets 
 type set map[string]bool;
+type queue []string;
+type stack []string;
 
-type deque []string;
 
-func popfront(d deque)(deque,string){
-	if len(d)==0{
-		return d,""
-	}
-	
-	front :=d[0] 
-	d = d[1:]
-	return d,front
+func (s *stack) isEmpty() bool {
+	return len(*s) == 0
+}
+func (s *stack) push(v string) {
+	*s = append(*s, v) 
 }
 
-func pop(d deque)(deque,string){
-	if len(d)==0{
-		return d,""
+func (q *queue) peek()string{
+	if q.isEmpty(){
+		fmt.Println("EMPTY Q")
+		return ""
 	}
-	
-	back :=d[len(d)-1] 
-	d = d[:len(d)-1]
-	return d,back
+	return (*q)[0] 
+}
+func (s *stack) peek()string{
+	if s.isEmpty(){
+		fmt.Println("EMPTY S")
+		return ""
+	}
+	return (*s)[len(*s)-1] 
 }
 
+
+func (s *stack) pop() (string) {
+	if s.isEmpty() {
+		return ""
+	} else {
+		index := len(*s)-1 
+		element := (*s)[index] 
+		*s = (*s)[:index] 
+		return element
+	}
+}
+
+func (q *queue) isEmpty() bool {
+	return len(*q) == 0
+}
+func (q *queue) push(v string) {
+	*q = append(*q, v) 
+}
+
+func (q *queue) pop() (string) {
+	if q.isEmpty() {
+		return ""
+	} else {
+		element := (*q)[0]
+		*q = (*q)[1:] 
+		return element
+	}
+}
 
 func (s set)add(v string){
 	if s == nil{
@@ -514,11 +545,11 @@ func main(){
 		
 	}
 	test4:= "bghm$"
-	S := make(deque,0)
-	Q := make(deque,0)
+	S := make(stack,0)
+	Q := make(queue,0)
 	S = append(S, startState)
 	for _,v := range test4{
-		Q = append(Q, string(v))
+		Q.push(string(v))
 	} 
 	fmt.Println(LLTable)
 	fmt.Println(S)
@@ -529,9 +560,9 @@ func main(){
 	current := root
 	current.debug()
 	
-	nextRule:= ruleLookup[ LLTable[ rowLookup[S[len(S)-1]] ][ columnLookup[Q[0]] ] ]
+	nextRule:= ruleLookup[ LLTable[ rowLookup[S.peek()] ][ columnLookup[Q.peek()] ] ]
 	fmt.Println(nextRule)
-	S,top := pop(S)
+	top := S.pop()
 	
 	newNode := makeNode(top,current)
 	addChild(current,newNode)
