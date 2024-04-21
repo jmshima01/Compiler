@@ -33,9 +33,9 @@ func isTerminal(s string)bool{
 func makeProductionRules(cfg []string) []ProductionRule{
 	productionRules := make([]ProductionRule,0)
 	currLHS := ""
-	currRHS := []string{}
+	currRHS := make([]string,0)
 	for _,line := range cfg{
-		v := strings.Split(line, " ")
+		v := strings.Fields(line)
 		currRHS = nil
 		for i,s:= range v{
 			if string(s) == "->" || (string(s) == "|" && i==0){
@@ -241,7 +241,6 @@ func parseLL(){
 // ========== LL(1) =================
 func main(){
 	args := os.Args
-	fmt.Println(args)
 	
 	grammar := readLines(args[1])
 	
@@ -270,7 +269,12 @@ func main(){
 	symbols.add("$")
 
 	productionRules := makeProductionRules(grammar)
-	fmt.Println(productionRules)
+	fmt.Println("++++++++++++")
+
+	for _,p := range productionRules{
+		fmt.Println(p)
+	}
+	fmt.Println("++++++++++++")
 	startState := getStartState(productionRules)
 	fmt.Println(startState)
 	fmt.Println()
@@ -361,7 +365,10 @@ func main(){
 	for _,v := range test4{
 		Q.push(string(v))
 	} 
-	fmt.Println(LLTable)
+	for _,v := range LLTable{
+		fmt.Println(v)
+	}
+	// fmt.Println(LLTable)
 	fmt.Println(S)
 	fmt.Println(Q)
 	
