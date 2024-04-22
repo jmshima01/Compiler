@@ -84,7 +84,7 @@ func (q *queue) peek()string{
 	return (*q)[0] 
 }
 
-func (q *queue) pop() (string) {
+func (q *queue) popfront() (string) {
 	if q.isEmpty() {
 		return ""
 	} else {
@@ -147,6 +147,7 @@ func printChildren(c []*Node){
 }
 
 func (t Node) debug(){
+	fmt.Println("------")
 	if t.parent != nil{
 		fmt.Println("Parent:",t.parent.data)
 	}

@@ -6,6 +6,10 @@ import(
 	"strings"
 )
 
+// James' DATA STRUCTURES
+// ds.go
+
+
 // ============ Typedefs ==============
 type ParseTree struct{
 	root *Node
@@ -27,9 +31,7 @@ type set map[string]bool;
 type queue []string;
 type stack []string;
 
-// ========== Type Methods =============
-
-
+// Type Methods: 
 // =========== Prod Rule ================
 func (P ProductionRule) toString() string{
 	s:= ""
@@ -41,7 +43,7 @@ func (P ProductionRule) toString() string{
 	return s[:len(s)-1] 
 }
 
-// =========== STACK AND QUEUE ==========
+// ======== STACK AND QUEUE ==========
 
 func (s *stack) isEmpty() bool {
 	return len(*s) == 0
@@ -84,7 +86,7 @@ func (q *queue) peek()string{
 	return (*q)[0] 
 }
 
-func (q *queue) pop() (string) {
+func (q *queue) popfront() (string) {
 	if q.isEmpty() {
 		return ""
 	} else {
@@ -147,6 +149,7 @@ func printChildren(c []*Node){
 }
 
 func (t Node) debug(){
+	fmt.Println("------")
 	if t.parent != nil{
 		fmt.Println("Parent:",t.parent.data)
 	}
@@ -165,6 +168,27 @@ func printTree(t *Node){
 		printTree(x)
 	}
 	return
+}
+
+type visual struct{
+	nodeType string // leaf or node
+	value string
+}
+
+func DFS(root *Node, dfs *[]visual) []visual{
+	if root == nil{
+		return *dfs
+	}
+	
+	v := *(root)
+	if len(v.children)==0{
+		*dfs = append(*dfs, visual{value: v.data,nodeType: "Leaf"})
+	} else{
+		*dfs = append(*dfs, visual{value: v.data, nodeType: "Node"})}
+	for _,x := range root.children{
+		DFS(x,dfs)
+	}
+	return *dfs
 }
 
 // ========== File I/O =================
