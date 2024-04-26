@@ -111,15 +111,15 @@ func readTokens() []token{
 		if line == ""{
 			continue
 		}
-		if comment.MatchString(v){
+		if comment.MatchString(line){
 			continue
 		}
-		
-		if multiLine.MatchString(v){
+
+		if multiLine.MatchString(line){
 			multiLineFlag = true
 			continue
 		}
-		if multiLineEnd.MatchString(v){
+		if multiLineEnd.MatchString(line){
 			multiLineFlag = false
 			continue
 		}

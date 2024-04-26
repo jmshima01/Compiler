@@ -1,327 +1,292 @@
 0 ROOT
 1 Class
-2 class
-4 Main
-5 {
-8 SubroutineDec
-10 function
-12 void
-14 main
-15 (
-18 )
-19 SubroutineBody
-20 {
-21 SubroutineBodyVarDec
-22 VarDec
-23 var
-26 Array
-28 a
-31 ;
-32 SubroutineBodyVarDec
-33 VarDec
-34 var
-36 int
-38 length
-41 ;
-42 SubroutineBodyVarDec
-43 VarDec
-44 var
-46 int
-48 i
-49 VarDecExt
-50 ,
-52 sum
-55 ;
-58 Statements
-59 Statement
-60 LetStatement
-61 let
-63 length
-66 =
-67 Expression
-68 Term
-69 SubroutineCall
-71 Keyboard
-72 .
-74 readInt
-75 (
-76 ExpressionList
-77 Expression
-79 HOW MANY NUMBERS? 
-84 )
-87 ;
-88 Statements
-89 Statement
-90 LetStatement
-91 let
-93 a
-96 =
-97 Expression
-98 Term
-99 SubroutineCall
-101 Array
-102 .
-104 new
-105 (
-106 ExpressionList
-107 Expression
-110 length
-115 )
-118 ;
-119 Statements
-120 Statement
-121 LetStatement
-122 let
-124 i
-127 =
-128 Expression
-130 0
-133 ;
-134 Statements
-135 Statement
-136 WhileStatement
-137 while
-138 (
-139 Expression
-142 i
-143 ExpressionTerms
-145 <
-148 length
-151 )
-152 {
-153 Statements
-154 Statement
-155 LetStatement
-156 let
-157 VarName
-159 a
-160 [
-161 Expression
-164 i
-167 ]
-170 =
-171 Expression
-172 Term
-173 SubroutineCall
-175 Keyboard
-176 .
-178 readInt
-179 (
-180 ExpressionList
-181 Expression
-183 ENTER THE NEXT NUMBER: 
-188 )
-191 ;
-192 Statements
-193 Statement
-194 LetStatement
-195 let
-197 i
-200 =
-201 Expression
-204 i
-205 ExpressionTerms
-207 +
-209 1
-212 ;
-215 }
-216 Statements
-217 Statement
-218 LetStatement
-219 let
-221 i
-224 =
-225 Expression
-227 0
-230 ;
-231 Statements
-232 Statement
-233 LetStatement
-234 let
-236 sum
-239 =
+4 SquareGame
+6 ClassVarDec
+8 field
+11 Square
+13 square
+17 ClassVarDec
+19 field
+21 int
+23 direction
+29 SubroutineDec
+31 constructor
+35 SquareGame
+37 new
+42 SubroutineBody
+48 LetStatement
+51 square
+55 Expression
+57 SubroutineCall
+59 Square
+62 new
+64 ExpressionList
+65 Expression
+67 0
+72 Expression
+74 0
+79 Expression
+81 30
+92 LetStatement
+95 direction
+99 Expression
+101 0
+107 ReturnStatement
+110 Expression
+113 this
+120 SubroutineDec
+122 method
+124 void
+126 dispose
+131 SubroutineBody
+139 SubroutineCall
+141 square
+144 dispose
+154 SubroutineCall
+156 Memory
+159 deAlloc
+161 ExpressionList
+162 Expression
+165 this
+174 ReturnStatement
+182 SubroutineDec
+184 method
+186 void
+188 moveSquare
+193 SubroutineBody
+199 IfStatement
+202 Expression
+205 direction
+208 =
+210 1
+219 SubroutineCall
+221 square
+224 moveUp
+237 IfStatement
 240 Expression
-242 0
-245 ;
-246 Statements
-247 Statement
-248 WhileStatement
-249 while
-250 (
-251 Expression
-254 i
-255 ExpressionTerms
-257 <
-260 length
-263 )
-264 {
-265 Statements
-266 Statement
-267 LetStatement
-268 let
-270 sum
-273 =
-274 Expression
-277 sum
-278 ExpressionTerms
-280 +
-282 VarName
-295 ;
-296 Statements
-297 Statement
-298 LetStatement
-299 let
-301 i
-304 =
-305 Expression
-308 i
-309 ExpressionTerms
-311 +
-313 1
-316 ;
-319 }
-320 Statements
-321 Statement
-322 DoStatement
-323 do
-324 SubroutineCall
-326 Output
-327 .
-329 printString
-330 (
-331 ExpressionList
-332 Expression
-334 THE AVERAGE IS: 
-339 )
-340 ;
-341 Statements
-342 Statement
-343 DoStatement
-344 do
-345 SubroutineCall
-347 Output
-348 .
-350 printInt
-351 (
-352 ExpressionList
-353 Expression
-356 sum
-357 ExpressionTerms
-359 /
-362 length
-367 )
-368 ;
-369 Statements
-370 Statement
-371 DoStatement
-372 do
-373 SubroutineCall
-375 Output
-376 .
-378 println
-379 (
-382 )
-383 ;
-384 Statements
-385 Statement
-386 ReturnStatement
-387 return
-390 ;
-393 }
-396 }
-397 $
+243 direction
+246 =
+248 2
+257 SubroutineCall
+259 square
+262 moveDown
+275 IfStatement
+278 Expression
+281 direction
+284 =
+286 3
+295 SubroutineCall
+297 square
+300 moveLeft
+313 IfStatement
+316 Expression
+319 direction
+322 =
+324 4
+333 SubroutineCall
+335 square
+338 moveRight
+353 SubroutineCall
+355 Sys
+358 wait
+360 ExpressionList
+361 Expression
+363 5
+372 ReturnStatement
+380 SubroutineDec
+382 method
+384 void
+386 run
+391 SubroutineBody
+394 VarDec
+397 char
+399 key
+404 VarDec
+407 boolean
+409 exit
+417 LetStatement
+420 exit
+424 Expression
+427 false
+433 WhileStatement
+436 Expression
+439 ~
+442 exit
+449 WhileStatement
+452 Expression
+455 key
+458 =
+460 0
+467 LetStatement
+470 key
+474 Expression
+476 SubroutineCall
+478 Keyboard
+481 keyPressed
+493 SubroutineCall
+495 moveSquare
+506 IfStatement
+509 Expression
+512 key
+515 =
+517 81
+524 LetStatement
+527 exit
+531 Expression
+534 true
+545 IfStatement
+548 Expression
+551 key
+554 =
+556 90
+565 SubroutineCall
+567 square
+570 decSize
+583 IfStatement
+586 Expression
+589 key
+592 =
+594 88
+603 SubroutineCall
+605 square
+608 incSize
+621 IfStatement
+624 Expression
+627 key
+630 =
+632 131
+639 LetStatement
+642 direction
+646 Expression
+648 1
+659 IfStatement
+662 Expression
+665 key
+668 =
+670 133
+677 LetStatement
+680 direction
+684 Expression
+686 2
+697 IfStatement
+700 Expression
+703 key
+706 =
+708 130
+715 LetStatement
+718 direction
+722 Expression
+724 3
+735 IfStatement
+738 Expression
+741 key
+744 =
+746 132
+753 LetStatement
+756 direction
+760 Expression
+762 4
+773 WhileStatement
+776 Expression
+779 ~
+782 Expression
+785 key
+788 =
+790 0
+800 LetStatement
+803 key
+807 Expression
+809 SubroutineCall
+811 Keyboard
+814 keyPressed
+826 SubroutineCall
+828 moveSquare
+842 ReturnStatement
 
 0 1
-1 2 4 5 8 396 397
-8 10 12 14 15 18 19
-19 20 21 58 393
-21 22 32
-22 23 26 28 31
-32 33 42
-33 34 36 38 41
-42 43
-43 44 46 48 49 55
-49 50 52
-58 59 88
-59 60
-60 61 63 66 67 87
-67 68
-68 69
-69 71 72 74 75 76 84
-76 77
-77 79
-88 89 119
-89 90
-90 91 93 96 97 118
-97 98
-98 99
-99 101 102 104 105 106 115
-106 107
+1 4 6 29
+6 8 11 13 17
+17 19 21 23
+29 31 35 37 42 120
+42 48 92 107
+48 51 55
+55 57
+57 59 62 64
+64 65 72 79
+65 67
+72 74
+79 81
+92 95 99
+99 101
 107 110
-119 120 134
-120 121
-121 122 124 127 128 133
-128 130
-134 135 216
-135 136
-136 137 138 139 151 152 153 215
-139 142 143
-143 145 148
-153 154 192
-154 155
-155 156 157 170 171 191
-157 159 160 161 167
-161 164
-171 172
-172 173
-173 175 176 178 179 180 188
-180 181
-181 183
-192 193
-193 194
-194 195 197 200 201 212
-201 204 205
-205 207 209
-216 217 231
-217 218
-218 219 221 224 225 230
-225 227
-231 232 246
-232 233
-233 234 236 239 240 245
-240 242
-246 247 320
-247 248
-248 249 250 251 263 264 265 319
-251 254 255
-255 257 260
-265 266 296
-266 267
-267 268 270 273 274 295
-274 277 278
-278 280 282
-296 297
-297 298
-298 299 301 304 305 316
-305 308 309
-309 311 313
-320 321 341
-321 322
-322 323 324 340
-324 326 327 329 330 331 339
-331 332
-332 334
-341 342 369
-342 343
-343 344 345 368
-345 347 348 350 351 352 367
-352 353
-353 356 357
-357 359 362
-369 370 384
-370 371
-371 372 373 383
-373 375 376 378 379 382
-384 385
-385 386
-386 387 390
+110 113
+120 122 124 126 131 182
+131 139 154 174
+139 141 144
+154 156 159 161
+161 162
+162 165
+182 184 186 188 193 380
+193 199 237 275 313 353 372
+199 202 219
+202 205 208 210
+219 221 224
+237 240 257
+240 243 246 248
+257 259 262
+275 278 295
+278 281 284 286
+295 297 300
+313 316 333
+316 319 322 324
+333 335 338
+353 355 358 360
+360 361
+361 363
+380 382 384 386 391
+391 394 404 417 433 842
+394 397 399
+404 407 409
+417 420 424
+424 427
+433 436 449 506 545 583 621 659 697 735 773
+436 439 442
+449 452 467 493
+452 455 458 460
+467 470 474
+474 476
+476 478 481
+493 495
+506 509 524
+509 512 515 517
+524 527 531
+531 534
+545 548 565
+548 551 554 556
+565 567 570
+583 586 603
+586 589 592 594
+603 605 608
+621 624 639
+624 627 630 632
+639 642 646
+646 648
+659 662 677
+662 665 668 670
+677 680 684
+684 686
+697 700 715
+700 703 706 708
+715 718 722
+722 724
+735 738 753
+738 741 744 746
+753 756 760
+760 762
+773 776 800 826
+776 779 782
+782 785 788 790
+800 803 807
+807 809
+809 811 814
+826 828

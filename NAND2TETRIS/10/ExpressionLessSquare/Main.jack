@@ -21,8 +21,9 @@ class Main {
         var boolean b;      // the Square files.
         if (b) {
         }
-        else {              // There is no else keyword in the Square files.
+        else { 
+            let b = false;             // There is no else keyword in the Square files.
         }
-        return;
+        return b;
     }
 }

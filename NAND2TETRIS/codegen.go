@@ -19,9 +19,16 @@ var currOffset int = 0
 var counter int = 0
 
 
-func codeGen(ast *Node){
-	if ast.data == "Class"{
-		
-	}
+
+func codeGen(ast *Node, code *string) *string{
+	// switch ast.data {
+	// case "Class":
+	// 	currClassName = ast.children[0].data
+	// 	codeGen(ast.,code)
+	// case ""
+	
+	
+	
+	// }
 	
 }
