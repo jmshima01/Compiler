@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 	"unicode"
-	
+	"slices"
 )
 
 // =============== Helpers ==========
@@ -367,7 +367,7 @@ func main() {
 	for _, v := range LLTable {
 		fmt.Println(v)
 	}
-	fmt.Println("=======================parsing============")
+	fmt.Println("=======================LL table driven parsing============")
 	// test4 := "bghm$"
 	tokenStream := readTokens()
 
@@ -381,35 +381,35 @@ func main() {
 	for i,v := range tokenStream {
 		if v.tokenType == "identifier"{
 			if tokenStream[i+1].value == "("{
-				Q.push("subroutinename")
+				Q.push(token{value: v.value,tokenType:"subroutinename"})
 			} else if tokenStream[i+1].value == "."{
-				Q.push("objectname")
+				Q.push(token{value: v.value,tokenType:"objectname"})
 			} else if tokenStream[i+1].value == "["{
-				Q.push("array")
+				Q.push(token{value: v.value,tokenType:"array"})
 			} else{
-				Q.push(v.tokenType)
+				Q.push(v)
 			}
 
 		} else if v.tokenType == "stringConst" {
-			Q.push("stringconstant")
+			Q.push(token{value: v.value,tokenType:"stringconstant"})
 		} else if v.tokenType == "integerConst"{
-			Q.push("integerconstant")
+			Q.push(token{value: v.value,tokenType:"integerconstant"})
 		} else{
-			Q.push(v.value)
+			Q.push(v)
 		}
 		
 	}
-	Q.push("$")
+	Q.push(token{value:"$",tokenType:"$"})
 	fmt.Println("---------------")
 	for _,v := range Q{
 		fmt.Println(v)
 	}
 	
 
-	root := makeNode("ROOT", nil)
+	root := makeNode("ROOT", nil, 0)
 	current := root
 	current.debug()
-
+	uniqueID := 1
 	for {
 		if S.isEmpty(){
 			if !Q.isEmpty(){
@@ -424,27 +424,289 @@ func main() {
 		fmt.Println("Q:", Q)
 		
 		s := S.peek()
-		q := Q.peek()
+		q := ""
+		t := Q.peek()
 		
-		
+		if t.tokenType == "keyword" || t.tokenType == "symbol"{
+			q = t.value
+		} else{
+			q = t.tokenType
+		}
 
 		if s == "<*>"{
+
 			S.pop()
-			current = current.parent
+			
+			// SDT:
+			switch current.data{
+			case "VarName":
+				if current.children[0].data != "ArrayName"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+				} else{
+					current.children = current.children[0].children
+					current = current.parent
+				}
+				
+				
+			case "ClassName":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "stringconstant":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "integerconstant":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "SubroutineCallName":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "SubroutineName":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "Type":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "ClassVarDecSF":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "SubroutineDecCFM":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			
+			case "SubroutineDecType":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "KeywordConstant":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "UnaryOp":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			case "Op":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = nil
+				current = current.parent
+			
+			case "Term":
+				switch len(current.children){
+				case 1:
+					if current.children[0].data != "SubroutineCall" && current.children[0].data != "ArrayName"{
+						current.data = current.children[0].data
+						current.id = current.children[0].id
+						current.children = nil
+						current = current.parent
+					} else{
+						current = current.parent
+					}
+				case 2:
+					temp:=current.children
+					current = current.parent
+					for i,v:= range current.children{
+						if v.data=="Term"{
+							current.children[i]=temp[0]
+							current.children[i].parent = current
+							current.children = slices.Insert(current.children,i+1,temp[1])
+							current.children[i+1].parent = current
+						}
+					}
+				
+
+				default:
+					current = current.parent	
+				}
+			
+
+			case "ExpressionTerms":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					current = current.parent
+					
+					current = current.parent
+
+				}
+
+			case "SubroutineBodyVarDec":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					current = current.parent
+				}
+			case "ExtraVarExt":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			case "Statements":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			case "LetExpressionCheck":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			case "ReturnExpressionCheck":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			case "ExpressionList":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			case "ParameterList":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			case "ClassVarDec":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			case "SubroutineDec":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			case "VarDecExt":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			
+			case "ExpressionListExt":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			case "ParameterListExt":
+				if current.children[0].data == "lambda"{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else{
+					
+					current = current.parent
+				}
+			default:
+				current = current.parent
+			}
+			// current = current.parent
 			continue
 		}
 
 		if s == "lambda"{
 			S.pop()
-			lambNode:=makeNode("lambda",current)
+			lambNode:=makeNode("lambda",current,uniqueID)
 			addChild(current,lambNode)
 			current.debug()
+			uniqueID++
 			continue
 		}
 		
 		if isTerminal(s) || s=="$"{
 			if s==q{
-				term:=makeNode(s,current)
+				term:=makeNode(t.value,current,uniqueID)
 				addChild(current,term)
 				S.pop()
 				Q.popfront()
@@ -454,12 +716,13 @@ func main() {
 				fmt.Println("syntax error: s!=q",s,q)
 				os.Exit(2)
 			}
+			uniqueID++
 			continue
 		}
 
 		nextRule,found := ruleLookup[LLTable[rowLookup[s]][columnLookup[q]]]
 		if !found{
-			fmt.Println(isTerminal(")"))
+			
 			fmt.Println("Parsing Error: (No such token in LL table or associated rule)",s,q,Q)
 			fmt.Println("-----")
 			fmt.Println(s,S)
@@ -468,12 +731,12 @@ func main() {
 		
 		fmt.Println("fetching rule...",nextRule)
 		top := S.pop()
-		newNode := makeNode(top, current)
+		newNode := makeNode(top, current,uniqueID)
 		addChild(current, newNode)
 		current.debug()
 		
 		current = newNode
-		
+		uniqueID++
 		// add rule in reverse to stack...
 		S = append(S, "<*>") // end of production
 		for i := len(nextRule.rhs) - 1; i >= 0; i-- {
@@ -485,13 +748,19 @@ func main() {
 
 	fmt.Println("============")
 	// printTree(current)
-	res:= make([]visual,0)
 	
-	dfs:=DFS(current,&res)
-	toGraphiz:=""
-	for i,v := range dfs{
-		toGraphiz+=v.value+fmt.Sprintf("%d ",i)+v.nodeType + fmt.Sprintf("%d",i) + "\n"
-	}
+	// g := "" 
+	// graphiz:=*(toGraphiz(current,&g))
+
+	nodeInfo := ""
+	nodeInfo = *(genNodeInfo(current,&nodeInfo))
+	
+
+	edgeInfo := ""
+	edgeInfo = *(genEdgeInfo(current, &edgeInfo))
+	
+	toGraphiz := nodeInfo + "\n" + edgeInfo
 	writeToFile("parsetree.txt",toGraphiz)
+	fmt.Println(toGraphiz)
 
 }

@@ -1,0 +1,6 @@
+class Complex {
+    method void add(){
+        var int x;
+        let x = x + 1;
+    }
+}

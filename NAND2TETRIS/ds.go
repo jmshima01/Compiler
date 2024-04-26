@@ -16,9 +16,11 @@ type ParseTree struct{
 }
 
 type Node struct{
+
 	data string;
+	identInfo string;
 	parent *Node;
-	
+	id int;
 	children []*Node;
 }
 
@@ -27,8 +29,14 @@ type ProductionRule struct{
 	rhs []string;
 };
 
+type token struct{
+	value string;
+	tokenType string;
+}
+
+
 type set map[string]bool;
-type queue []string;
+type queue []token;
 type stack []string;
 
 // Type Methods: 
@@ -74,21 +82,21 @@ func (s *stack) pop() (string) {
 func (q *queue) isEmpty() bool {
 	return len(*q) == 0
 }
-func (q *queue) push(v string) {
+func (q *queue) push(v token) {
 	*q = append(*q, v) 
 }
 
-func (q *queue) peek()string{
+func (q *queue) peek()token{
 	if q.isEmpty(){
 		fmt.Println("EMPTY Q")
-		return ""
+		return token{}
 	}
 	return (*q)[0] 
 }
 
-func (q *queue) popfront() (string) {
+func (q *queue) popfront()token {
 	if q.isEmpty() {
-		return ""
+		return token{}
 	} else {
 		element := (*q)[0]
 		*q = (*q)[1:] 
@@ -128,9 +136,10 @@ func setUnion(s1 set, s2 set)set{
 
 // ======== PARSE TREE ==============
 
-func makeNode(s string,parent *Node) *Node{
+func makeNode(s string,parent *Node, id int) *Node{
 	n := Node{parent: parent, data:s}
 	n.children = make([]*Node, 0)
+	n.id = id
 	return &n
 }
 
@@ -153,7 +162,7 @@ func (t Node) debug(){
 	if t.parent != nil{
 		fmt.Println("Parent:",t.parent.data)
 	}
-	fmt.Println("data",t.data)
+	fmt.Println("data",t.data,t.id)
 	printChildren(t.children)
 }
 
@@ -170,25 +179,45 @@ func printTree(t *Node){
 	return
 }
 
-type visual struct{
-	nodeType string // leaf or node
-	value string
-}
-
-func DFS(root *Node, dfs *[]visual) []visual{
+func genNodeInfo(root *Node, s *string) *string{
 	if root == nil{
-		return *dfs
+		return s
+	}
+
+	r := *(root)
+	if r.data == "lambda"{ // avoid implicit label for python script
+		*s+=fmt.Sprintf("%d %s\n",r.id,"Lambda")
+	// } else if r.data == "identifier" || r.data == "objectname" || r.data == "array" || r.data == "subroutinename" || r.data == "integerconstant" || r.data == "stringconstant"{
+	// 	*s+= fmt.Sprintf("%d %s\n",r.id,r.identInfo)
+	} else{
+		*s+=fmt.Sprintf("%d %s\n",r.id,r.data)
 	}
 	
-	v := *(root)
-	if len(v.children)==0{
-		*dfs = append(*dfs, visual{value: v.data,nodeType: "Leaf"})
-	} else{
-		*dfs = append(*dfs, visual{value: v.data, nodeType: "Node"})}
-	for _,x := range root.children{
-		DFS(x,dfs)
+	for _,child := range root.children{
+		genNodeInfo(child,s)
 	}
-	return *dfs
+	return s
+}
+
+func genEdgeInfo(root *Node, dfs *string) *string{
+	if root == nil{
+		return dfs
+	}
+	v := *(root)
+	*dfs+= fmt.Sprintf("%d",v.id)
+	for _,child := range v.children{
+		*dfs+=fmt.Sprintf(" %d",child.id)
+		
+	}
+	*dfs+="\n"
+	for _,x := range root.children{
+		child := *(x)
+		if len(child.children) != 0{ // if not leaf
+			genEdgeInfo(x,dfs)
+		}
+	}
+
+	return dfs
 }
 
 // ========== File I/O =================

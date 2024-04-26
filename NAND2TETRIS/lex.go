@@ -7,10 +7,6 @@ import (
 	"regexp"
 )
 
-type token struct{
-	value string;
-	tokenType string;
-}
 
 func (t token)toString()string{
 	return fmt.Sprintf("<%s> %s </%s>",t.tokenType,t.value,t.tokenType)
@@ -58,8 +54,6 @@ func lex(data []string)[]token{
 				}
 				s=""
 				i--
-				
-			
 			} else if c=="0"||c=="1"||c=="2"||c=="3"||c=="4"||c=="5"||c=="6"||c=="7"||c=="8"||c=="9"{
 				for i<l{
 					if !integerConst.MatchString(s+c){
@@ -69,7 +63,6 @@ func lex(data []string)[]token{
 					i++
 					c=string(v[i])
 				}
-				
 				if integerConst.MatchString(s){
 					tokens = append(tokens, token{value:s,tokenType:"integerConst"})
 				} else{
@@ -78,7 +71,6 @@ func lex(data []string)[]token{
 				}
 				s=""
 				i--
-			
 			} else if c == "\""{
 				for i<l{
 					s+=c
@@ -103,22 +95,37 @@ func lex(data []string)[]token{
 	return tokens
 }
 
-
 func readTokens() []token{
 	args := os.Args
 	lines := readLines(args[2])
 
 	// remove comments from .jack file:
 	clean := make([]string,0)
-	comment,_:= regexp.Compile(`^(//)|^(/\*).*\*/`)
-	same_line_comment, _ := regexp.Compile("//")
+	comment,_:= regexp.Compile(`^(//).*|^(/\*).*\*/`)
+	sameLineComment, _ := regexp.Compile("//")
+	multiLine, _ := regexp.Compile(`^(/\*).*`)
+	multiLineEnd, _ := regexp.Compile(`\*/`)
+	multiLineFlag := false
 	for _,v := range lines{
 		line := strings.TrimSpace(v)
 		if line == ""{
 			continue
 		}
-		if !comment.MatchString(line){
-			if same_line_comment.MatchString(line){
+		if comment.MatchString(v){
+			continue
+		}
+		
+		if multiLine.MatchString(v){
+			multiLineFlag = true
+			continue
+		}
+		if multiLineEnd.MatchString(v){
+			multiLineFlag = false
+			continue
+		}
+
+		if !comment.MatchString(line) && !multiLineFlag{
+			if sameLineComment.MatchString(line){
 				line = strings.Split(line,"//")[0]
 				clean = append(clean, line)
 			} else {clean = append(clean, line)}
@@ -126,13 +133,10 @@ func readTokens() []token{
 	}
 
 	// debug...
-	// for _,v := range clean{
-	// 	fmt.Println(v)
-	// }
-	
+	for _,v := range clean{
+		fmt.Println(v)
+	}
 	tokens := lex(clean)
-	
-
+	fmt.Println(tokens)
 	return tokens
-
 }
