@@ -444,6 +444,9 @@ func main() {
 					if v.data != "ArrayName" {
 						newChildren = append(newChildren, v)
 					} else {
+						for _,x := range v.children{
+							x.parent = current
+						}
 						newChildren = append(newChildren, v.children...)
 					}
 				}
@@ -455,6 +458,9 @@ func main() {
 					if v.data != "VarName" {
 						newChildren = append(newChildren, v)
 					} else {
+						for _,x := range v.children{
+							x.parent = current
+						}
 						newChildren = append(newChildren, v.children...)
 					}
 				}
@@ -465,16 +471,7 @@ func main() {
 				current.id = current.children[0].id
 				current.children = nil
 				current = current.parent
-			case "stringconstant":
-				current.data = current.children[0].data
-				current.id = current.children[0].id
-				current.children = nil
-				current = current.parent
-			case "integerconstant":
-				current.data = current.children[0].data
-				current.id = current.children[0].id
-				current.children = nil
-				current = current.parent
+			
 			case "SubroutineCallName":
 				current.data = current.children[0].data
 				current.id = current.children[0].id
@@ -529,6 +526,9 @@ func main() {
 					if v.data != "Term" {
 						newChildren = append(newChildren, v)
 					} else {
+						for _,x := range v.children{
+							x.parent = current
+						}
 						newChildren = append(newChildren, v.children...)
 					}
 				}
@@ -552,6 +552,9 @@ func main() {
 					if v.data != "Statement" {
 						newChildren = append(newChildren, v)
 					} else {
+						for _,x := range v.children{
+							x.parent = current
+						}
 						newChildren = append(newChildren, v.children...)
 					}
 				}
@@ -571,6 +574,9 @@ func main() {
 						if v.data != "ExpressionTerms" {
 							newChildren = append(newChildren, v)
 						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
 							newChildren = append(newChildren, v.children...)
 						}
 					}
@@ -591,6 +597,9 @@ func main() {
 						if v.data != "SubroutineBodyVarDec" {
 							newChildren = append(newChildren, v)
 						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
 							newChildren = append(newChildren, v.children...)
 						}
 					}
@@ -611,6 +620,9 @@ func main() {
 						if v.data != "ExtraVarExt" {
 							newChildren = append(newChildren, v)
 						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
 							newChildren = append(newChildren, v.children...)
 						}
 					}
@@ -630,6 +642,9 @@ func main() {
 						if v.data != "Statements" {
 							newChildren = append(newChildren, v)
 						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
 							newChildren = append(newChildren, v.children...)
 						}
 					}
@@ -650,6 +665,9 @@ func main() {
 						if v.data != "LetExpressionCheck" {
 							newChildren = append(newChildren, v)
 						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
 							newChildren = append(newChildren, v.children...)
 						}
 					}
@@ -670,6 +688,9 @@ func main() {
 						if v.data != "ReturnExpressionCheck" {
 							newChildren = append(newChildren, v)
 						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
 							newChildren = append(newChildren, v.children...)
 						}
 					}
@@ -751,6 +772,7 @@ func main() {
 							newChildren = append(newChildren, v)
 						} else {
 							for _, x := range v.children {
+								x.parent = current
 								if x.data != "," {
 									newChildren = append(newChildren, x)
 								}
@@ -776,6 +798,7 @@ func main() {
 							newChildren = append(newChildren, v)
 						} else {
 							for _, x := range v.children {
+								x.parent = current
 								if x.data != "," {
 									newChildren = append(newChildren, x)
 								}
@@ -800,6 +823,7 @@ func main() {
 							newChildren = append(newChildren, v)
 						} else {
 							for _, x := range v.children {
+								x.parent = current
 								if x.data != "," {
 									newChildren = append(newChildren, x)
 								}
@@ -838,6 +862,7 @@ func main() {
 						newChildren = append(newChildren, v)
 					} else {
 						for _, x := range v.children {
+							x.parent = current
 							if x.data != "do" && x.data != ";" {
 								newChildren = append(newChildren, x)
 							}
@@ -846,6 +871,7 @@ func main() {
 					}
 				}
 				current.children = newChildren
+				current.children[0].data = "DoStatement"
 
 			case "LetStatement":
 				newChildren := make([]*Node, 0)
@@ -923,6 +949,7 @@ func main() {
 				current.children = newChildren
 				current = current.parent
 
+			
 			default:
 				current = current.parent
 			}
@@ -983,18 +1010,24 @@ func main() {
 	current.debug()
 	fmt.Println("============")
 	// printTree(current)
-
+	ast := current.children[0]
 	// g := ""
 	// graphiz:=*(toGraphiz(current,&g))
 
 	nodeInfo := ""
-	nodeInfo = *(genNodeInfo(current, &nodeInfo))
+	nodeInfo = *(genNodeInfo(ast, &nodeInfo))
 
 	edgeInfo := ""
-	edgeInfo = *(genEdgeInfo(current, &edgeInfo))
+	edgeInfo = *(genEdgeInfo(ast, &edgeInfo))
 
 	toGraphiz := nodeInfo + "\n" + edgeInfo
 	writeToFile("parsetree.txt", toGraphiz)
 	fmt.Println(toGraphiz)
-
+	fmt.Println("======================= CODE GEN =====================")
+	printTree(ast)
+	VMcode := ""
+	VMcode = *(codeGen(ast,&VMcode))
+	fmt.Println(globalSymbolTable)
+	fmt.Println(localSymbolTable)
+	fmt.Println("\nVMcode:\n",VMcode)
 }

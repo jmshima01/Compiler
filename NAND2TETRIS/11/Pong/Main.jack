@@ -8,7 +8,8 @@
  * Main class of the Pong game.
  */
 class Main {
-
+    field int test;
+    static int x,y;
     /** Initializes a Pong game and starts running it. */
     function void main() {
         var PongGame game;

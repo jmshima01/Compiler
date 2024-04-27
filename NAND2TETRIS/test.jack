@@ -1,6 +1,7 @@
-class Complex {
-    method void add(){
-        var int x;
-        let x = x + 1;
+class Foo {
+    static int z;
+    method void add(int x, int y){
+        let z = x + y;
+        do add(z,y);
     }
 }

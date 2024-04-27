@@ -1,9 +1,9 @@
-.PHONY: all clean 
+.PHONY: all clean build test
 
 BIN_NAME=Compiler
 
 build:
-	@go build -o $(BIN_NAME) main.go lex.go ds.go
+	@go build -o $(BIN_NAME) main.go lex.go ds.go codegen.go
 	@chmod +x $(BIN_NAME)
 
 clean:
