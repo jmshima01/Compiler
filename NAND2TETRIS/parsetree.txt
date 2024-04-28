@@ -1,124 +1,46 @@
 1 Class
-4 Main
+4 Foo
 6 ClassVarDec
-8 static
-10 boolean
-12 test
-18 SubroutineDec
-20 function
-22 void
-24 main
-29 SubroutineBody
-32 VarDec
-36 SquareGame
-38 game
-46 LetStatement
-49 game
-53 Expression
-55 SubroutineCall
-57 SquareGame
-60 new
-72 DoStatement
-74 game
-77 run
-87 DoStatement
-89 game
-92 dispose
-100 ReturnStatement
-108 SubroutineDec
-110 function
-112 void
-114 more
-119 SubroutineBody
-122 VarDec
-125 int
-127 i
-131 j
-136 VarDec
-140 String
-142 s
-147 VarDec
-151 Array
-153 a
-161 IfStatement
-164 Expression
-167 false
-174 LetStatement
-177 s
-181 Expression
-183 string constant
-189 LetStatement
-192 s
-196 Expression
-199 null
-205 LetStatement
-209 a
-210 [
-211 Expression
-213 1
-216 ]
-220 Expression
-224 a
-225 [
-226 Expression
-228 2
-231 ]
-238 ElseStatment
-243 LetStatement
-246 i
-250 Expression
-253 i
-256 *
-259 Expression
-262 -
-265 j
-274 LetStatement
-277 j
-281 Expression
-284 j
-287 /
-290 Expression
-293 -
-295 2
-304 LetStatement
-307 i
-311 Expression
-314 i
-317 pipe
-320 j
-329 ReturnStatement
+8 field
+10 int
+11 VarName
+12 x
+15 VarName
+16 y
+22 SubroutineDec
+24 constructor
+26 void
+28 new
+33 SubroutineBody
+39 LetStatement
+41 VarName
+42 x
+46 Expression
+49 integerconstant
+48 0
+55 LetStatement
+57 VarName
+58 y
+62 Expression
+65 integerconstant
+64 1
+71 ReturnStatement
+74 Expression
+77 this
 
-1 4 6 18
-6 8 10 12
-18 20 22 24 29 108
-29 32 46 72 87 100
-32 36 38
-46 49 53
-53 55
-55 57 60
-72 74 77
-87 89 92
-108 110 112 114 119
-119 122 136 147 161 329
-122 125 127 131
-136 140 142
-147 151 153
-161 164 174 189 205 238
-164 167
-174 177 181
-181 183
-189 192 196
-196 199
-205 209 210 211 216 220
-211 213
-220 224 225 226 231
-226 228
-238 243 274 304
-243 246 250
-250 253 256 259
-259 262 265
-274 277 281
-281 284 287 290
-290 293 295
-304 307 311
-311 314 317 320
+1 4 6 22
+6 8 10 11 15
+11 12
+15 16
+22 24 26 28 33
+33 39 55 71
+39 41 46
+41 42
+46 49
+49 48
+55 57 62
+57 58
+62 65
+65 64
+71 74
+74 77

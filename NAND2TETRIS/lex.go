@@ -95,9 +95,8 @@ func lex(data []string)[]token{
 	return tokens
 }
 
-func readTokens() []token{
-	args := os.Args
-	lines := readLines(args[2])
+func readTokens(filepath string) []token{
+	lines := readLines(filepath)
 
 	// remove comments from .jack file:
 	clean := make([]string,0)

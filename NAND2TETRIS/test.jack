@@ -1,7 +1,8 @@
 class Foo {
-    static int z;
-    method void add(int x, int y){
-        let z = x + y;
-        do add(z,y);
-    }
+field int x, y;
+constructor void new() {
+let x = 0;
+let y = 1;
+return this;
+}
 }
