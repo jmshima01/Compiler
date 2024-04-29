@@ -43,5 +43,5 @@ func main(){
 		os.Exit(1)
 	}
 	fmt.Println("\nVMcode:")
-	fmt.Println(vmCode)
+	
 }

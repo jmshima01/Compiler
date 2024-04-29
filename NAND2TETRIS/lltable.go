@@ -501,11 +501,11 @@ func AST(grammar []string, tokFilepath string) *Node{
 				current.id = current.children[0].id
 				current.children = nil
 				current = current.parent
-			case "KeywordConstant":
-				current.data = current.children[0].data
-				current.id = current.children[0].id
-				current.children = nil
-				current = current.parent
+			// case "KeywordConstant":
+			// 	current.data = current.children[0].data
+			// 	current.id = current.children[0].id
+			// 	current.children = nil
+			// 	current = current.parent
 			
 			case "Term":
 				current = current.parent
