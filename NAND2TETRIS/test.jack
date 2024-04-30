@@ -1,8 +1,12 @@
 class Foo {
-field int x, y;
-constructor void new() {
-let x = 0;
-let y = 1;
-return this;
-}
+    static int z;
+    function void bar(int x, int y) {
+        let z = x + y;
+        if (z = 1){
+            let x = 0;
+        }
+        if (z=3){
+            let x = 2+4;
+        }
+    }
 }

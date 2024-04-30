@@ -1,0 +1,26 @@
+function Foo.bar 0
+push argument 0
+push argument 1
+add
+pop static 0
+push static 0
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+pop argument 0
+push static 0
+push constant 3
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 2
+push constant 4
+add
+pop argument 0
+label IF_FALSE0
+label IF_FALSE1
+

@@ -382,9 +382,9 @@ func AST(grammar []string, tokFilepath string) *Node{
 	// test4 := "bghm$"
 	tokenStream := readTokens(tokFilepath)
 
-	for _, v := range tokenStream {
-		fmt.Println(v)
-	}
+	// for _, v := range tokenStream {
+	// 	fmt.Println(v)
+	// }
 
 	S := make(stack, 0)
 	Q := make(queue, 0)
@@ -412,9 +412,9 @@ func AST(grammar []string, tokFilepath string) *Node{
 	}
 	Q.push(token{value: "$", tokenType: "$"})
 	fmt.Println("---------------")
-	for _, v := range Q {
-		fmt.Println(v)
-	}
+	// for _, v := range Q {
+	// 	fmt.Println(v)
+	// }
 
 	root := makeNode("ROOT", nil, 0)
 	current := root
@@ -430,8 +430,8 @@ func AST(grammar []string, tokFilepath string) *Node{
 			break
 		}
 
-		fmt.Println("S:", S)
-		fmt.Println("Q:", Q)
+		// fmt.Println("S:", S)
+		// fmt.Println("Q:", Q)
 
 		s := S.peek()
 		q := ""
@@ -475,11 +475,13 @@ func AST(grammar []string, tokFilepath string) *Node{
 				current.id = current.children[0].id
 				current.children = nil
 				current = current.parent
+			
 			case "SubroutineName":
 				current.data = current.children[0].data
 				current.id = current.children[0].id
 				current.children = nil
 				current = current.parent
+
 			case "Type":
 				current.data = current.children[0].data
 				current.id = current.children[0].id
@@ -686,11 +688,11 @@ func AST(grammar []string, tokFilepath string) *Node{
 				}
 			case "ExpressionList":
 				if current.children[0].data == "lambda" {
-					current.data = current.children[0].data
+					// current.data = current.children[0].data
 					current.id = current.children[0].id
 					current.children = nil
 					current = current.parent
-					current.children = current.children[:len(current.children)-1]
+					// current.children = current.children[:len(current.children)-1]
 				} else {
 
 					current = current.parent
@@ -822,7 +824,7 @@ func AST(grammar []string, tokFilepath string) *Node{
 					current.children = newChildren
 				}
 
-			case "ElseStatment":
+			case "ElseStatement":
 				if current.children[0].data == "lambda" {
 					current.data = current.children[0].data
 					current.id = current.children[0].id
@@ -941,7 +943,7 @@ func AST(grammar []string, tokFilepath string) *Node{
 			default:
 				current = current.parent
 			}
-
+			// current = current.parent
 			continue
 		}
 
@@ -949,7 +951,7 @@ func AST(grammar []string, tokFilepath string) *Node{
 			S.pop()
 			lambNode := makeNode("lambda", current, uniqueID)
 			addChild(current, lambNode)
-			current.debug()
+			// current.debug()
 			uniqueID++
 			continue
 		}
@@ -971,7 +973,7 @@ func AST(grammar []string, tokFilepath string) *Node{
 				}
 				S.pop()
 				Q.popfront()
-				current.debug()
+				// current.debug()
 
 			} else {
 				fmt.Println("syntax error: s!=q", s, q)
@@ -984,17 +986,19 @@ func AST(grammar []string, tokFilepath string) *Node{
 		nextRule, found := ruleLookup[LLTable[rowLookup[s]][columnLookup[q]]]
 		if !found {
 
-			fmt.Println("Parsing Error: (No such token in LL table or associated rule)", s, q, Q)
+			fmt.Println("Parsing Error: (No such token in LL table or associated rule)")
 			fmt.Println("-----")
-			fmt.Println(s, S)
+			fmt.Println(s, q)
+			fmt.Println(S)
+			fmt.Println(Q)
 			os.Exit(2)
 		}
 
-		fmt.Println("fetching rule...", nextRule)
+		// fmt.Println("fetching rule...", nextRule)
 		top := S.pop()
 		newNode := makeNode(top, current, uniqueID)
 		addChild(current, newNode)
-		current.debug()
+		// current.debug()
 
 		current = newNode
 		uniqueID++
@@ -1021,8 +1025,8 @@ func AST(grammar []string, tokFilepath string) *Node{
 
 	toGraphiz := nodeInfo + "\n" + edgeInfo
 	writeToFile("parsetree.txt", toGraphiz)
-	fmt.Println(toGraphiz)
-	printTree(ast)
+	// fmt.Println(toGraphiz)
+	// printTree(ast)
 
 	return ast
 }

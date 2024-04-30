@@ -47,10 +47,10 @@ func lex(data []string)[]token{
 				_,isKeyword := keywords[s]
 				if isKeyword{
 					tokens = append(tokens, token{value:s,tokenType:"keyword"})
-					fmt.Println("found keyword",s)
+					// fmt.Println("found keyword",s)
 				} else if identifier.MatchString(s){
 					tokens = append(tokens, token{value:s,tokenType:"identifier"})
-					fmt.Println("found ident",s)
+					// fmt.Println("found ident",s)
 				}
 				s=""
 				i--

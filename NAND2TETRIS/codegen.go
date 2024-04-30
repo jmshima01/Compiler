@@ -16,27 +16,33 @@ var G map[string]SymbolData = map[string]SymbolData{}
 var L map[string]SymbolData = map[string]SymbolData{}
 
 var curClass string = ""
-var counter int = 0
+
 var numGlob int = 0
+// var numStatic int = 0
+var curSubDecType string = ""
+var counter int = 0
 
-
-func handleParamlist(ast *Node,isMethod bool) {
-	argCounter := 0
-	if isMethod{
-		this:= SymbolData{kind:"this",offset: argCounter,symbolType: curClass,name: "this"}
+func handleParamlist(ast *Node) string{
+	argCounter:=0
+	if curSubDecType == "method"{
 		argCounter++
-		L[this.name] = this
 	}
-	fmt.Println("param lis", ast.children[0].data)
+	
+	
+	res:= ""
 	symbol := SymbolData{kind: "argument", offset: argCounter}
 	for i := 0; i < len(ast.children); i += 2 {
 		
 		symbol.symbolType = ast.children[i].data
 		symbol.name = ast.children[i+1].children[0].data
 		L[symbol.name] = symbol
+		
+		// res+=fmt.Sprintf("%s %d",symbol.kind,argCounter)
+		
 		argCounter++
 		symbol.offset = argCounter
 	}
+	return res
 }
 
 func handleBody(ast *Node) (int,string) {
@@ -46,8 +52,7 @@ func handleBody(ast *Node) (int,string) {
 		if v.data == "VarDec"{
 			handleVarDec(v, &locals)
 		
-		
-		}else{
+		} else{
 			switch v.data {
 			case "LetStatement":
 				res+=handleLet(v)
@@ -70,7 +75,7 @@ func handleBody(ast *Node) (int,string) {
 
 
 func handleVarDec(ast *Node, locals *int) {
-
+	
 	symbol := SymbolData{offset: *locals}
 	for i, v := range ast.children {
 		if i == 0 {
@@ -90,12 +95,55 @@ func handleVarDec(ast *Node, locals *int) {
 
 
 func handleLet(ast *Node) string {
-	res := ""
-	
-	res+=handleExpression(ast.children[1])
-	res+=handleVarName(ast.children[0])
-	
-	res += fmt.Sprintf("pop %s %d\n", L[ast.children[0].children[0].data].kind,L[ast.children[0].children[0].data].offset)
+	res := ""								                  
+	if len(ast.children[0].children) > 1{ // ARRAY from AST --> a [ Expr ] 
+		// l,inLocal := L[ast.children[0].children[0].data]
+		// g := G[ast.children[0].children[0].data]
+		// arrIndex := handleExpression(ast.children[0].children[2])
+		// arrInst := fmt.Sprintf("%s\npush %s %d\nadd\npop pointer 1\npush that 0\n",arrIndex,) 
+		res+="TODO ARRAY!\n"
+
+		
+		// res+=handleExpression(ast.children[1])
+		
+		// if inLocal{
+		// 	res += fmt.Sprintf("pop %s %d\n", l.kind,l.offset)
+		// } else { // must be global then!
+		// 	if g.kind != "static"{
+		// 		switch curSubDecType{
+		// 		case "method":
+		// 			res += fmt.Sprintf("pop %s %d\n","this",g.offset)
+		// 		case "constructor":
+		// 			res += fmt.Sprintf("pop %s %d\n","this",g.offset)
+		// 		default: // "function --> field"
+		// 			res += fmt.Sprintf("pop %s %d\n", g.kind,g.offset)
+
+		// 		}
+		// 	} else{res += fmt.Sprintf("pop %s %d\n", g.kind,g.offset)}
+		// }								                    // a [ Expr ]
+
+
+	} else{
+		l,inLocal := L[ast.children[0].children[0].data]
+		g := G[ast.children[0].children[0].data]
+		res+=handleExpression(ast.children[1])
+		
+		if inLocal{
+			res += fmt.Sprintf("pop %s %d\n", l.kind,l.offset)
+		} else { // must be global then!
+			if g.kind != "static"{
+				switch curSubDecType{
+				case "method":
+					res += fmt.Sprintf("pop %s %d\n","this",g.offset)
+				case "constructor":
+					res += fmt.Sprintf("pop %s %d\n","this",g.offset)
+				default: // "function --> field"
+					res += fmt.Sprintf("pop %s %d\n", g.kind,g.offset)
+
+				}
+			} else{res += fmt.Sprintf("pop %s %d\n", g.kind,g.offset)}
+		}
+	}
 	return res
 }
 
@@ -104,10 +152,11 @@ func handleDo(ast *Node) string{
 }
 
 func handleWhile(ast *Node) string{
-	res:=fmt.Sprintf("label While_%d\n",counter)
+	
+	res:=fmt.Sprintf("label WHILE_EXP%d\n",counter)
 	res+= handleExpression(ast.children[1])+"not\n"
 
-	res+=fmt.Sprintf("if-goto WHILE_END_%d\n",counter)
+	res+=fmt.Sprintf("if-goto WHILE_END%d\n",counter)
 
 	for _, v := range ast.children {
 		switch v.data {
@@ -116,17 +165,18 @@ func handleWhile(ast *Node) string{
 		case "DoStatement":
 			res+=handleDo(v)
 		case "IfStatement":
+			counter++
 			res+=handleIf(v)
 		case "WhileStatement":
+			counter++
 			res+=handleWhile(v)
 		case "ReturnStatement":
 			res+= handleReturn(v)
 		}
 	}
-	res+=fmt.Sprintf("goto WHILE_%d\n",counter)
-	res+=fmt.Sprintf("label WHILE_END_%d\n",counter)
+	res+=fmt.Sprintf("goto WHILE_EXP%d\n",counter)
+	res+=fmt.Sprintf("label WHILE_END%d\n",counter)
 	counter++
-	
 	return res
 
 }
@@ -134,7 +184,7 @@ func handleWhile(ast *Node) string{
 func handleReturn(ast *Node) string {
 	res := ""
 	if len(ast.children) > 0 {
-		res =handleExpression(ast.children[0]) + "return"
+		res =handleExpression(ast.children[0]) + "return\n"
 	} else {
 		res = "push constant 0\nreturn"
 	}
@@ -143,11 +193,44 @@ func handleReturn(ast *Node) string {
 }
 
 func handleIf(ast *Node) string{
+	isElse,ind := false,0
 	res := handleExpression(ast.children[0])
-	res += "not\n"
-	res += fmt.Sprintf("if-goto IF_FALSE_%d\n",counter)
+	res += fmt.Sprintf("if-goto IF_TRUE%d\n",counter)
+	res += fmt.Sprintf("goto IF_FALSE%d\n",counter)
+	res += fmt.Sprintf("label IF_TRUE%d\n",counter)
+	for i,v := range ast.children {
+		switch v.data {
+		case "LetStatement":
+			res+=handleLet(v)
+		case "DoStatement":
+			res+=handleDo(v)
+		case "IfStatement":
+			
+			res+=handleIf(v)
+			
+		case "WhileStatement":
+			res+=handleWhile(v)
+		case "ReturnStatement":
+			res+= handleReturn(v)
+		case "ElseStatement":
+			res+= fmt.Sprintf("goto IF_END%d\n",counter)
+			isElse,ind = true,i
+		}
 	
-	for _, v := range ast.children {
+
+	}
+	res += fmt.Sprintf("label IF_FALSE%d\n",counter)
+	if isElse{
+		res+=handleElse(ast.children[ind])
+	}
+	counter++
+	return res
+}
+
+
+func handleElse(ast *Node)string{
+	res:=""
+	for _,v := range ast.children {
 		switch v.data {
 		case "LetStatement":
 			res+=handleLet(v)
@@ -160,16 +243,19 @@ func handleIf(ast *Node) string{
 		case "ReturnStatement":
 			res+= handleReturn(v)
 		}
-	}
-	res += fmt.Sprintf("goto IF_END_%d\n",counter)
+	
 
-	counter++
+	}
+	res += fmt.Sprintf("label IF_END%d\n",counter)
 	return res
 }
 
+
+
+
 func handleExpression(ast *Node) string {
 	res:=""
-	fmt.Println(ast.children[0].data,"HIIIIIIIII")
+	// fmt.Println(ast.children[0].data,"HIIIIIIIII")
 	for i := 0; i < len(ast.children)-1; i++ {
 		v := ast.children[i]
 		if v.data == "Op" || v.data == "UnaryOp" {
@@ -189,18 +275,38 @@ func handleExpression(ast *Node) string {
 		case "stringconstant":
 			res+=handleStr(v)
 		case "VarName":
-			res+=handleVarName(v)
+			res+=handleExprVarName(v)
 		case "KeywordConstant":
 			res+=handleKeyword(v)
 		case "Op":
 			res+=handleOp(v)
 		case "SubroutineCall":
 			res+=handleSubCall(v)
+		case "UnaryOp":
+			res+=handleUnaryOp(v)
 		}
 	}
 	
 	return res
 }
+
+func handleExprVarName(ast *Node)string{
+	res:=""
+	l,inLocal := L[ast.children[0].data]
+	glob := G[ast.children[0].data]
+	if inLocal{
+		res = fmt.Sprintf("push %s %d\n",l.kind,l.offset)
+	} else{
+		if glob.kind!="static"{
+			res = fmt.Sprintf("push this %d\n",glob.offset)
+		} else{
+			res = fmt.Sprintf("push static %d\n",glob.offset)
+		}
+	}
+	
+	return res
+}
+
 
 func handleInt(ast *Node) string {
 	return fmt.Sprintf("push constant %s\n", ast.children[0].data)
@@ -224,6 +330,7 @@ func handleKeyword(ast *Node) string {
 	case "false":
 		res = "push constant 0\n"
 	case "this":
+		// _,inLocal := L["this"]
 		res = "push pointer 0\n"
 	case "true":
 		res = "push constant 0\nnot\n"
@@ -239,9 +346,9 @@ func handleOp(ast *Node) string {
 	case "-":
 		res = "sub\n"
 	case "*":
-		res = "Math.multiply 2\n"
+		res = "call Math.multiply 2\n"
 	case "/":
-		res = "Math.divide 2\n"
+		res = "call Math.divide 2\n"
 	case "pipe":
 		res = "or\n"
 	case "&":
@@ -249,54 +356,42 @@ func handleOp(ast *Node) string {
 	case "=":
 		res = "eq\n"
 	case "<":
-		res = "gt\n"
-	case ">":
 		res = "lt\n"
+	case ">":
+		res = "gt\n"
 	}
 	return res
 }
 
-func handleVarName(ast *Node) string {
-	res := ""
-	g ,inGlobal:= G[ast.children[0].data]
-	l, inLocal := L[ast.children[0].data]
-	if inLocal {
-		res = fmt.Sprintf("push %s %d\n", l.kind, l.offset)
-	} else if inGlobal{
-		res = fmt.Sprintf("push %s %d\n", g.kind, g.offset)
-	}
-	return res
+func handleUnaryOp(ast *Node)string{
+	if ast.children[0].data == "-"{
+		return "neg\n"
+	} else{return "not\n"}
 }
+
 
 func handleSubCall(ast *Node) string {
 	l, inLocal := L[ast.children[0].data]
+	
 	res:=""
 	
 	v:= ast.children[len(ast.children)-1]
-	if v.data == "ExpressionList"{
-		temp,exprCount:=handleExprList(v)
-		if len(ast.children)==2{
-			res = fmt.Sprintf("push pointer 0\n%scall %s.%s %d\n",temp,curClass,ast.children[0].data,exprCount)
-		} else{
-			if inLocal{
-				res= fmt.Sprintf("%spush %s %d\ncall %s.%s %d\n",temp,l.kind,l.offset,curClass,ast.children[0].data,exprCount)
-			} else{
-				res+= fmt.Sprintf("%scall %s.%s %d\n",temp,ast.children[0].data,ast.children[1].data,exprCount)
-
-			}
-		}
 	
-	} else {
-		if len(ast.children) == 1 {
-			res= fmt.Sprintf("call %s.%s 1\n", curClass, ast.children[0].data)
+	temp,exprCount:=handleExprList(v)
+	if len(ast.children)==2{
+		res += fmt.Sprintf("push pointer 0\n%scall %s.%s %d\n",temp,curClass,ast.children[0].data,exprCount+1)
+	} else if inLocal{
 		
-		}else if inLocal {
-			res = fmt.Sprintf("call %s.%s 1\n", l.symbolType, ast.children[1].data)
-		} else {
-			res= fmt.Sprintf("call %s.%s 0\n", ast.children[0].data, ast.children[1].data)
+		res+= fmt.Sprintf("%spush %s %d\ncall %s.%s %d\n",temp,l.kind,l.offset,l.symbolType,ast.children[1].data,exprCount+1)
+	} else{
+		glob,inGlob := G[ast.children[0].data]
+		if inGlob{
+			res+= fmt.Sprintf("%spush this %d\ncall %s.%s %d\n",temp,glob.offset,glob.symbolType,ast.children[1].data,exprCount+1)
+		}else{
+			res+= fmt.Sprintf("%scall %s.%s %d\n",temp,ast.children[0].data,ast.children[1].data,exprCount)
 		}
+		
 	}
-	
 	return res
 }
 
@@ -343,32 +438,60 @@ func handleClassVar(ast *Node){
 
 
 func handleSubrDec(ast *Node)string{
-	res:=""
+	
 	// clear(L) // reset local symbol table NOTE:go1.22 clear()
-
 	numLocals := 0
-	res,r,s:="","",""
-	for _, v := range ast.children {
-		if v.data == "SubroutineDec"{
-			s=handleSubrDec(v)
-		}
-		if v.data == "ParameterList" {
-			handleParamlist(v,false)
+	res,r,s,p:="","","",""
+	switch ast.children[0].data{
+	case "constructor":
+		curSubDecType = "constructor"
+		for _, v := range ast.children {
+			if v.data == "SubroutineDec"{
+				s=handleSubrDec(v)
+			}
+			if v.data == "ParameterList" {
+				p=handleParamlist(v)
 
-		} else if v.data == "SubroutineBody" {
-			numLocals,r = handleBody(v)
+			} else if v.data == "SubroutineBody" {
+				numLocals,r = handleBody(v)
+			}
 		}
-	}
-	res += fmt.Sprintf("function %s.%s %d\n%s\n%s", curClass, ast.children[2].data, numLocals,r,s)
+		res += fmt.Sprintf("function %s.%s %d\npush constant %d\ncall Memory.alloc 1\npop pointer 0\n%s%s\n%s", curClass, ast.children[2].data, numLocals,numGlob,p,r,s)
+		return res
 	
-	
+	case "method":
+		curSubDecType = "method"
+		L["this"]=SymbolData{name: "this",symbolType: curClass,offset: 0,kind:"argument"}
+		for _, v := range ast.children {
+			if v.data == "SubroutineDec"{
+				s=handleSubrDec(v)
+			}
+			if v.data == "ParameterList" {
+				p=handleParamlist(v)
 
-	if ast.children[0].data == "constructor"{
-		res += fmt.Sprintf("push constant %d\ncall Memory.alloc 1\npop pointer 0\n%s",numGlob,r)
+			} else if v.data == "SubroutineBody" {
+				numLocals,r = handleBody(v)
+			}
+		}
+		res += fmt.Sprintf("function %s.%s %d\npush argument 0\npop pointer 0\n%s%s\n%s", curClass, ast.children[2].data, numLocals,p,r,s)
+		return res
+	
+	default: // class function
+		curSubDecType = "function"
+		for _, v := range ast.children {
+			if v.data == "SubroutineDec"{
+				s=handleSubrDec(v)
+			}
+			if v.data == "ParameterList" {
+				p=handleParamlist(v)
+
+			} else if v.data == "SubroutineBody" {
+				numLocals,r = handleBody(v)
+			}
+		}
+		res += fmt.Sprintf("function %s.%s %d\n%s%s\n%s", curClass, ast.children[2].data, numLocals,p,r,s)
+		return res
 	}
-	
-	return res
-	
 }
 
 func codeGen(ast *Node) string {

@@ -231,8 +231,8 @@ func readLines(path string) []string{
 	
 }
 
-func writeToFile(path string,asm string){
-	err := os.WriteFile(path,[]byte(asm),0644)
+func writeToFile(path string,raw string){
+	err := os.WriteFile(path,[]byte(raw),0644)
 	if err != nil{
 		panic(err)
 	}
