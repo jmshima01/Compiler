@@ -1,0 +1,490 @@
+{Class [class ClassName { ClassVarDec SubroutineDec } $]}
+{ClassVarDec [ClassVarDecSF Type VarName ExtraVarExt ; ClassVarDec]}
+{ClassVarDec [lambda]}
+{ClassVarDecSF [static]}
+{ClassVarDecSF [field]}
+{ExtraVarExt [, VarName ExtraVarExt]}
+{ExtraVarExt [lambda]}
+{Type [int]}
+{Type [char]}
+{Type [boolean]}
+{Type [ClassName]}
+{SubroutineDec [SubroutineDecCFM SubroutineDecType SubroutineName ( ParameterList ) SubroutineBody SubroutineDec]}
+{SubroutineDec [lambda]}
+{SubroutineDecCFM [constructor]}
+{SubroutineDecCFM [function]}
+{SubroutineDecCFM [method]}
+{SubroutineDecType [void]}
+{SubroutineDecType [Type]}
+{ParameterList [Type VarName ParameterListExt]}
+{ParameterList [lambda]}
+{ParameterListExt [, Type VarName ParameterListExt]}
+{ParameterListExt [lambda]}
+{SubroutineBody [{ SubroutineBodyVarDec Statements }]}
+{SubroutineBodyVarDec [VarDec SubroutineBodyVarDec]}
+{SubroutineBodyVarDec [lambda]}
+{VarDec [var Type VarName VarDecExt ;]}
+{VarDecExt [, VarName VarDecExt]}
+{VarDecExt [lambda]}
+{ClassName [identifier]}
+{SubroutineName [subroutinename]}
+{VarName [identifier]}
+{VarName [ArrayName]}
+{ArrayName [array [ Expression ]]}
+{Statements [Statement Statements]}
+{Statements [lambda]}
+{Statement [LetStatement]}
+{Statement [IfStatement]}
+{Statement [WhileStatement]}
+{Statement [DoStatement]}
+{Statement [ReturnStatement]}
+{Statement [ElseStatement]}
+{LetStatement [let VarName LetExpressionCheck = Expression ;]}
+{LetExpressionCheck [[ Expression ]]}
+{LetExpressionCheck [lambda]}
+{IfStatement [if ( Expression ) { Statements } Statements]}
+{ElseStatement [else { Statements }]}
+{WhileStatement [while ( Expression ) { Statements }]}
+{DoStatement [do SubroutineCall ;]}
+{ReturnStatement [return ReturnExpressionCheck ;]}
+{ReturnExpressionCheck [Expression]}
+{ReturnExpressionCheck [lambda]}
+{Expression [Term ExpressionTerms]}
+{ExpressionTerms [Op Term ExpressionTerms]}
+{ExpressionTerms [lambda]}
+{Term [integerconstant]}
+{Term [stringconstant]}
+{Term [KeywordConstant]}
+{Term [VarName]}
+{Term [SubroutineCall]}
+{Term [( Expression )]}
+{Term [UnaryOp Term]}
+{SubroutineCall [SubroutineName ( ExpressionList )]}
+{SubroutineCall [SubroutineCallName . SubroutineName ( ExpressionList )]}
+{SubroutineCallName [objectname]}
+{ExpressionList [Expression ExpressionListExt]}
+{ExpressionList [lambda]}
+{ExpressionListExt [, Expression ExpressionListExt]}
+{ExpressionListExt [lambda]}
+{Op [+]}
+{Op [-]}
+{Op [*]}
+{Op [/]}
+{Op [&]}
+{Op [pipe]}
+{Op [<]}
+{Op [>]}
+{Op [=]}
+{UnaryOp [-]}
+{UnaryOp [~]}
+{KeywordConstant [true]}
+{KeywordConstant [false]}
+{KeywordConstant [null]}
+{KeywordConstant [this]}
+++++++++++++
+Class
+
+integerconstant derv-> false
+& derv-> false
+) derv-> false
+~ derv-> false
+ParameterList derv-> true
+return derv-> false
+ReturnExpressionCheck derv-> true
+Statement derv-> false
+DoStatement derv-> false
+ExpressionList derv-> true
+ExpressionTerms derv-> true
+SubroutineDecCFM derv-> false
+ArrayName derv-> false
+while derv-> false
+[ derv-> false
+do derv-> false
+/ derv-> false
+null derv-> false
+Class derv-> false
+array derv-> false
+SubroutineBodyVarDec derv-> true
+ExtraVarExt derv-> true
+SubroutineName derv-> false
+boolean derv-> false
+KeywordConstant derv-> false
+Statements derv-> true
+subroutinename derv-> false
+var derv-> false
+} derv-> false
+false derv-> false
+* derv-> false
+Type derv-> false
+WhileStatement derv-> false
+LetExpressionCheck derv-> true
+function derv-> false
+static derv-> false
+if derv-> false
+SubroutineCall derv-> false
+SubroutineBody derv-> false
+ElseStatement derv-> false
+VarDecExt derv-> true
+IfStatement derv-> false
+VarDec derv-> false
+. derv-> false
+= derv-> false
+field derv-> false
+Expression derv-> false
+SubroutineDec derv-> true
+$ derv-> false
+this derv-> false
+void derv-> false
+Term derv-> false
+VarName derv-> false
+objectname derv-> false
+< derv-> false
+] derv-> false
+- derv-> false
+ClassVarDecSF derv-> false
+ReturnStatement derv-> false
+UnaryOp derv-> false
+stringconstant derv-> false
+constructor derv-> false
+ParameterListExt derv-> true
+pipe derv-> false
+method derv-> false
+let derv-> false
+identifier derv-> false
++ derv-> false
+( derv-> false
+SubroutineDecType derv-> false
+ClassName derv-> false
+ClassVarDec derv-> true
+else derv-> false
+> derv-> false
+{ derv-> false
+char derv-> false
+LetStatement derv-> false
+Op derv-> false
+SubroutineCallName derv-> false
+ExpressionListExt derv-> true
+class derv-> false
+; derv-> false
+true derv-> false
+, derv-> false
+int derv-> false
+
+first-> ClassVarDecSF [static field]
+first-> ReturnStatement [return]
+first-> UnaryOp [- ~]
+first-> ParameterListExt [,]
+first-> ClassName [identifier]
+first-> ClassVarDec [static field]
+first-> SubroutineDecType [void int char boolean identifier]
+first-> LetStatement [let]
+first-> Op [pipe > - * / & < = +]
+first-> SubroutineCallName [objectname]
+first-> ExpressionListExt [,]
+first-> ParameterList [int char boolean identifier]
+first-> ExpressionList [integerconstant null this objectname subroutinename ( - stringconstant true false identifier array ~]
+first-> ExpressionTerms [/ pipe < > - * = + &]
+first-> SubroutineDecCFM [constructor function method]
+first-> ArrayName [array]
+first-> ReturnExpressionCheck [- integerconstant null this array subroutinename objectname stringconstant true false identifier ( ~]
+first-> Statement [let if while do return else]
+first-> DoStatement [do]
+first-> Class [class]
+first-> SubroutineBodyVarDec [var]
+first-> ExtraVarExt [,]
+first-> SubroutineName [subroutinename]
+first-> KeywordConstant [this true false null]
+first-> Statements [let if while do return else]
+first-> Type [int char boolean identifier]
+first-> WhileStatement [while]
+first-> LetExpressionCheck [[]
+first-> VarDecExt [,]
+first-> IfStatement [if]
+first-> VarDec [var]
+first-> SubroutineCall [objectname subroutinename]
+first-> SubroutineBody [{]
+first-> ElseStatement [else]
+first-> SubroutineDec [method constructor function]
+first-> Expression [( - ~ stringconstant false this identifier array integerconstant true null subroutinename objectname]
+first-> Term [stringconstant true false identifier array subroutinename ( integerconstant null this objectname - ~]
+first-> VarName [identifier array]
+
+follow-> Type [identifier array subroutinename]
+follow-> SubroutineCall [& pipe > ; - = / + * <]
+follow-> ClassVarDecSF [identifier int char boolean]
+follow-> SubroutineDecType [subroutinename]
+follow-> SubroutineBody [constructor function method]
+follow-> ParameterListExt [)]
+follow-> LetStatement [return else let if while do]
+follow-> SubroutineBodyVarDec [do return else let if } while]
+follow-> ElseStatement [else let if while do return]
+follow-> ReturnExpressionCheck [;]
+follow-> Class []
+follow-> Statement [else let if while do return]
+follow-> WhileStatement [let if while do return else]
+follow-> DoStatement [let if while do return else]
+follow-> KeywordConstant [& - / + * > < pipe =]
+follow-> ExtraVarExt [;]
+follow-> LetExpressionCheck [=]
+follow-> Term [pipe & - + * = > < /]
+follow-> ExpressionList [)]
+follow-> ClassName [{ identifier array subroutinename]
+follow-> ClassVarDec [method } constructor function]
+follow-> VarDecExt [;]
+follow-> Expression [) , ] ;]
+follow-> IfStatement [if while do return else let]
+follow-> ExpressionTerms [; ) , ]]
+follow-> VarName [; [ > + , pipe < * = / & -]
+follow-> SubroutineDecCFM [void int char boolean identifier]
+follow-> SubroutineName [(]
+follow-> VarDec [var]
+follow-> ArrayName [pipe > , + [ = * & ; < - /]
+follow-> ReturnStatement [if while do return else let]
+follow-> Op [false subroutinename objectname ~ stringconstant true - this ( integerconstant null identifier array]
+follow-> UnaryOp [~ true objectname integerconstant null identifier this subroutinename ( - array false stringconstant]
+follow-> SubroutineCallName [.]
+follow-> SubroutineDec [}]
+follow-> ParameterList [)]
+follow-> Statements [}]
+follow-> ExpressionListExt [)]
+
+predict-> {Class [class ClassName { ClassVarDec SubroutineDec } $]} [class]
+predict-> {ClassVarDec [ClassVarDecSF Type VarName ExtraVarExt ; ClassVarDec]} [static field]
+predict-> {ClassVarDec [lambda]} [constructor function method }]
+predict-> {ClassVarDecSF [static]} [static]
+predict-> {ClassVarDecSF [field]} [field]
+predict-> {ExtraVarExt [, VarName ExtraVarExt]} [,]
+predict-> {ExtraVarExt [lambda]} [;]
+predict-> {Type [int]} [int]
+predict-> {Type [char]} [char]
+predict-> {Type [boolean]} [boolean]
+predict-> {Type [ClassName]} [identifier]
+predict-> {SubroutineDec [SubroutineDecCFM SubroutineDecType SubroutineName ( ParameterList ) SubroutineBody SubroutineDec]} [constructor function method]
+predict-> {SubroutineDec [lambda]} [}]
+predict-> {SubroutineDecCFM [constructor]} [constructor]
+predict-> {SubroutineDecCFM [function]} [function]
+predict-> {SubroutineDecCFM [method]} [method]
+predict-> {SubroutineDecType [void]} [void]
+predict-> {SubroutineDecType [Type]} [identifier int char boolean]
+predict-> {ParameterList [Type VarName ParameterListExt]} [int char boolean identifier]
+predict-> {ParameterList [lambda]} [)]
+predict-> {ParameterListExt [, Type VarName ParameterListExt]} [,]
+predict-> {ParameterListExt [lambda]} [)]
+predict-> {SubroutineBody [{ SubroutineBodyVarDec Statements }]} [{]
+predict-> {SubroutineBodyVarDec [VarDec SubroutineBodyVarDec]} [var]
+predict-> {SubroutineBodyVarDec [lambda]} [return else let if while } do]
+predict-> {VarDec [var Type VarName VarDecExt ;]} [var]
+predict-> {VarDecExt [, VarName VarDecExt]} [,]
+predict-> {VarDecExt [lambda]} [;]
+predict-> {ClassName [identifier]} [identifier]
+predict-> {SubroutineName [subroutinename]} [subroutinename]
+predict-> {VarName [identifier]} [identifier]
+predict-> {VarName [ArrayName]} [array]
+predict-> {ArrayName [array [ Expression ]]} [array]
+predict-> {Statements [Statement Statements]} [else let if while do return]
+predict-> {Statements [lambda]} [}]
+predict-> {Statement [LetStatement]} [let]
+predict-> {Statement [IfStatement]} [if]
+predict-> {Statement [WhileStatement]} [while]
+predict-> {Statement [DoStatement]} [do]
+predict-> {Statement [ReturnStatement]} [return]
+predict-> {Statement [ElseStatement]} [else]
+predict-> {LetStatement [let VarName LetExpressionCheck = Expression ;]} [let]
+predict-> {LetExpressionCheck [[ Expression ]]} [[]
+predict-> {LetExpressionCheck [lambda]} [=]
+predict-> {IfStatement [if ( Expression ) { Statements } Statements]} [if]
+predict-> {ElseStatement [else { Statements }]} [else]
+predict-> {WhileStatement [while ( Expression ) { Statements }]} [while]
+predict-> {DoStatement [do SubroutineCall ;]} [do]
+predict-> {ReturnStatement [return ReturnExpressionCheck ;]} [return]
+predict-> {ReturnExpressionCheck [Expression]} [this identifier stringconstant true array ~ null objectname integerconstant subroutinename ( - false]
+predict-> {ReturnExpressionCheck [lambda]} [;]
+predict-> {Expression [Term ExpressionTerms]} [integerconstant array stringconstant true false subroutinename ( ~ this - null identifier objectname]
+predict-> {ExpressionTerms [Op Term ExpressionTerms]} [> * / = - + & pipe <]
+predict-> {ExpressionTerms [lambda]} [] , ; )]
+predict-> {Term [integerconstant]} [integerconstant]
+predict-> {Term [stringconstant]} [stringconstant]
+predict-> {Term [KeywordConstant]} [this true false null]
+predict-> {Term [VarName]} [identifier array]
+predict-> {Term [SubroutineCall]} [subroutinename objectname]
+predict-> {Term [( Expression )]} [(]
+predict-> {Term [UnaryOp Term]} [- ~]
+predict-> {SubroutineCall [SubroutineName ( ExpressionList )]} [subroutinename]
+predict-> {SubroutineCall [SubroutineCallName . SubroutineName ( ExpressionList )]} [objectname]
+predict-> {SubroutineCallName [objectname]} [objectname]
+predict-> {ExpressionList [Expression ExpressionListExt]} [objectname - array subroutinename ( null this identifier ~ integerconstant stringconstant true false]
+predict-> {ExpressionList [lambda]} [)]
+predict-> {ExpressionListExt [, Expression ExpressionListExt]} [,]
+predict-> {ExpressionListExt [lambda]} [)]
+predict-> {Op [+]} [+]
+predict-> {Op [-]} [-]
+predict-> {Op [*]} [*]
+predict-> {Op [/]} [/]
+predict-> {Op [&]} [&]
+predict-> {Op [pipe]} [pipe]
+predict-> {Op [<]} [<]
+predict-> {Op [>]} [>]
+predict-> {Op [=]} [=]
+predict-> {UnaryOp [-]} [-]
+predict-> {UnaryOp [~]} [~]
+predict-> {KeywordConstant [true]} [true]
+predict-> {KeywordConstant [false]} [false]
+predict-> {KeywordConstant [null]} [null]
+predict-> {KeywordConstant [this]} [this]
+map[1:{Class [class ClassName { ClassVarDec SubroutineDec } $]} 2:{ClassVarDec [ClassVarDecSF Type VarName ExtraVarExt ; ClassVarDec]} 3:{ClassVarDec [lambda]} 4:{ClassVarDecSF [static]} 5:{ClassVarDecSF [field]} 6:{ExtraVarExt [, VarName ExtraVarExt]} 7:{ExtraVarExt [lambda]} 8:{Type [int]} 9:{Type [char]} 10:{Type [boolean]} 11:{Type [ClassName]} 12:{SubroutineDec [SubroutineDecCFM SubroutineDecType SubroutineName ( ParameterList ) SubroutineBody SubroutineDec]} 13:{SubroutineDec [lambda]} 14:{SubroutineDecCFM [constructor]} 15:{SubroutineDecCFM [function]} 16:{SubroutineDecCFM [method]} 17:{SubroutineDecType [void]} 18:{SubroutineDecType [Type]} 19:{ParameterList [Type VarName ParameterListExt]} 20:{ParameterList [lambda]} 21:{ParameterListExt [, Type VarName ParameterListExt]} 22:{ParameterListExt [lambda]} 23:{SubroutineBody [{ SubroutineBodyVarDec Statements }]} 24:{SubroutineBodyVarDec [VarDec SubroutineBodyVarDec]} 25:{SubroutineBodyVarDec [lambda]} 26:{VarDec [var Type VarName VarDecExt ;]} 27:{VarDecExt [, VarName VarDecExt]} 28:{VarDecExt [lambda]} 29:{ClassName [identifier]} 30:{SubroutineName [subroutinename]} 31:{VarName [identifier]} 32:{VarName [ArrayName]} 33:{ArrayName [array [ Expression ]]} 34:{Statements [Statement Statements]} 35:{Statements [lambda]} 36:{Statement [LetStatement]} 37:{Statement [IfStatement]} 38:{Statement [WhileStatement]} 39:{Statement [DoStatement]} 40:{Statement [ReturnStatement]} 41:{Statement [ElseStatement]} 42:{LetStatement [let VarName LetExpressionCheck = Expression ;]} 43:{LetExpressionCheck [[ Expression ]]} 44:{LetExpressionCheck [lambda]} 45:{IfStatement [if ( Expression ) { Statements } Statements]} 46:{ElseStatement [else { Statements }]} 47:{WhileStatement [while ( Expression ) { Statements }]} 48:{DoStatement [do SubroutineCall ;]} 49:{ReturnStatement [return ReturnExpressionCheck ;]} 50:{ReturnExpressionCheck [Expression]} 51:{ReturnExpressionCheck [lambda]} 52:{Expression [Term ExpressionTerms]} 53:{ExpressionTerms [Op Term ExpressionTerms]} 54:{ExpressionTerms [lambda]} 55:{Term [integerconstant]} 56:{Term [stringconstant]} 57:{Term [KeywordConstant]} 58:{Term [VarName]} 59:{Term [SubroutineCall]} 60:{Term [( Expression )]} 61:{Term [UnaryOp Term]} 62:{SubroutineCall [SubroutineName ( ExpressionList )]} 63:{SubroutineCall [SubroutineCallName . SubroutineName ( ExpressionList )]} 64:{SubroutineCallName [objectname]} 65:{ExpressionList [Expression ExpressionListExt]} 66:{ExpressionList [lambda]} 67:{ExpressionListExt [, Expression ExpressionListExt]} 68:{ExpressionListExt [lambda]} 69:{Op [+]} 70:{Op [-]} 71:{Op [*]} 72:{Op [/]} 73:{Op [&]} 74:{Op [pipe]} 75:{Op [<]} 76:{Op [>]} 77:{Op [=]} 78:{UnaryOp [-]} 79:{UnaryOp [~]} 80:{KeywordConstant [true]} 81:{KeywordConstant [false]} 82:{KeywordConstant [null]} 83:{KeywordConstant [this]}]
+
+ruleLookup := map[int]ProductionRule{
+30: ProductionRule{lhs:"SubroutineName", rhs:string{"subroutinename"})
+47: ProductionRule{lhs:"WhileStatement", rhs:string{"while","(","Expression",")","{","Statements","}"})
+19: ProductionRule{lhs:"ParameterList", rhs:string{"Type","VarName","ParameterListExt"})
+20: ProductionRule{lhs:"ParameterList", rhs:string{"lambda"})
+68: ProductionRule{lhs:"ExpressionListExt", rhs:string{"lambda"})
+73: ProductionRule{lhs:"Op", rhs:string{"&"})
+77: ProductionRule{lhs:"Op", rhs:string{"="})
+82: ProductionRule{lhs:"KeywordConstant", rhs:string{"null"})
+31: ProductionRule{lhs:"VarName", rhs:string{"identifier"})
+33: ProductionRule{lhs:"ArrayName", rhs:string{"array","[","Expression","]"})
+57: ProductionRule{lhs:"Term", rhs:string{"KeywordConstant"})
+69: ProductionRule{lhs:"Op", rhs:string{"+"})
+75: ProductionRule{lhs:"Op", rhs:string{"<"})
+76: ProductionRule{lhs:"Op", rhs:string{">"})
+3: ProductionRule{lhs:"ClassVarDec", rhs:string{"lambda"})
+14: ProductionRule{lhs:"SubroutineDecCFM", rhs:string{"constructor"})
+43: ProductionRule{lhs:"LetExpressionCheck", rhs:string{"[","Expression","]"})
+80: ProductionRule{lhs:"KeywordConstant", rhs:string{"true"})
+72: ProductionRule{lhs:"Op", rhs:string{"/"})
+5: ProductionRule{lhs:"ClassVarDecSF", rhs:string{"field"})
+18: ProductionRule{lhs:"SubroutineDecType", rhs:string{"Type"})
+23: ProductionRule{lhs:"SubroutineBody", rhs:string{"{","SubroutineBodyVarDec","Statements","}"})
+44: ProductionRule{lhs:"LetExpressionCheck", rhs:string{"lambda"})
+45: ProductionRule{lhs:"IfStatement", rhs:string{"if","(","Expression",")","{","Statements","}","Statements"})
+49: ProductionRule{lhs:"ReturnStatement", rhs:string{"return","ReturnExpressionCheck",";"})
+32: ProductionRule{lhs:"VarName", rhs:string{"ArrayName"})
+67: ProductionRule{lhs:"ExpressionListExt", rhs:string{",","Expression","ExpressionListExt"})
+74: ProductionRule{lhs:"Op", rhs:string{"pipe"})
+79: ProductionRule{lhs:"UnaryOp", rhs:string{"~"})
+1: ProductionRule{lhs:"Class", rhs:string{"class","ClassName","{","ClassVarDec","SubroutineDec","}","$"})
+17: ProductionRule{lhs:"SubroutineDecType", rhs:string{"void"})
+35: ProductionRule{lhs:"Statements", rhs:string{"lambda"})
+50: ProductionRule{lhs:"ReturnExpressionCheck", rhs:string{"Expression"})
+56: ProductionRule{lhs:"Term", rhs:string{"stringconstant"})
+59: ProductionRule{lhs:"Term", rhs:string{"SubroutineCall"})
+22: ProductionRule{lhs:"ParameterListExt", rhs:string{"lambda"})
+24: ProductionRule{lhs:"SubroutineBodyVarDec", rhs:string{"VarDec","SubroutineBodyVarDec"})
+36: ProductionRule{lhs:"Statement", rhs:string{"LetStatement"})
+60: ProductionRule{lhs:"Term", rhs:string{"(","Expression",")"})
+64: ProductionRule{lhs:"SubroutineCallName", rhs:string{"objectname"})
+78: ProductionRule{lhs:"UnaryOp", rhs:string{"-"})
+4: ProductionRule{lhs:"ClassVarDecSF", rhs:string{"static"})
+7: ProductionRule{lhs:"ExtraVarExt", rhs:string{"lambda"})
+15: ProductionRule{lhs:"SubroutineDecCFM", rhs:string{"function"})
+42: ProductionRule{lhs:"LetStatement", rhs:string{"let","VarName","LetExpressionCheck","=","Expression",";"})
+52: ProductionRule{lhs:"Expression", rhs:string{"Term","ExpressionTerms"})
+38: ProductionRule{lhs:"Statement", rhs:string{"WhileStatement"})
+41: ProductionRule{lhs:"Statement", rhs:string{"ElseStatement"})
+70: ProductionRule{lhs:"Op", rhs:string{"-"})
+2: ProductionRule{lhs:"ClassVarDec", rhs:string{"ClassVarDecSF","Type","VarName","ExtraVarExt",";","ClassVarDec"})
+29: ProductionRule{lhs:"ClassName", rhs:string{"identifier"})
+53: ProductionRule{lhs:"ExpressionTerms", rhs:string{"Op","Term","ExpressionTerms"})
+62: ProductionRule{lhs:"SubroutineCall", rhs:string{"SubroutineName","(","ExpressionList",")"})
+65: ProductionRule{lhs:"ExpressionList", rhs:string{"Expression","ExpressionListExt"})
+81: ProductionRule{lhs:"KeywordConstant", rhs:string{"false"})
+48: ProductionRule{lhs:"DoStatement", rhs:string{"do","SubroutineCall",";"})
+54: ProductionRule{lhs:"ExpressionTerms", rhs:string{"lambda"})
+9: ProductionRule{lhs:"Type", rhs:string{"char"})
+10: ProductionRule{lhs:"Type", rhs:string{"boolean"})
+11: ProductionRule{lhs:"Type", rhs:string{"ClassName"})
+13: ProductionRule{lhs:"SubroutineDec", rhs:string{"lambda"})
+16: ProductionRule{lhs:"SubroutineDecCFM", rhs:string{"method"})
+26: ProductionRule{lhs:"VarDec", rhs:string{"var","Type","VarName","VarDecExt",";"})
+71: ProductionRule{lhs:"Op", rhs:string{"*"})
+21: ProductionRule{lhs:"ParameterListExt", rhs:string{",","Type","VarName","ParameterListExt"})
+39: ProductionRule{lhs:"Statement", rhs:string{"DoStatement"})
+83: ProductionRule{lhs:"KeywordConstant", rhs:string{"this"})
+34: ProductionRule{lhs:"Statements", rhs:string{"Statement","Statements"})
+37: ProductionRule{lhs:"Statement", rhs:string{"IfStatement"})
+51: ProductionRule{lhs:"ReturnExpressionCheck", rhs:string{"lambda"})
+58: ProductionRule{lhs:"Term", rhs:string{"VarName"})
+66: ProductionRule{lhs:"ExpressionList", rhs:string{"lambda"})
+8: ProductionRule{lhs:"Type", rhs:string{"int"})
+25: ProductionRule{lhs:"SubroutineBodyVarDec", rhs:string{"lambda"})
+27: ProductionRule{lhs:"VarDecExt", rhs:string{",","VarName","VarDecExt"})
+55: ProductionRule{lhs:"Term", rhs:string{"integerconstant"})
+61: ProductionRule{lhs:"Term", rhs:string{"UnaryOp","Term"})
+63: ProductionRule{lhs:"SubroutineCall", rhs:string{"SubroutineCallName",".","SubroutineName","(","ExpressionList",")"})
+6: ProductionRule{lhs:"ExtraVarExt", rhs:string{",","VarName","ExtraVarExt"})
+12: ProductionRule{lhs:"SubroutineDec", rhs:string{"SubroutineDecCFM","SubroutineDecType","SubroutineName","(","ParameterList",")","SubroutineBody","SubroutineDec"})
+28: ProductionRule{lhs:"VarDecExt", rhs:string{"lambda"})
+40: ProductionRule{lhs:"Statement", rhs:string{"ReturnStatement"})
+46: ProductionRule{lhs:"ElseStatement", rhs:string{"else","{","Statements","}"})
+[Class ClassVarDec ClassVarDecSF ExtraVarExt Type SubroutineDec SubroutineDecCFM SubroutineDecType ParameterList ParameterListExt SubroutineBody SubroutineBodyVarDec VarDec VarDecExt ClassName SubroutineName VarName ArrayName Statements Statement LetStatement LetExpressionCheck IfStatement ElseStatement WhileStatement DoStatement ReturnStatement ReturnExpressionCheck Expression ExpressionTerms Term SubroutineCall SubroutineCallName ExpressionList ExpressionListExt Op UnaryOp KeywordConstant]
+[& ( ) * + , - . / ; < = > [ ] array boolean char class constructor do else false field function identifier if int integerconstant let method null objectname pipe return static stringconstant subroutinename this true var void while { } ~ $]
+map[$:46 &:0 (:1 ):2 *:3 +:4 ,:5 -:6 .:7 /:8 ;:9 <:10 =:11 >:12 [:13 ]:14 array:15 boolean:16 char:17 class:18 constructor:19 do:20 else:21 false:22 field:23 function:24 identifier:25 if:26 int:27 integerconstant:28 let:29 method:30 null:31 objectname:32 pipe:33 return:34 static:35 stringconstant:36 subroutinename:37 this:38 true:39 var:40 void:41 while:42 {:43 }:44 ~:45]
+map[ArrayName:17 Class:0 ClassName:14 ClassVarDec:1 ClassVarDecSF:2 DoStatement:25 ElseStatement:23 Expression:28 ExpressionList:33 ExpressionListExt:34 ExpressionTerms:29 ExtraVarExt:3 IfStatement:22 KeywordConstant:37 LetExpressionCheck:21 LetStatement:20 Op:35 ParameterList:8 ParameterListExt:9 ReturnExpressionCheck:27 ReturnStatement:26 Statement:19 Statements:18 SubroutineBody:10 SubroutineBodyVarDec:11 SubroutineCall:31 SubroutineCallName:32 SubroutineDec:5 SubroutineDecCFM:6 SubroutineDecType:7 SubroutineName:15 Term:30 Type:4 UnaryOp:36 VarDec:12 VarDecExt:13 VarName:16 WhileStatement:24]
+
+[& ( ) * + , - . / ; < = > [ ] array boolean char class constructor do else false field function identifier if int integerconstant let method null objectname pipe return static stringconstant subroutinename this true var void while { } ~ $]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 2 3 0 0 0 0 0 3 0 0 0 0 2 0 0 0 0 0 0 0 0 3 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 6 0 0 0 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10 9 0 0 0 0 0 0 0 11 0 8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 12 0 0 0 0 12 0 0 0 0 0 12 0 0 0 0 0 0 0 0 0 0 0 0 0 13 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 14 0 0 0 0 15 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 18 18 0 0 0 0 0 0 0 18 0 18 0 0 0 0 0 0 0 0 0 0 0 0 0 17 0 0 0 0 0]
+[0 0 20 0 0 0 0 0 0 0 0 0 0 0 0 0 19 19 0 0 0 0 0 0 0 19 0 19 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 22 0 0 21 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 23 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 25 25 0 0 0 0 25 0 0 25 0 0 0 0 25 0 0 0 0 0 24 0 25 0 25 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 26 0 0 0 0 0 0]
+[0 0 0 0 0 27 0 0 0 28 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 29 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 30 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 31 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 33 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 34 34 0 0 0 0 34 0 0 34 0 0 0 0 34 0 0 0 0 0 0 0 34 0 35 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 41 0 0 0 0 37 0 0 36 0 0 0 0 40 0 0 0 0 0 0 0 38 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 42 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 44 0 43 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 45 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 46 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 47 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 48 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 49 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 50 0 0 0 0 50 0 0 51 0 0 0 0 0 50 0 0 0 0 0 0 50 0 0 50 0 0 50 0 0 50 50 0 0 0 50 50 50 50 0 0 0 0 0 50 0]
+[0 52 0 0 0 0 52 0 0 0 0 0 0 0 0 52 0 0 0 0 0 0 52 0 0 52 0 0 52 0 0 52 52 0 0 0 52 52 52 52 0 0 0 0 0 52 0]
+[53 0 54 53 53 54 53 0 53 54 53 53 53 0 54 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 53 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 60 0 0 0 0 61 0 0 0 0 0 0 0 0 58 0 0 0 0 0 0 57 0 0 58 0 0 55 0 0 57 59 0 0 0 56 59 57 57 0 0 0 0 0 61 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 63 0 0 0 0 62 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 64 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 65 66 0 0 0 65 0 0 0 0 0 0 0 0 65 0 0 0 0 0 0 65 0 0 65 0 0 65 0 0 65 65 0 0 0 65 65 65 65 0 0 0 0 0 65 0]
+[0 0 68 0 0 67 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[73 0 0 71 69 0 70 0 72 0 75 77 76 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 74 0 0 0 0 0 0 0 0 0 0 0 0 0]
+[0 0 0 0 0 0 78 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 79 0]
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 81 0 0 0 0 0 0 0 0 82 0 0 0 0 0 0 83 80 0 0 0 0 0 0 0]
+=======================LL table driven parsing============
+class Foo {
+static int z;
+function void bar(int x, int y) {
+let z = x + y;
+if (z = 1){
+let x = 0;
+}
+if (z=3){
+let x = 2+4;
+}
+}
+}
+[{class keyword} {Foo identifier} {{ symbol} {static keyword} {int keyword} {z identifier} {; symbol} {function keyword} {void keyword} {bar identifier} {( symbol} {int keyword} {x identifier} {, symbol} {int keyword} {y identifier} {) symbol} {{ symbol} {let keyword} {z identifier} {= symbol} {x identifier} {+ symbol} {y identifier} {; symbol} {if keyword} {( symbol} {z identifier} {= symbol} {1 integerConst} {) symbol} {{ symbol} {let keyword} {x identifier} {= symbol} {0 integerConst} {; symbol} {} symbol} {if keyword} {( symbol} {z identifier} {= symbol} {3 integerConst} {) symbol} {{ symbol} {let keyword} {x identifier} {= symbol} {2 integerConst} {+ symbol} {4 integerConst} {; symbol} {} symbol} {} symbol} {} symbol}]
+---------------
+------
+data ROOT 0
+children->[]
+EMPTY Q
+------
+data ROOT 0
+children->[Class ]
+============
+HADKELL, bar
+map[z:{static 0 z int}]
+map[x:{argument 0 x int} y:{argument 1 y int}]
+ENDED 1

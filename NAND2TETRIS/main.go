@@ -4,13 +4,10 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	// "strings"
 	"regexp"
 )
 
 func main(){
-
 	args := os.Args
 	grammar := readLines("jack.cfg")
 	vmCode := ""
@@ -29,7 +26,7 @@ func main(){
 		jackFiles := make([]string,0)
 		for _,f := range files{
 			if jackFile.MatchString(f.Name()){
-				fmt.Println(f.Name())
+				// fmt.Println(f.Name())
 				jackFiles = append(jackFiles, f.Name())
 
 			}
@@ -62,7 +59,7 @@ func main(){
 			jackFiles := make([]string,0)
 			for _,f := range files{
 				if jackFile.MatchString(f.Name()){
-					fmt.Println(f.Name())
+					// fmt.Println(f.Name())
 					jackFiles = append(jackFiles, args[1]+"/"+f.Name())
 
 				}

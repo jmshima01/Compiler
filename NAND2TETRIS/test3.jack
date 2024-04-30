@@ -1,8 +1,0 @@
-class Foo {
-field int x, y;
-constructor void new() {
-let x = 0;
-let y = 1;
-return this;
-}
-}

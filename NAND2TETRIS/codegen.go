@@ -509,7 +509,7 @@ func codeGen(ast *Node) string {
 				handleClassVar(v)
 			} 
 			if v.data == "SubroutineDec"{
-				fmt.Println("HADKELL,",v.children[2].data)
+				// fmt.Println("HADKELL,",v.children[2].data)
 				code += handleSubrDec(v)
 								
 			}

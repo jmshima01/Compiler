@@ -239,7 +239,7 @@ func predict(p ProductionRule, dervLambda set, firsts map[string]set, follows ma
 }
 
 // ========== LL(1) Table driven Parser =================
-func AST(grammar []string, tokFilepath string) *Node{
+func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .jack source file
 	
 	// trim whitespace
 	for i, v := range grammar {
@@ -259,75 +259,75 @@ func AST(grammar []string, tokFilepath string) *Node{
 			}
 		}
 	}
-	fmt.Println(terminals)
-	fmt.Println(nonTerminals)
+	// fmt.Println(terminals)
+	// fmt.Println(nonTerminals)
 
 	symbols := setUnion(terminals, nonTerminals)
 	symbols.add("$")
 
 	productionRules := makeProductionRules(grammar)
-	fmt.Println("++++++++++++")
+	// fmt.Println("++++++++++++")
 
-	for _, p := range productionRules {
-		fmt.Println(p)
-	}
-	fmt.Println("++++++++++++")
+	// for _, p := range productionRules {
+	// 	fmt.Println(p)
+	// }
+	// fmt.Println("++++++++++++")
 	startState := getStartState(productionRules)
-	fmt.Println(startState)
-	fmt.Println()
+	// fmt.Println(startState)
+	// fmt.Println()
 
 	dervLambdaCache := make(set)
 	for k, _ := range symbols {
 		// fmt.Println("workin on",k)
-		fmt.Println(k, "derv->", derivesToLambda(k, productionRules))
+		// fmt.Println(k, "derv->", derivesToLambda(k, productionRules))
 		dervLambdaCache[k] = derivesToLambda(k, productionRules)
 	}
-	fmt.Println()
+	// fmt.Println()
 	firstCache := map[string]set{}
 	for k, _ := range symbols {
 		firstCache[k] = first(k, productionRules, dervLambdaCache, make(set), make(set))
-		if isNonTerminal(k) {
-			fmt.Println("first->", k, first(k, productionRules, dervLambdaCache, make(set), make(set)).getValues())
-		}
+		// if isNonTerminal(k) {
+		// 	fmt.Println("first->", k, first(k, productionRules, dervLambdaCache, make(set), make(set)).getValues())
+		// }
 
 	}
 
-	fmt.Println()
+	// fmt.Println()
 
 	followCache := map[string]set{}
 	for k, _ := range nonTerminals {
 		// if(k=="RHS"){
-		fmt.Println("follow->", k, follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set)).getValues())
+		// fmt.Println("follow->", k, follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set)).getValues())
 		followCache[k] = follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set))
 
 	}
-	fmt.Println()
-	for _, p := range productionRules {
-		fmt.Println("predict->", p, predict(p, dervLambdaCache, firstCache, followCache).getValues())
-	}
+	// fmt.Println()
+	// for _, p := range productionRules {
+	// 	fmt.Println("predict->", p, predict(p, dervLambdaCache, firstCache, followCache).getValues())
+	// }
 
 	ruleLookup := map[int]ProductionRule{}
 	for i, p := range productionRules {
 		ruleLookup[i+1] = p
 	}
 
-	fmt.Println(ruleLookup)
-	fmt.Println()
-	fmt.Println("ruleLookup := map[int]ProductionRule{")
-	for k,v := range ruleLookup{
-		r := "string{"
-		for i,s := range v.rhs{
-			r+= fmt.Sprintf("\"%s\"",s)
-			if i == len(v.rhs)-1{
-				continue
-			}
-			r+=","
-		}
-		r+="}"
+	// fmt.Println(ruleLookup)
+	// fmt.Println()
+	// fmt.Println("ruleLookup := map[int]ProductionRule{")
+	// for k,v := range ruleLookup{
+	// 	r := "string{"
+	// 	for i,s := range v.rhs{
+	// 		r+= fmt.Sprintf("\"%s\"",s)
+	// 		if i == len(v.rhs)-1{
+	// 			continue
+	// 		}
+	// 		r+=","
+	// 	}
+	// 	r+="}"
 		
-		x:=fmt.Sprintf("%d: ProductionRule{lhs:\"%s\", rhs:%s)",k,ruleLookup[k].lhs,r)
-		fmt.Println(x)
-	}
+	// 	x:=fmt.Sprintf("%d: ProductionRule{lhs:\"%s\", rhs:%s)",k,ruleLookup[k].lhs,r)
+	// 	fmt.Println(x)
+	// }
 
 	columnValues := terminals.getValues()
 	sort.Strings(columnValues)
@@ -353,10 +353,10 @@ func AST(grammar []string, tokFilepath string) *Node{
 		columnLookup[v] = i
 	}
 
-	fmt.Println(rowValues)
-	fmt.Println(columnValues)
-	fmt.Println(columnLookup)
-	fmt.Println(rowLookup)
+	// fmt.Println(rowValues)
+	// fmt.Println(columnValues)
+	// fmt.Println(columnLookup)
+	// fmt.Println(rowLookup)
 	LLTable := make([][]int, len(rowLookup))
 	for _, i := range rowLookup {
 		LLTable[i] = make([]int, len(columnLookup))
@@ -373,13 +373,13 @@ func AST(grammar []string, tokFilepath string) *Node{
 		}
 
 	}
-	fmt.Println()
+	// fmt.Println()
 	fmt.Println(columnValues)
 	for _, v := range LLTable {
 		fmt.Println(v)
 	}
-	fmt.Println("=======================LL table driven parsing============")
-	// test4 := "bghm$"
+	fmt.Println("=============LL table driven parsing============")
+	
 	tokenStream := readTokens(tokFilepath)
 
 	// for _, v := range tokenStream {
@@ -411,14 +411,14 @@ func AST(grammar []string, tokFilepath string) *Node{
 
 	}
 	Q.push(token{value: "$", tokenType: "$"})
-	fmt.Println("---------------")
+	// fmt.Println("---------------")
 	// for _, v := range Q {
 	// 	fmt.Println(v)
 	// }
 
 	root := makeNode("ROOT", nil, 0)
 	current := root
-	current.debug()
+	// current.debug()
 	uniqueID := 1
 	for {
 		if S.isEmpty() {
@@ -447,7 +447,7 @@ func AST(grammar []string, tokFilepath string) *Node{
 
 			S.pop()
 
-			// SDT Ast conversion:
+			// SDT Ast conversion: The Sword Slaying the Dragon aka Syntax Directed Translation
 			switch current.data {
 			case "ArrayName":
 				current = current.parent
@@ -1003,19 +1003,17 @@ func AST(grammar []string, tokFilepath string) *Node{
 		current = newNode
 		uniqueID++
 		// add rule in reverse to stack...
-		S = append(S, "<*>") // end of production
+		S = append(S, "<*>") // end of production symbol designation
 		for i := len(nextRule.rhs) - 1; i >= 0; i-- {
 			S = append(S, nextRule.rhs[i])
 		}
 	}
 	S = nil
 	Q = nil
-	current.debug()
-	fmt.Println("============")
+	
 	// printTree(current)
 	ast := current.children[0]
-	// g := ""
-	// graphiz:=*(toGraphiz(current,&g))
+	
 
 	nodeInfo := ""
 	nodeInfo = *(genNodeInfo(ast, &nodeInfo))
@@ -1025,8 +1023,6 @@ func AST(grammar []string, tokFilepath string) *Node{
 
 	toGraphiz := nodeInfo + "\n" + edgeInfo
 	writeToFile("parsetree.txt", toGraphiz)
-	// fmt.Println(toGraphiz)
-	// printTree(ast)
 
 	return ast
 }

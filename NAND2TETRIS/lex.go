@@ -132,10 +132,10 @@ func readTokens(filepath string) []token{
 	}
 
 	// debug...
-	for _,v := range clean{
-		fmt.Println(v)
-	}
+	// for _,v := range clean{
+	// 	fmt.Println(v)
+	// }
 	tokens := lex(clean)
-	fmt.Println(tokens)
+	// fmt.Println(tokens)
 	return tokens
 }

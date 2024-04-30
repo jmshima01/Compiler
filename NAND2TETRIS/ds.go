@@ -11,14 +11,10 @@ import(
 
 
 // ============ Typedefs ==============
-type ParseTree struct{
-	root *Node
-}
+
 
 type Node struct{
-
 	data string;
-	identInfo string;
 	parent *Node;
 	id int;
 	children []*Node;
