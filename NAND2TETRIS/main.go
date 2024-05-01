@@ -39,7 +39,7 @@ func main(){
 			ast := AST(grammar,f)
 			
 			vmCode = codeGen(ast)
-			writeToFile(fmt.Sprintf("%s_js.vm",strings.Split(f,".")[0]),vmCode)
+			writeToFile(fmt.Sprintf("%s.vm",strings.Split(f,".")[0]),vmCode)
 		}
 	
 	// GIVEN a <source>
@@ -72,7 +72,7 @@ func main(){
 				ast := AST(grammar,f)
 				
 				vmCode = codeGen(ast)
-				writeToFile(fmt.Sprintf("%s_js.vm",strings.Split(f,".")[0]),vmCode)
+				writeToFile(fmt.Sprintf("%s.vm",strings.Split(f,".")[0]),vmCode)
 			}	
 			
 		// Single File
@@ -84,13 +84,16 @@ func main(){
 
 			ast := AST(grammar,args[1])
 			vmCode = codeGen(ast)
-			writeToFile(fmt.Sprintf("%s_js.vm",strings.Split(args[1],".")[0]),vmCode)
+			writeToFile(fmt.Sprintf("%s.vm",strings.Split(args[1],".")[0]),vmCode)
+			fmt.Println()
 		}
 
 	} else{
 		println("USEAGE: ./JackCompiler <source>\nWhere if no source is given the current dir is searched for .jack files")
 		os.Exit(1)
 	}
+
+	fmt.Println(vmCode)
 	
 	
 }

@@ -1,37 +1,187 @@
 1 Class
 4 Main
-8 SubroutineDec
-10 function
-12 void
-14 main
-19 SubroutineBody
-27 DoStatement
-29 Output
-32 printInt
-34 ExpressionList
-35 Expression
-38 integerconstant
-37 1
-40 Op
-41 +
-44 Expression
-47 integerconstant
-46 2
-49 Op
-50 *
-53 integerconstant
-52 3
-65 ReturnStatement
+6 ClassVarDec
+8 static
+10 boolean
+11 VarName
+12 test
+18 SubroutineDec
+20 function
+22 void
+24 main
+29 SubroutineBody
+32 VarDec
+36 SquareGame
+37 VarName
+38 game
+46 LetStatement
+48 VarName
+49 game
+53 Expression
+55 SubroutineCall
+57 SquareGame
+60 new
+63 ExpressionList
+72 DoStatement
+74 game
+77 run
+80 ExpressionList
+87 DoStatement
+89 game
+92 dispose
+95 ExpressionList
+100 ReturnStatement
+108 SubroutineDec
+110 function
+112 void
+114 more
+119 SubroutineBody
+122 VarDec
+125 int
+126 VarName
+127 i
+130 VarName
+131 j
+136 VarDec
+140 String
+141 VarName
+142 s
+147 VarDec
+151 Array
+152 VarName
+153 a
+161 IfStatement
+164 Expression
+166 KeywordConstant
+167 false
+174 LetStatement
+176 VarName
+177 s
+181 Expression
+184 stringconstant
+183 string constant
+190 LetStatement
+192 VarName
+193 s
+197 Expression
+199 KeywordConstant
+200 null
+206 LetStatement
+208 VarName
+209 ArrayName
+210 a
+212 Expression
+215 integerconstant
+214 1
+222 Expression
+224 VarName
+225 ArrayName
+226 a
+228 Expression
+231 integerconstant
+230 2
+243 ElseStatement
+248 LetStatement
+250 VarName
+251 i
+255 Expression
+257 VarName
+258 i
+260 Op
+261 *
+264 Expression
+266 UnaryOp
+267 -
+269 VarName
+270 j
+279 LetStatement
+281 VarName
+282 j
+286 Expression
+288 VarName
+289 j
+291 Op
+292 /
+295 Expression
+297 UnaryOp
+298 -
+301 integerconstant
+300 2
+310 LetStatement
+312 VarName
+313 i
+317 Expression
+319 VarName
+320 i
+322 Op
+323 pipe
+325 VarName
+326 j
+335 ReturnStatement
 
-1 4 8
-8 10 12 14 19
-19 27 65
-27 29 32 34
-34 35
-35 38 40 44
-38 37
-40 41
-44 47 49 53
-47 46
-49 50
-53 52
+1 4 6 18
+6 8 10 11
+11 12
+18 20 22 24 29 108
+29 32 46 72 87 100
+32 36 37
+37 38
+46 48 53
+48 49
+53 55
+55 57 60 63
+72 74 77 80
+87 89 92 95
+108 110 112 114 119
+119 122 136 147 161 243 335
+122 125 126 130
+126 127
+130 131
+136 140 141
+141 142
+147 151 152
+152 153
+161 164 174 190 206
+164 166
+166 167
+174 176 181
+176 177
+181 184
+184 183
+190 192 197
+192 193
+197 199
+199 200
+206 208 222
+208 209
+209 210 212
+212 215
+215 214
+222 224
+224 225
+225 226 228
+228 231
+231 230
+243 248 279 310
+248 250 255
+250 251
+255 257 260 264
+257 258
+260 261
+264 266 269
+266 267
+269 270
+279 281 286
+281 282
+286 288 291 295
+288 289
+291 292
+295 297 301
+297 298
+301 300
+310 312 317
+312 313
+317 319 322 325
+319 320
+322 323
+325 326

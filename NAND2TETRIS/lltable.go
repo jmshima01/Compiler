@@ -450,19 +450,28 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 			// SDT Ast conversion: The Sword Slaying the Dragon aka Syntax Directed Translation
 			switch current.data {
 			case "ArrayName":
-				current = current.parent
 				newChildren := make([]*Node, 0)
 				for _, v := range current.children {
-					if v.data != "ArrayName" {
+
+					if v.data != "[" && v.data != "]" {
 						newChildren = append(newChildren, v)
-					} else {
-						for _,x := range v.children{
-							x.parent = current
-						}
-						newChildren = append(newChildren, v.children...)
 					}
 				}
 				current.children = newChildren
+				current = current.parent
+			// 	current = current.parent
+			// 	newChildren := make([]*Node, 0)
+			// 	for _, v := range current.children {
+			// 		if v.data != "ArrayName" {
+			// 			newChildren = append(newChildren, v)
+			// 		} else {
+			// 			for _,x := range v.children{
+			// 				x.parent = current
+			// 			}
+			// 			newChildren = append(newChildren, v.children...)
+			// 		}
+			// 	}
+			// 	current.children = newChildren
 
 			case "ClassName":
 				current.data = current.children[0].data
