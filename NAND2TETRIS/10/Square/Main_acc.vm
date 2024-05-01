@@ -61,8 +61,8 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-label IF_FALSE0
 goto IF_END0
+label IF_FALSE0
 push local 0
 push local 1
 neg

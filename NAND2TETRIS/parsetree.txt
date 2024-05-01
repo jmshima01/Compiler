@@ -1,187 +1,717 @@
 1 Class
 4 Main
-6 ClassVarDec
-8 static
-10 boolean
-11 VarName
-12 test
-18 SubroutineDec
-20 function
-22 void
-24 main
-29 SubroutineBody
-32 VarDec
-36 SquareGame
-37 VarName
-38 game
-46 LetStatement
-48 VarName
-49 game
-53 Expression
-55 SubroutineCall
-57 SquareGame
-60 new
-63 ExpressionList
-72 DoStatement
-74 game
-77 run
-80 ExpressionList
-87 DoStatement
-89 game
-92 dispose
-95 ExpressionList
-100 ReturnStatement
-108 SubroutineDec
-110 function
-112 void
-114 more
-119 SubroutineBody
-122 VarDec
-125 int
-126 VarName
-127 i
-130 VarName
-131 j
-136 VarDec
-140 String
-141 VarName
-142 s
-147 VarDec
-151 Array
-152 VarName
-153 a
-161 IfStatement
-164 Expression
-166 KeywordConstant
-167 false
-174 LetStatement
-176 VarName
-177 s
-181 Expression
-184 stringconstant
-183 string constant
-190 LetStatement
-192 VarName
-193 s
-197 Expression
-199 KeywordConstant
-200 null
-206 LetStatement
-208 VarName
-209 ArrayName
-210 a
-212 Expression
-215 integerconstant
-214 1
-222 Expression
-224 VarName
-225 ArrayName
-226 a
-228 Expression
-231 integerconstant
-230 2
-243 ElseStatement
-248 LetStatement
-250 VarName
-251 i
-255 Expression
-257 VarName
-258 i
-260 Op
-261 *
-264 Expression
-266 UnaryOp
-267 -
+8 SubroutineDec
+10 function
+12 void
+14 main
+19 SubroutineBody
+22 VarDec
+26 Array
+27 VarName
+28 a
+31 VarName
+32 b
+35 VarName
+36 c
+44 LetStatement
+46 VarName
+47 a
+51 Expression
+53 SubroutineCall
+55 Array
+58 new
+60 ExpressionList
+61 Expression
+64 integerconstant
+63 10
+75 LetStatement
+77 VarName
+78 b
+82 Expression
+84 SubroutineCall
+86 Array
+89 new
+91 ExpressionList
+92 Expression
+95 integerconstant
+94 5
+106 LetStatement
+108 VarName
+109 c
+113 Expression
+115 SubroutineCall
+117 Array
+120 new
+122 ExpressionList
+123 Expression
+126 integerconstant
+125 1
+137 LetStatement
+139 VarName
+140 ArrayName
+141 a
+143 Expression
+146 integerconstant
+145 3
+153 Expression
+156 integerconstant
+155 2
+162 LetStatement
+164 VarName
+165 ArrayName
+166 a
+168 Expression
+171 integerconstant
+170 4
+178 Expression
+181 integerconstant
+180 8
+187 LetStatement
+189 VarName
+190 ArrayName
+191 a
+193 Expression
+196 integerconstant
+195 5
+203 Expression
+206 integerconstant
+205 4
+212 LetStatement
+214 VarName
+215 ArrayName
+216 b
+218 Expression
+220 VarName
+221 ArrayName
+222 a
+224 Expression
+227 integerconstant
+226 3
+237 Expression
+239 VarName
+240 ArrayName
+241 a
+243 Expression
+246 integerconstant
+245 3
+251 Op
+252 +
+255 integerconstant
+254 3
+261 LetStatement
+263 VarName
+264 ArrayName
+265 a
+267 Expression
 269 VarName
-270 j
-279 LetStatement
-281 VarName
-282 j
-286 Expression
-288 VarName
-289 j
-291 Op
-292 /
+270 ArrayName
+271 b
+273 Expression
+275 VarName
+276 ArrayName
+277 a
+279 Expression
+282 integerconstant
+281 3
 295 Expression
-297 UnaryOp
-298 -
-301 integerconstant
-300 2
-310 LetStatement
-312 VarName
-313 i
-317 Expression
-319 VarName
-320 i
-322 Op
-323 pipe
-325 VarName
-326 j
-335 ReturnStatement
+297 VarName
+298 ArrayName
+299 a
+301 Expression
+303 VarName
+304 ArrayName
+305 a
+307 Expression
+310 integerconstant
+309 5
+318 Op
+319 *
+321 VarName
+322 ArrayName
+323 b
+325 Expression
+328 Expression
+331 Expression
+334 integerconstant
+333 7
+336 Op
+337 -
+339 VarName
+340 ArrayName
+341 a
+343 Expression
+346 integerconstant
+345 3
+354 Op
+355 -
+357 SubroutineCall
+359 Main
+362 double
+364 ExpressionList
+365 Expression
+368 integerconstant
+367 2
+378 Op
+379 +
+382 integerconstant
+381 1
+391 LetStatement
+393 VarName
+394 ArrayName
+395 c
+397 Expression
+400 integerconstant
+399 0
+407 Expression
+409 KeywordConstant
+410 null
+416 LetStatement
+418 VarName
+419 c
+423 Expression
+425 VarName
+426 ArrayName
+427 c
+429 Expression
+432 integerconstant
+431 0
+443 DoStatement
+445 Output
+448 printString
+450 ExpressionList
+451 Expression
+454 stringconstant
+453 Test 1: expected result: 5; actual result: 
+465 DoStatement
+467 Output
+470 printInt
+472 ExpressionList
+473 Expression
+475 VarName
+476 ArrayName
+477 b
+479 Expression
+482 integerconstant
+481 2
+496 DoStatement
+498 Output
+501 println
+504 ExpressionList
+511 DoStatement
+513 Output
+516 printString
+518 ExpressionList
+519 Expression
+522 stringconstant
+521 Test 2: expected result: 40; actual result: 
+533 DoStatement
+535 Output
+538 printInt
+540 ExpressionList
+541 Expression
+543 VarName
+544 ArrayName
+545 a
+547 Expression
+550 integerconstant
+549 5
+564 DoStatement
+566 Output
+569 println
+572 ExpressionList
+579 DoStatement
+581 Output
+584 printString
+586 ExpressionList
+587 Expression
+590 stringconstant
+589 Test 3: expected result: 0; actual result: 
+601 DoStatement
+603 Output
+606 printInt
+608 ExpressionList
+609 Expression
+611 VarName
+612 c
+623 DoStatement
+625 Output
+628 println
+631 ExpressionList
+636 LetStatement
+638 VarName
+639 c
+643 Expression
+645 KeywordConstant
+646 null
+652 IfStatement
+655 Expression
+657 VarName
+658 c
+660 Op
+661 =
+663 KeywordConstant
+664 null
+673 DoStatement
+675 Main
+678 fill
+680 ExpressionList
+681 Expression
+683 VarName
+684 a
+689 Expression
+692 integerconstant
+691 10
+701 LetStatement
+703 VarName
+704 c
+708 Expression
+710 VarName
+711 ArrayName
+712 a
+714 Expression
+717 integerconstant
+716 3
+726 LetStatement
+728 VarName
+729 ArrayName
+730 c
+732 Expression
+735 integerconstant
+734 1
+742 Expression
+745 integerconstant
+744 33
+751 LetStatement
+753 VarName
+754 c
+758 Expression
+760 VarName
+761 ArrayName
+762 a
+764 Expression
+767 integerconstant
+766 7
+776 LetStatement
+778 VarName
+779 ArrayName
+780 c
+782 Expression
+785 integerconstant
+784 1
+792 Expression
+795 integerconstant
+794 77
+801 LetStatement
+803 VarName
+804 b
+808 Expression
+810 VarName
+811 ArrayName
+812 a
+814 Expression
+817 integerconstant
+816 3
+826 LetStatement
+828 VarName
+829 ArrayName
+830 b
+832 Expression
+835 integerconstant
+834 1
+842 Expression
+844 VarName
+845 ArrayName
+846 b
+848 Expression
+851 integerconstant
+850 1
+856 Op
+857 +
+859 VarName
+860 ArrayName
+861 c
+863 Expression
+866 integerconstant
+865 1
+880 DoStatement
+882 Output
+885 printString
+887 ExpressionList
+888 Expression
+891 stringconstant
+890 Test 4: expected result: 77; actual result: 
+902 DoStatement
+904 Output
+907 printInt
+909 ExpressionList
+910 Expression
+912 VarName
+913 ArrayName
+914 c
+916 Expression
+919 integerconstant
+918 1
+933 DoStatement
+935 Output
+938 println
+941 ExpressionList
+948 DoStatement
+950 Output
+953 printString
+955 ExpressionList
+956 Expression
+959 stringconstant
+958 Test 5: expected result: 110; actual result: 
+970 DoStatement
+972 Output
+975 printInt
+977 ExpressionList
+978 Expression
+980 VarName
+981 ArrayName
+982 b
+984 Expression
+987 integerconstant
+986 1
+1001 DoStatement
+1003 Output
+1006 println
+1009 ExpressionList
+1014 ReturnStatement
+1022 SubroutineDec
+1024 function
+1027 int
+1029 double
+1031 ParameterList
+1033 int
+1034 VarName
+1035 a
+1039 SubroutineBody
+1045 ReturnStatement
+1048 Expression
+1050 VarName
+1051 a
+1053 Op
+1054 *
+1057 integerconstant
+1056 2
+1064 SubroutineDec
+1066 function
+1068 void
+1070 fill
+1072 ParameterList
+1075 Array
+1076 VarName
+1077 a
+1081 int
+1082 VarName
+1083 size
+1087 SubroutineBody
+1093 WhileStatement
+1096 Expression
+1098 VarName
+1099 size
+1101 Op
+1102 >
+1105 integerconstant
+1104 0
+1112 LetStatement
+1114 VarName
+1115 size
+1119 Expression
+1121 VarName
+1122 size
+1124 Op
+1125 -
+1128 integerconstant
+1127 1
+1134 LetStatement
+1136 VarName
+1137 ArrayName
+1138 a
+1140 Expression
+1142 VarName
+1143 size
+1150 Expression
+1152 SubroutineCall
+1154 Array
+1157 new
+1159 ExpressionList
+1160 Expression
+1163 integerconstant
+1162 3
+1177 ReturnStatement
 
-1 4 6 18
-6 8 10 11
-11 12
-18 20 22 24 29 108
-29 32 46 72 87 100
-32 36 37
-37 38
-46 48 53
-48 49
-53 55
-55 57 60 63
-72 74 77 80
-87 89 92 95
-108 110 112 114 119
-119 122 136 147 161 243 335
-122 125 126 130
-126 127
-130 131
-136 140 141
-141 142
-147 151 152
-152 153
-161 164 174 190 206
-164 166
-166 167
-174 176 181
-176 177
-181 184
-184 183
-190 192 197
-192 193
-197 199
-199 200
-206 208 222
-208 209
-209 210 212
-212 215
-215 214
-222 224
-224 225
-225 226 228
-228 231
-231 230
-243 248 279 310
-248 250 255
-250 251
-255 257 260 264
-257 258
-260 261
-264 266 269
-266 267
+1 4 8
+8 10 12 14 19 1022
+19 22 44 75 106 137 162 187 212 261 391 416 443 465 496 511 533 564 579 601 623 636 652 880 902 933 948 970 1001 1014
+22 26 27 31 35
+27 28
+31 32
+35 36
+44 46 51
+46 47
+51 53
+53 55 58 60
+60 61
+61 64
+64 63
+75 77 82
+77 78
+82 84
+84 86 89 91
+91 92
+92 95
+95 94
+106 108 113
+108 109
+113 115
+115 117 120 122
+122 123
+123 126
+126 125
+137 139 153
+139 140
+140 141 143
+143 146
+146 145
+153 156
+156 155
+162 164 178
+164 165
+165 166 168
+168 171
+171 170
+178 181
+181 180
+187 189 203
+189 190
+190 191 193
+193 196
+196 195
+203 206
+206 205
+212 214 237
+214 215
+215 216 218
+218 220
+220 221
+221 222 224
+224 227
+227 226
+237 239 251 255
+239 240
+240 241 243
+243 246
+246 245
+251 252
+255 254
+261 263 295
+263 264
+264 265 267
+267 269
 269 270
-279 281 286
-281 282
-286 288 291 295
-288 289
-291 292
-295 297 301
+270 271 273
+273 275
+275 276
+276 277 279
+279 282
+282 281
+295 297 318 321
 297 298
-301 300
-310 312 317
-312 313
-317 319 322 325
-319 320
-322 323
-325 326
+298 299 301
+301 303
+303 304
+304 305 307
+307 310
+310 309
+318 319
+321 322
+322 323 325
+325 328 378 382
+328 331 354 357
+331 334 336 339
+334 333
+336 337
+339 340
+340 341 343
+343 346
+346 345
+354 355
+357 359 362 364
+364 365
+365 368
+368 367
+378 379
+382 381
+391 393 407
+393 394
+394 395 397
+397 400
+400 399
+407 409
+409 410
+416 418 423
+418 419
+423 425
+425 426
+426 427 429
+429 432
+432 431
+443 445 448 450
+450 451
+451 454
+454 453
+465 467 470 472
+472 473
+473 475
+475 476
+476 477 479
+479 482
+482 481
+496 498 501 504
+511 513 516 518
+518 519
+519 522
+522 521
+533 535 538 540
+540 541
+541 543
+543 544
+544 545 547
+547 550
+550 549
+564 566 569 572
+579 581 584 586
+586 587
+587 590
+590 589
+601 603 606 608
+608 609
+609 611
+611 612
+623 625 628 631
+636 638 643
+638 639
+643 645
+645 646
+652 655 673 701 726 751 776 801 826
+655 657 660 663
+657 658
+660 661
+663 664
+673 675 678 680
+680 681 689
+681 683
+683 684
+689 692
+692 691
+701 703 708
+703 704
+708 710
+710 711
+711 712 714
+714 717
+717 716
+726 728 742
+728 729
+729 730 732
+732 735
+735 734
+742 745
+745 744
+751 753 758
+753 754
+758 760
+760 761
+761 762 764
+764 767
+767 766
+776 778 792
+778 779
+779 780 782
+782 785
+785 784
+792 795
+795 794
+801 803 808
+803 804
+808 810
+810 811
+811 812 814
+814 817
+817 816
+826 828 842
+828 829
+829 830 832
+832 835
+835 834
+842 844 856 859
+844 845
+845 846 848
+848 851
+851 850
+856 857
+859 860
+860 861 863
+863 866
+866 865
+880 882 885 887
+887 888
+888 891
+891 890
+902 904 907 909
+909 910
+910 912
+912 913
+913 914 916
+916 919
+919 918
+933 935 938 941
+948 950 953 955
+955 956
+956 959
+959 958
+970 972 975 977
+977 978
+978 980
+980 981
+981 982 984
+984 987
+987 986
+1001 1003 1006 1009
+1022 1024 1027 1029 1031 1039 1064
+1031 1033 1034
+1034 1035
+1039 1045
+1045 1048
+1048 1050 1053 1057
+1050 1051
+1053 1054
+1057 1056
+1064 1066 1068 1070 1072 1087
+1072 1075 1076 1081 1082
+1076 1077
+1082 1083
+1087 1093 1177
+1093 1096 1112 1134
+1096 1098 1101 1105
+1098 1099
+1101 1102
+1105 1104
+1112 1114 1119
+1114 1115
+1119 1121 1124 1128
+1121 1122
+1124 1125
+1128 1127
+1134 1136 1150
+1136 1137
+1137 1138 1140
+1140 1142
+1142 1143
+1150 1152
+1152 1154 1157 1159
+1159 1160
+1160 1163
+1163 1162
