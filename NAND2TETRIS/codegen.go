@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 )
 
 
@@ -20,7 +21,7 @@ var curClass string = ""
 var numGlob int = 0
 // var numStatic int = 0
 var curSubDecType string = ""
-var counterw,counterif = -1,-1
+
 
 func handleParamlist(ast *Node) string{
 	argCounter:=0
@@ -48,8 +49,8 @@ func handleParamlist(ast *Node) string{
 func handleBody(ast *Node) (int,string) {
 	locals := 0
 	res:=""
-	// counterw = 0
-	// counterif = 0
+	count := 0
+	countif := 0
 	for _, v := range ast.children {
 		if v.data == "VarDec"{
 			handleVarDec(v, &locals)
@@ -61,21 +62,20 @@ func handleBody(ast *Node) (int,string) {
 			case "DoStatement":
 				res+=handleDo(v)
 			case "IfStatement":
-				res+=handleIf(v)
-			case "ElseStatement":
-				res+=handleElse(v)
+				res+=handleIf(v,countif)
+				countif++
 			case "WhileStatement":
+				res+=handleWhile(v,count)
+				count++
 				
-				res+=handleWhile(v)
-				counterw--
 			case "ReturnStatement":
 				res+= handleReturn(v)
 			}
 		}
+		
+		
 	}
-	
 	return locals,res
-
 }
 
 
@@ -143,8 +143,9 @@ func handleDo(ast *Node) string{
 	return handleSubCall(ast) + "pop temp 0\n"
 }
 
-func handleWhile(ast *Node ) string{
-	counterw++
+func handleWhile(ast *Node, counterw int) string{
+	numCalls:=0
+	numIfs := 0
 	res := ""
 	res=fmt.Sprintf("label WHILE_EXP%d\n",counterw)
 	res+= handleExpression(ast.children[0])+"not\n"
@@ -158,18 +159,17 @@ func handleWhile(ast *Node ) string{
 		case "DoStatement":
 			res+=handleDo(v)
 		case "IfStatement":
-			
-			res+=handleIf(v)
-			
+			res+=handleIf(v,numIfs)
+			numIfs++
 		case "WhileStatement":
-			
-			res+=handleWhile(v)
-			
-			
+			numCalls++
+			res+=handleWhile(v,counterw+numCalls)
 		case "ReturnStatement":
 			res+= handleReturn(v)
+
 		}
 	}
+	
 	res+=fmt.Sprintf("goto WHILE_EXP%d\n",counterw)
 	res+=fmt.Sprintf("label WHILE_END%d\n",counterw)
 	
@@ -179,8 +179,9 @@ func handleWhile(ast *Node ) string{
 
 func handleReturn(ast *Node) string {
 	res := ""
+	
 	if len(ast.children) > 0 {
-		res =handleExpression(ast.children[0]) + "return"
+		res =handleExpression(ast.children[0]) +"return"
 	} else {
 		res = "push constant 0\nreturn"
 	}
@@ -188,41 +189,57 @@ func handleReturn(ast *Node) string {
 
 }
 
-func handleIf(ast *Node) string{
-	
-	counterif++
+func handleIf(ast *Node, counterif int) string{
+	hasElse,ind:=false,0
+	numCalls:=0
+	numWhiles:=0
+	hasReturn:=false
 	res := handleExpression(ast.children[0])
 	res += fmt.Sprintf("if-goto IF_TRUE%d\n",counterif)
 	res += fmt.Sprintf("goto IF_FALSE%d\n",counterif)
 	res += fmt.Sprintf("label IF_TRUE%d\n",counterif)
-	for _,v := range ast.children {
+	for i,v := range ast.children {
 		switch v.data {
 		case "LetStatement":
 			res+=handleLet(v)
 		case "DoStatement":
 			res+=handleDo(v)
 		case "IfStatement":
-			res+=handleIf(v)
+			numCalls++
+			res+=handleIf(v,counterif+numCalls)
 		case "WhileStatement":
-			
-			res+=handleWhile(v)
-			
-			
+			res+=handleWhile(v,numWhiles)
+			numWhiles++
 		case "ReturnStatement":
 			res+= handleReturn(v)
-	
+			hasReturn = true
+
+		case "ElseStatement":
+			hasElse = true
+			ind=i
+			// res+="\n"
+			
 		}
 	}
-
-	res += fmt.Sprintf("label IF_FALSE%d\n",counterif)
-	
+	if hasElse{
+		if hasReturn{
+			res += fmt.Sprintf("\ngoto IF_END%d\n",counterif)
+		}else{
+			res += fmt.Sprintf("goto IF_END%d\n",counterif)
+		}
+		res += fmt.Sprintf("label IF_FALSE%d\n",counterif)
+		res+= handleElse(ast.children[ind],counterif)
+		
+	} else{
+		res += fmt.Sprintf("label IF_FALSE%d\n",counterif)
+	}
 	return res
 }
 
 
-func handleElse(ast *Node)string{
-	
-	res:=fmt.Sprintf("goto IF_END%d\n",counterif)
+func handleElse(ast *Node, counterif int)string{
+	res:=""
+	wasReturn:=false
 	for _,v := range ast.children {
 		switch v.data {
 		case "LetStatement":
@@ -230,18 +247,21 @@ func handleElse(ast *Node)string{
 		case "DoStatement":
 			res+=handleDo(v)
 		case "IfStatement":
-			res+=handleIf(v)
-			
+			res+=handleIf(v,0)
 		case "WhileStatement":
-			res+=handleWhile(v)
-			
+			res+=handleWhile(v,0)
 		case "ReturnStatement":
 			res+= handleReturn(v)
+			wasReturn = true
 		}
-	
 
 	}
-	res += fmt.Sprintf("label IF_END%d\n",counterif)
+	if wasReturn{
+		res+=fmt.Sprintf("\nlabel IF_END%d",counterif)
+	} else{
+		res += fmt.Sprintf("label IF_END%d\n",counterif)
+	}
+	
 	return res
 }
 
@@ -340,7 +360,6 @@ func handleKeyword(ast *Node) string {
 	case "false":
 		res = "push constant 0\n"
 	case "this":
-		// _,inLocal := L["this"]
 		res = "push pointer 0\n"
 	case "true":
 		res = "push constant 0\nnot\n"
@@ -466,7 +485,7 @@ func handleSubrDec(ast *Node)string{
 				numLocals,r = handleBody(v)
 			}
 		}
-		res += fmt.Sprintf("function %s.%s %d\npush constant %d\ncall Memory.alloc 1\npop pointer 0\n%s%s\n%s", curClass, ast.children[2].data, numLocals,numGlob,p,r,s)
+		res += fmt.Sprintf("function %s.%s %d\npush constant %d\ncall Memory.alloc 1\npop pointer 0%s\n%s\n%s", curClass, ast.children[2].data, numLocals,numGlob,p,r,s)
 		return res
 	
 	case "method":
@@ -483,7 +502,7 @@ func handleSubrDec(ast *Node)string{
 				numLocals,r = handleBody(v)
 			}
 		}
-		res += fmt.Sprintf("function %s.%s %d\npush argument 0\npop pointer 0\n%s%s\n%s", curClass, ast.children[2].data, numLocals,p,r,s)
+		res += fmt.Sprintf("function %s.%s %d\npush argument 0\npop pointer 0%s\n%s\n%s", curClass, ast.children[2].data, numLocals,p,r,s)
 		return res
 	
 	default: // class function
@@ -499,7 +518,8 @@ func handleSubrDec(ast *Node)string{
 				numLocals,r = handleBody(v)
 			}
 		}
-		res += fmt.Sprintf("function %s.%s %d\n%s%s\n%s", curClass, ast.children[2].data, numLocals,p,r,s)
+		
+		res += fmt.Sprintf("function %s.%s %d%s\n%s\n%s", curClass, ast.children[2].data, numLocals,p,r,s)
 		return res
 	}
 }
@@ -519,7 +539,6 @@ func codeGen(ast *Node) string {
 				handleClassVar(v)
 			} 
 			if v.data == "SubroutineDec"{
-				// fmt.Println("HADKELL,",v.children[2].data)
 				code += handleSubrDec(v)
 								
 			}

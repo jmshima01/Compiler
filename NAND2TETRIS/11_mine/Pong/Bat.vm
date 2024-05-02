@@ -161,14 +161,14 @@ push this 2
 add
 push constant 511
 gt
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
 push constant 511
 push this 2
 sub
 pop this 0
-label IF_FALSE2
+label IF_FALSE0
 push constant 0
 call Screen.setColor 1
 pop temp 0
@@ -203,5 +203,4 @@ add
 call Screen.drawRectangle 4
 pop temp 0
 label IF_END0
-push constant 0
-return
+
