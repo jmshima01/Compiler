@@ -850,6 +850,17 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 
 					}
 					current.children = newChildren
+
+					for i,v := range current.children{
+						if v.data == "ElseStatement"{
+							if current.children[i-1].data=="IfStatement"{
+								v.parent = current.children[i-1]
+								addChild(current.children[i-1],v)
+								current.children = append(current.children[:i],current.children[i+1:]...)
+							}
+						}
+					}
+
 					current = current.parent
 				}
 
@@ -900,7 +911,7 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 						if current.children[i-1].data=="IfStatement"{
 							v.parent = current.children[i-1]
 							addChild(current.children[i-1],v)
-							current.children = current.children[:len(current.children)-1]
+							current.children = append(current.children[:i],current.children[i+1:]...)
 						}
 					}
 				}
@@ -923,9 +934,12 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 				current.children = current.children[1 : len(current.children)-1]
 				for i,v := range current.children{
 					if v.data == "ElseStatement"{
-						v.parent = current.children[i-1]
-						addChild(current.children[i-1],v)
-						current.children = current.children[:len(current.children)-1]
+						if current.children[i-1].data == "IfStatement"{
+							v.parent = current.children[i-1]
+							addChild(current.children[i-1],v)
+							current.children = append(current.children[:i],current.children[i+1:]...)
+						}
+						
 					}
 				}
 				current = current.parent
@@ -970,7 +984,7 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 						if current.children[i-1].data=="IfStatement"{
 							v.parent = current.children[i-1]
 							addChild(current.children[i-1],v)
-							current.children = current.children[:len(current.children)-1]
+							current.children = append(current.children[:i],current.children[i+1:]...)
 						}
 					}
 				}
@@ -981,7 +995,7 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 			default:
 				current = current.parent
 			}
-			// current = current.parent
+			// current = current.parent //uncomment for no SDT
 			continue
 		}
 

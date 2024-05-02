@@ -5,33 +5,380 @@
 12 void
 14 main
 19 SubroutineBody
-27 DoStatement
-29 Output
-32 printInt
-34 ExpressionList
-35 Expression
-38 integerconstant
-37 1
-40 Op
-41 +
-44 Expression
-47 integerconstant
-46 2
-49 Op
-50 *
-53 integerconstant
-52 3
-65 ReturnStatement
+22 VarDec
+25 int
+26 VarName
+27 value
+37 DoStatement
+39 Main
+42 fillMemory
+44 ExpressionList
+45 Expression
+48 integerconstant
+47 8001
+53 Expression
+56 integerconstant
+55 16
+61 Expression
+63 UnaryOp
+64 -
+67 integerconstant
+66 1
+76 LetStatement
+78 VarName
+79 value
+83 Expression
+85 SubroutineCall
+87 Memory
+90 peek
+92 ExpressionList
+93 Expression
+96 integerconstant
+95 8000
+109 DoStatement
+111 Main
+114 convert
+116 ExpressionList
+117 Expression
+119 VarName
+120 value
+129 ReturnStatement
+137 SubroutineDec
+139 function
+141 void
+143 convert
+145 ParameterList
+147 int
+148 VarName
+149 value
+153 SubroutineBody
+156 VarDec
+159 int
+160 VarName
+161 mask
+164 VarName
+165 position
+170 VarDec
+173 boolean
+174 VarName
+175 loop
+183 LetStatement
+185 VarName
+186 loop
+190 Expression
+192 KeywordConstant
+193 true
+199 WhileStatement
+202 Expression
+204 VarName
+205 loop
+212 LetStatement
+214 VarName
+215 position
+219 Expression
+221 VarName
+222 position
+224 Op
+225 +
+228 integerconstant
+227 1
+234 LetStatement
+236 VarName
+237 mask
+241 Expression
+243 SubroutineCall
+245 Main
+248 nextMask
+250 ExpressionList
+251 Expression
+253 VarName
+254 mask
+265 IfStatement
+268 Expression
+270 UnaryOp
+271 ~
+274 Expression
+276 VarName
+277 position
+279 Op
+280 >
+283 integerconstant
+282 16
+293 IfStatement
+296 Expression
+298 UnaryOp
+299 ~
+302 Expression
+305 Expression
+307 VarName
+308 value
+310 Op
+311 &
+313 VarName
+314 mask
+319 Op
+320 =
+323 integerconstant
+322 0
+335 DoStatement
+337 Memory
+340 poke
+342 ExpressionList
+343 Expression
+346 integerconstant
+345 8000
+348 Op
+349 +
+351 VarName
+352 position
+357 Expression
+360 integerconstant
+359 1
+372 ElseStatement
+379 DoStatement
+381 Memory
+384 poke
+386 ExpressionList
+387 Expression
+390 integerconstant
+389 8000
+392 Op
+393 +
+395 VarName
+396 position
+401 Expression
+404 integerconstant
+403 0
+419 ElseStatement
+424 LetStatement
+426 VarName
+427 loop
+431 Expression
+433 KeywordConstant
+434 false
+446 ReturnStatement
+454 SubroutineDec
+456 function
+459 int
+461 nextMask
+463 ParameterList
+465 int
+466 VarName
+467 mask
+471 SubroutineBody
+477 IfStatement
+480 Expression
+482 VarName
+483 mask
+485 Op
+486 =
+489 integerconstant
+488 0
+496 ReturnStatement
+499 Expression
+502 integerconstant
+501 1
+511 ElseStatement
+516 ReturnStatement
+519 Expression
+521 VarName
+522 mask
+524 Op
+525 *
+528 integerconstant
+527 2
+538 SubroutineDec
+540 function
+542 void
+544 fillMemory
+546 ParameterList
+548 int
+549 VarName
+550 address
+554 int
+555 VarName
+556 length
+560 int
+561 VarName
+562 value
+566 SubroutineBody
+572 WhileStatement
+575 Expression
+577 VarName
+578 length
+580 Op
+581 >
+584 integerconstant
+583 0
+593 DoStatement
+595 Memory
+598 poke
+600 ExpressionList
+601 Expression
+603 VarName
+604 address
+609 Expression
+611 VarName
+612 value
+621 LetStatement
+623 VarName
+624 length
+628 Expression
+630 VarName
+631 length
+633 Op
+634 -
+637 integerconstant
+636 1
+643 LetStatement
+645 VarName
+646 address
+650 Expression
+652 VarName
+653 address
+655 Op
+656 +
+659 integerconstant
+658 1
+668 ReturnStatement
 
 1 4 8
-8 10 12 14 19
-19 27 65
-27 29 32 34
-34 35
-35 38 40 44
-38 37
-40 41
-44 47 49 53
-47 46
-49 50
-53 52
+8 10 12 14 19 137
+19 22 37 76 109 129
+22 25 26
+26 27
+37 39 42 44
+44 45 53 61
+45 48
+48 47
+53 56
+56 55
+61 63 67
+63 64
+67 66
+76 78 83
+78 79
+83 85
+85 87 90 92
+92 93
+93 96
+96 95
+109 111 114 116
+116 117
+117 119
+119 120
+137 139 141 143 145 153 454
+145 147 148
+148 149
+153 156 170 183 199 446
+156 159 160 164
+160 161
+164 165
+170 173 174
+174 175
+183 185 190
+185 186
+190 192
+192 193
+199 202 212 234 265
+202 204
+204 205
+212 214 219
+214 215
+219 221 224 228
+221 222
+224 225
+228 227
+234 236 241
+236 237
+241 243
+243 245 248 250
+250 251
+251 253
+253 254
+265 268 293 419
+268 270 274
+270 271
+274 276 279 283
+276 277
+279 280
+283 282
+293 296 335 372
+296 298 302
+298 299
+302 305 319 323
+305 307 310 313
+307 308
+310 311
+313 314
+319 320
+323 322
+335 337 340 342
+342 343 357
+343 346 348 351
+346 345
+348 349
+351 352
+357 360
+360 359
+372 379
+379 381 384 386
+386 387 401
+387 390 392 395
+390 389
+392 393
+395 396
+401 404
+404 403
+419 424
+424 426 431
+426 427
+431 433
+433 434
+454 456 459 461 463 471 538
+463 465 466
+466 467
+471 477
+477 480 496 511
+480 482 485 489
+482 483
+485 486
+489 488
+496 499
+499 502
+502 501
+511 516
+516 519
+519 521 524 528
+521 522
+524 525
+528 527
+538 540 542 544 546 566
+546 548 549 554 555 560 561
+549 550
+555 556
+561 562
+566 572 668
+572 575 593 621 643
+575 577 580 584
+577 578
+580 581
+584 583
+593 595 598 600
+600 601 609
+601 603
+603 604
+609 611
+611 612
+621 623 628
+623 624
+628 630 633 637
+630 631
+633 634
+637 636
+643 645 650
+645 646
+650 652 655 659
+652 653
+655 656
+659 658

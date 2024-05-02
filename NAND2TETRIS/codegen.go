@@ -19,7 +19,7 @@ var L map[string]SymbolData = map[string]SymbolData{}
 var curClass string = ""
 
 var numGlob int = 0
-// var numStatic int = 0
+var numStatic int = 0
 var curSubDecType string = ""
 
 
@@ -50,7 +50,8 @@ func handleBody(ast *Node) (int,string) {
 	locals := 0
 	res:=""
 	count := 0
-	countif := 0
+	// counterif = 0 // was :=
+	numCalls := 0
 	for _, v := range ast.children {
 		if v.data == "VarDec"{
 			handleVarDec(v, &locals)
@@ -62,10 +63,11 @@ func handleBody(ast *Node) (int,string) {
 			case "DoStatement":
 				res+=handleDo(v)
 			case "IfStatement":
-				res+=handleIf(v,countif)
-				countif++
+				
+				res+=handleIf(v,&numCalls)
+				numCalls++
 			case "WhileStatement":
-				res+=handleWhile(v,count)
+				res+=handleWhile(v,count,&numCalls)
 				count++
 				
 			case "ReturnStatement":
@@ -143,9 +145,8 @@ func handleDo(ast *Node) string{
 	return handleSubCall(ast) + "pop temp 0\n"
 }
 
-func handleWhile(ast *Node, counterw int) string{
-	numCalls:=0
-	numIfs := 0
+func handleWhile(ast *Node, counterw int, numCalls *int) string{
+	numWhile := 0
 	res := ""
 	res=fmt.Sprintf("label WHILE_EXP%d\n",counterw)
 	res+= handleExpression(ast.children[0])+"not\n"
@@ -159,11 +160,12 @@ func handleWhile(ast *Node, counterw int) string{
 		case "DoStatement":
 			res+=handleDo(v)
 		case "IfStatement":
-			res+=handleIf(v,numIfs)
-			numIfs++
+			
+			res+=handleIf(v,numCalls)
+			*numCalls++
 		case "WhileStatement":
-			numCalls++
-			res+=handleWhile(v,counterw+numCalls)
+			numWhile++
+			res+=handleWhile(v,counterw+numWhile,numCalls)
 		case "ReturnStatement":
 			res+= handleReturn(v)
 
@@ -189,15 +191,15 @@ func handleReturn(ast *Node) string {
 
 }
 
-func handleIf(ast *Node, counterif int) string{
+func handleIf(ast *Node, numCalls *int) string{
 	hasElse,ind:=false,0
-	numCalls:=0
+	
 	numWhiles:=0
 	hasReturn:=false
 	res := handleExpression(ast.children[0])
-	res += fmt.Sprintf("if-goto IF_TRUE%d\n",counterif)
-	res += fmt.Sprintf("goto IF_FALSE%d\n",counterif)
-	res += fmt.Sprintf("label IF_TRUE%d\n",counterif)
+	res += fmt.Sprintf("if-goto IF_TRUE%d\n",*numCalls)
+	res += fmt.Sprintf("goto IF_FALSE%d\n",*numCalls)
+	res += fmt.Sprintf("label IF_TRUE%d\n",*numCalls)
 	for i,v := range ast.children {
 		switch v.data {
 		case "LetStatement":
@@ -205,10 +207,11 @@ func handleIf(ast *Node, counterif int) string{
 		case "DoStatement":
 			res+=handleDo(v)
 		case "IfStatement":
-			numCalls++
-			res+=handleIf(v,counterif+numCalls)
+			*numCalls++
+			res+=handleIf(v,numCalls)
+			*numCalls--
 		case "WhileStatement":
-			res+=handleWhile(v,numWhiles)
+			res+=handleWhile(v,numWhiles,numCalls)
 			numWhiles++
 		case "ReturnStatement":
 			res+= handleReturn(v)
@@ -223,22 +226,28 @@ func handleIf(ast *Node, counterif int) string{
 	}
 	if hasElse{
 		if hasReturn{
-			res += fmt.Sprintf("\ngoto IF_END%d\n",counterif)
+			res += fmt.Sprintf("\ngoto IF_END%d\n",*numCalls)
 		}else{
-			res += fmt.Sprintf("goto IF_END%d\n",counterif)
+			res += fmt.Sprintf("goto IF_END%d\n",*numCalls)
 		}
-		res += fmt.Sprintf("label IF_FALSE%d\n",counterif)
-		res+= handleElse(ast.children[ind],counterif)
+		res += fmt.Sprintf("label IF_FALSE%d\n",*numCalls)
+		
+		res+= handleElse(ast.children[ind],numCalls)
 		
 	} else{
-		res += fmt.Sprintf("label IF_FALSE%d\n",counterif)
+		res += fmt.Sprintf("label IF_FALSE%d\n",*numCalls)
 	}
+	
 	return res
 }
 
 
-func handleElse(ast *Node, counterif int)string{
+func handleElse(ast *Node, numCalls *int)string{
 	res:=""
+	// hasElse,ind:=false,0
+
+	numWhiles:=0
+	
 	wasReturn:=false
 	for _,v := range ast.children {
 		switch v.data {
@@ -247,9 +256,12 @@ func handleElse(ast *Node, counterif int)string{
 		case "DoStatement":
 			res+=handleDo(v)
 		case "IfStatement":
-			res+=handleIf(v,0)
+			*numCalls++
+			res+=handleIf(v,numCalls)
+			*numCalls--
 		case "WhileStatement":
-			res+=handleWhile(v,0)
+			res+=handleWhile(v,numWhiles,numCalls)
+			numWhiles++
 		case "ReturnStatement":
 			res+= handleReturn(v)
 			wasReturn = true
@@ -257,9 +269,9 @@ func handleElse(ast *Node, counterif int)string{
 
 	}
 	if wasReturn{
-		res+=fmt.Sprintf("\nlabel IF_END%d",counterif)
+		res+=fmt.Sprintf("\nlabel IF_END%d",*numCalls)
 	} else{
-		res += fmt.Sprintf("label IF_END%d\n",counterif)
+		res += fmt.Sprintf("label IF_END%d\n",*numCalls)
 	}
 	
 	return res
@@ -437,16 +449,18 @@ func handleExprList(ast *Node)(string,int){
 }
 
 func handleClassVar(ast *Node){
-
-	symbol := SymbolData{offset: numGlob}
+	
+	symbol := SymbolData{}
 		
 		for i, v := range ast.children {
 			if i == 0 {
 				if v.data == "static" {
 					symbol.kind = "static"
+					symbol.offset = numStatic
 					
 				} else {
 					symbol.kind = "field"
+					symbol.offset = numGlob
 					
 				}
 				symbol.kind = v.data
@@ -459,7 +473,13 @@ func handleClassVar(ast *Node){
 					symbol.name = v.children[0].data
 					G[symbol.name] = symbol
 					symbol.offset++
-					numGlob++
+					if symbol.kind == "field"{
+						
+						numGlob++
+					} else{
+						numStatic++
+					}
+					
 				}
 			}
 		}
@@ -468,7 +488,7 @@ func handleClassVar(ast *Node){
 
 func handleSubrDec(ast *Node)string{
 	
-	// clear(L) // reset local symbol table NOTE:go1.22 clear()
+	clear(L) // reset local symbol table NOTE:go1.22 clear()
 	numLocals := 0
 	res,r,s,p:="","","",""
 	switch ast.children[0].data{
