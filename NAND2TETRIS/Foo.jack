@@ -1,0 +1,10 @@
+class Foo{
+    static int x;
+    function void bar(int n){
+        var int y;
+        let y = 2;
+        let x = -y + n;
+        do Output.printInt(x);
+        return;
+    }
+}

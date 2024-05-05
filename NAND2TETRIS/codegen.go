@@ -66,9 +66,11 @@ func handleBody(ast *Node) (int,string) {
 				
 				res+=handleIf(v,&numCalls)
 				numCalls++
+				
 			case "WhileStatement":
 				res+=handleWhile(v,count,&numCalls)
 				count++
+				// numCalls++
 				
 			case "ReturnStatement":
 				res+= handleReturn(v)
@@ -166,6 +168,7 @@ func handleWhile(ast *Node, counterw int, numCalls *int) string{
 		case "WhileStatement":
 			numWhile++
 			res+=handleWhile(v,counterw+numWhile,numCalls)
+			
 		case "ReturnStatement":
 			res+= handleReturn(v)
 
@@ -213,6 +216,7 @@ func handleIf(ast *Node, numCalls *int) string{
 		case "WhileStatement":
 			res+=handleWhile(v,numWhiles,numCalls)
 			numWhiles++
+			
 		case "ReturnStatement":
 			res+= handleReturn(v)
 			hasReturn = true
@@ -221,6 +225,7 @@ func handleIf(ast *Node, numCalls *int) string{
 			hasElse = true
 			ind=i
 			// res+="\n"
+			
 			
 		}
 	}
@@ -262,6 +267,7 @@ func handleElse(ast *Node, numCalls *int)string{
 		case "WhileStatement":
 			res+=handleWhile(v,numWhiles,numCalls)
 			numWhiles++
+			
 		case "ReturnStatement":
 			res+= handleReturn(v)
 			wasReturn = true
@@ -427,7 +433,7 @@ func handleSubCall(ast *Node) string {
 	} else{
 		glob,inGlob := G[ast.children[0].data]
 		if inGlob{
-			res+= fmt.Sprintf("%spush this %d\ncall %s.%s %d\n",temp,glob.offset,glob.symbolType,ast.children[1].data,exprCount+1)
+			res+= fmt.Sprintf("push this %d\n%scall %s.%s %d\n",glob.offset,temp,glob.symbolType,ast.children[1].data,exprCount+1)
 		}else{
 			res+= fmt.Sprintf("%scall %s.%s %d\n",temp,ast.children[0].data,ast.children[1].data,exprCount)
 		}
@@ -546,6 +552,11 @@ func handleSubrDec(ast *Node)string{
 
 func codeGen(ast *Node) string {
 	code := ""
+	clear(G)
+	numGlob = 0
+	numStatic = 0
+	curSubDecType = ""
+	
 	switch ast.data {
 
 	case "Class":

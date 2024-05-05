@@ -70,8 +70,12 @@ func main(){
 
 			for _,f := range jackFiles{
 				ast := AST(grammar,f)
-				
+				// clear(G) // reset Global symbol table
+				// clear(L) // reset Local symbol table
 				vmCode = codeGen(ast)
+				// clear(G)
+				// fmt.Println("\nILIKEYOURCUT==========\n",G)
+				
 				writeToFile(fmt.Sprintf("%s.vm",strings.Split(f,".")[0]),vmCode)
 			}	
 			

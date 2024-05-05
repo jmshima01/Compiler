@@ -1,9 +1,9 @@
 .PHONY: all clean build submit
 
-BIN_NAME=JackCompiler
+BIN_NAME=Zobos
 
 build:
-	@go build -o $(BIN_NAME) main.go lex.go ds.go codegen.go lltable.go
+	@go build -o $(BIN_NAME) main.go ds.go grammar.go
 	@chmod +x $(BIN_NAME)
 
 clean:
