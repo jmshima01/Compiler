@@ -4,6 +4,7 @@ import(
 	"fmt"
 	"os"
 	"strings"
+	"sort"
 )
 
 // James' DATA STRUCTURES
@@ -13,6 +14,19 @@ import(
 // ============ Typedefs ==============
 
 type ItemSet map[string]Item;
+
+func (s ItemSet)toString()string{
+	vals:= make(sort.StringSlice,0)
+	for _,v := range s{
+		vals = append(vals, v.toString())
+	}
+	vals.Sort()
+	res :=""
+	for _,v:= range vals{
+		res+=v
+	}
+	return res 
+}
 
 type Item struct{
 	productionMarker int;
@@ -25,14 +39,13 @@ func makeItem(rule ProductionRule, marker int)Item{
 }
 
 
-type AdjList []Pair;
 
 type Pair struct{
-	itemsetID int;
+	id int;
 	transitionSymbol string;
 }
 
-type CFSM map[int]AdjList
+type CFSM map[int][]Pair
 
 func (i Item)toString()string{
 	

@@ -1,6 +1,6 @@
 .PHONY: all clean build submit
 
-BIN_NAME=Zobos
+BIN_NAME=ZOBOS
 
 build:
 	@go build -o $(BIN_NAME) main.go ds.go grammar.go
