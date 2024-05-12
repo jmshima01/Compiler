@@ -84,16 +84,12 @@ func chooseNewLambda(){
 
 
 func main() {
-	args := os.Args
-	if len(args)!=2{
-		println("Usage ./WRECK <scan.lut>")
-		os.Exit(1)
-	}
+	// args := os.Args
 	
 	grammar := readLines("llre.cfg")
 	LLTable,startState,ruleLookup,rowLookup,columnLookup := makeLLTable(grammar)
 
-	scan := readLines(args[1])	
+	scan := readLines("scan.lut")	
 	toTokenize := [][]string{}
 	
 	for i, line := range scan {
