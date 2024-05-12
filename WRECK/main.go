@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
-	// "os"
+	"os"
 )
 
 func lex(s string) []token {
@@ -84,12 +84,12 @@ func chooseNewLambda(){
 
 
 func main() {
-	// args := os.Args
+	args := os.Args
 	
 	grammar := readLines("llre.cfg")
 	LLTable,startState,ruleLookup,rowLookup,columnLookup := makeLLTable(grammar)
 
-	scan := readLines("scan.lut")	
+	scan := readLines(args[1])	
 	toTokenize := [][]string{}
 	
 	for i, line := range scan {
@@ -129,7 +129,7 @@ func main() {
 		}
 	}
 
-	writeToFile("scan.u",scanu)
+	writeToFile(args[2],scanu)
 	for i := range tokenize{
 		tokenStream := lex(tokenize[i])
 		ast := makeAST(tokenStream,LLTable,startState,ruleLookup,rowLookup,columnLookup)
