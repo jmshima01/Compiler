@@ -32,7 +32,7 @@ type token struct{
 
 
 type set map[string]bool;
-type queue []string;
+type queue []token;
 type stack []string;
 
 // Type Methods: 
@@ -78,21 +78,21 @@ func (s *stack) pop() (string) {
 func (q *queue) isEmpty() bool {
 	return len(*q) == 0
 }
-func (q *queue) push(v string) {
+func (q *queue) push(v token) {
 	*q = append(*q, v) 
 }
 
-func (q *queue) peek()string{
+func (q *queue) peek()token{
 	if q.isEmpty(){
 		fmt.Println("EMPTY Q")
-		return ""
+		return token{}
 	}
 	return (*q)[0] 
 }
 
-func (q *queue) popfront() (string) {
+func (q *queue) popfront()token {
 	if q.isEmpty() {
-		return ""
+		return token{}
 	} else {
 		element := (*q)[0]
 		*q = (*q)[1:] 

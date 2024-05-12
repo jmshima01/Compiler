@@ -3,7 +3,7 @@
 BIN_NAME=WRECK
 
 build:
-	@go build -o $(BIN_NAME) main.go ds.go lltable.go
+	@go build -o $(BIN_NAME) main.go ds.go lltable.go nfa.go
 	@chmod +x $(BIN_NAME)
 
 clean:

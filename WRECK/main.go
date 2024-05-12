@@ -17,7 +17,12 @@ func lex(s string) []token {
 		}
 		if string(v) == `\` {
 			if string(s[i+1]) == "s" {
-				t := token{value: "SP", tokenType: "char"}
+				t := token{value: "0x20", tokenType: "char"}
+				skip = true
+				tokens = append(tokens, t)
+				continue
+			} else if string(s[i+1]) == `\` {
+				t := token{value: "0x5C", tokenType: "char"}
 				skip = true
 				tokens = append(tokens, t)
 				continue
@@ -81,14 +86,12 @@ func main() {
 		fmt.Println(vals)
 		toTokenize = append(toTokenize, vals[0])
 	}
-	tokenStream := []token{}
-	for _, v := range toTokenize {
-		tokenStream = lex(v)
-		break
-	}
-
+	tokenStream := lex("A-D.g+")
+	// for _, v := range toTokenize {
+	// 	tokenStream = lex(v)
+	// 	break
+	// }
 	
-
 	// ::Table gen::
 	for i, v := range grammar {
 		grammar[i] = strings.TrimSpace(v)
@@ -123,7 +126,7 @@ func main() {
 		}
 		dervLambdaCache[k] = derivesToLambda(k, productionRules)
 	}
-	
+
 	firstCache := map[string]set{}
 	for k, _ := range symbols {
 		if isNonTerminal(k) {
@@ -137,7 +140,7 @@ func main() {
 	for k, _ := range nonTerminals {
 		// fmt.Println("doing follow of...",k)
 		fmt.Println("follow->", k, follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set)).getValues())
-		
+
 		followCache[k] = follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set))
 
 	}
@@ -204,11 +207,17 @@ func main() {
 	S := make(stack, 0)
 	Q := make(queue, 0)
 	S = append(S, startState)
-	for _, v := range tokenStream {
-		Q.push(v.tokenType)
+
+	// tokenStream = lex(`a-d.q(A|B|)*de+`)
+
+	for _, tok := range tokenStream {
+
+		Q.push(tok)
+
 	}
 
-	Q.push("$")
+	Q.push(token{value: "$", tokenType: "$"})
+
 	fmt.Println(Q)
 	root := makeNode("ROOT", nil, 0)
 	current := root
@@ -223,15 +232,166 @@ func main() {
 			break
 		}
 
-		fmt.Println("S:",S)
-		fmt.Println("Q:",Q)
+		fmt.Println("S:", S)
+		fmt.Println("Q:", Q)
 		s := S.peek()
 		q := Q.peek()
 
 		if s == "<*>" {
 
 			S.pop()
-			current = current.parent 
+			switch current.data {
+			// case "NUCLEUS":
+			case "CHARRNG":
+				if current.children[0].data == "lambda" {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else {
+					current.data = current.children[1].data
+					current.id = current.children[1].id
+					current.children = nil
+					current = current.parent
+				}
+			case "ATOMMOD":
+				if current.children[0].data == "lambda" {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+				}
+			case "SEQLIST":
+				if current.children[0].data == "lambda" {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else if len(current.children) == 1 {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = current.children[0].children
+					current = current.parent
+					
+				} else {
+					current = current.parent
+					newChildren := make([]*Node, 0)
+					for _, v := range current.children {
+						if v.data != "SEQLIST" {
+							newChildren = append(newChildren, v)
+						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
+							newChildren = append(newChildren, v.children...)
+						}
+					}
+					current.children = newChildren
+				}
+			case "ALTLIST":
+				if current.children[0].data == "lambda" {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else {
+					current = current.parent
+					newChildren := make([]*Node, 0)
+					for _, v := range current.children {
+						if v.data != "ALTLIST" {
+							newChildren = append(newChildren, v)
+						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
+							newChildren = append(newChildren, v.children...)
+						}
+					}
+					current.children = newChildren
+				}
+			case "NUCLEUS":
+				if len(current.children) == 1 {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = current.children[0].children
+					current = current.parent
+
+				} else if len(current.children) == 3 {
+					current.data = current.children[1].data
+					current.id = current.children[1].id
+					current.children = current.children[1].children
+					current = current.parent
+
+				}else if len(current.children) == 2{
+					current.data = "range"
+					current = current.parent
+				
+				}else {
+					current = current.parent
+				}
+			case "ATOM":
+				if len(current.children) == 2 {
+					current.data = current.children[1].data
+					current.id = current.children[1].id
+					current.children = current.children[:len(current.children)-1]
+					current = current.parent
+
+				} else if len(current.children) == 1 {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = current.children[0].children
+					current = current.parent
+
+				} else {
+					current = current.parent
+				}
+			case "ALT":
+				if len(current.children) == 1{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = current.children[0].children
+					current = current.parent
+				} else{
+					newChildren := make([]*Node, 0)
+					for _, v := range current.children {
+						if v.data != "pipe" {
+							newChildren = append(newChildren, v)
+						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
+							newChildren = append(newChildren, v.children...)
+						}
+					}
+					current.children = newChildren
+					for _,v := range current.children{
+						if v.data == "SEQ" && len(v.children)==1{
+							v.data = v.children[0].data
+							v.id = v.children[0].id
+							v.children = v.children[0].children
+						}
+					}
+					current = current.parent
+				}
+			case "RE":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = current.children[0].children
+				current = current.parent
+			
+			default:
+				current = current.parent
+			}
+			// current = current.parent //for no SDT
 			continue
 		}
 
@@ -244,9 +404,13 @@ func main() {
 		}
 
 		if isTerminal(s) || s == "$" {
-			if s == q {
 
-				term := makeNode(q, current, uniqueID)
+			if s == q.tokenType {
+				term := makeNode(q.tokenType, current, uniqueID)
+				if q.tokenType == "char" {
+					term.data = q.value
+				}
+
 				addChild(current, term)
 				uniqueID++
 
@@ -262,9 +426,9 @@ func main() {
 			continue
 		}
 
-		nextRule, found := ruleLookup[LLTable[rowLookup[s]][columnLookup[q]]]
+		nextRule, found := ruleLookup[LLTable[rowLookup[s]][columnLookup[q.tokenType]]]
 		if !found {
-			
+
 			fmt.Println("Parsing Error: (No such token in LL table or associated rule)")
 			fmt.Println("-----")
 			fmt.Println(s, q)
@@ -276,6 +440,7 @@ func main() {
 		// fmt.Println("fetching rule...", nextRule)
 		top := S.pop()
 		newNode := makeNode(top, current, uniqueID)
+
 		addChild(current, newNode)
 		current.debug()
 
@@ -301,4 +466,7 @@ func main() {
 
 	toGraphiz := nodeInfo + "\n" + edgeInfo
 	writeToFile("parsetree.txt", toGraphiz)
+	
+	makeNFA(ast)
+
 }
