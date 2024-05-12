@@ -154,9 +154,9 @@ func nodeRange(current *Node, src int, dest int){
 	start := rune(convertHx(current.children[0].data)[0])
 	end := rune(convertHx(current.children[1].data)[0])
 	r := charRange(start,end)
-	fmt.Println(r)
+	// fmt.Println(r)
 	for _,v := range r{
-		fmt.Println(dest)
+		// fmt.Println(dest)
 		addEdge(convertAlpha(v),src,dest)
 	}
 }

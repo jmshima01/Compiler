@@ -333,10 +333,10 @@ func makeLLTable(grammar []string) ([][]int,string,map[int]ProductionRule,map[st
 
 	}
 
-	fmt.Println(columnValues)
-	for _, v := range LLTable {
-		fmt.Println(v)
-	}
+	// fmt.Println(columnValues)
+	// for _, v := range LLTable {
+	// 	fmt.Println(v)
+	// }
 	return LLTable,startState,ruleLookup,rowLookup,columnLookup
 }
 
