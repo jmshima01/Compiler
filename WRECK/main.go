@@ -118,18 +118,18 @@ func main() {
 
 	tokenize := []string{} 
 	tokenNames := []string{}
-	for i,v := range toTokenize{
+	for _,v := range toTokenize{
 		tokenize = append(tokenize, v[0])
 		tokenNames = append(tokenNames, v[1])
 		x:=v
 		x[0] = x[1]+".tt"
 		scanu+=strings.Join(x," ")
-		if i != len(toTokenize)-1{
-			scanu+= "\n"
-		}
+		scanu+= "\n"
+		
 	}
 
 	writeToFile(args[2],scanu)
+	
 	for i := range tokenize{
 		tokenStream := lex(tokenize[i])
 		ast := makeAST(tokenStream,LLTable,startState,ruleLookup,rowLookup,columnLookup)

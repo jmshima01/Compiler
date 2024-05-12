@@ -1,6 +1,5 @@
-x0ax20x5C abcde
-(\s|\\|b|c|d)*a     lasta
-(\s|a|c|d)*b        lastb
-(\s|\\|a|b|d)*c     lastc
-d+                  dee         D
-.                   IGNORE
+abcdefghijklmno
+abc _abc ABC
+ghi _ghi GHI
+jkl _jkl
+mno _mno EMENOH
