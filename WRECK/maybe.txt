@@ -1,0 +1,44 @@
+First Set of NUCLEUS: ({'open', 'dot', 'char'}, {'NUCLEUS'})
+First Set of ALT: ({'pipe', 'open', 'dot', 'char'}, {'ALT'})
+First Set of ATOM: ({'open', 'dot', 'char'}, {'ATOM'})
+First Set of ATOMMOD: ({'kleene', 'plus'}, {'ATOMMOD'})
+First Set of SEQLIST: ({'open', 'dot', 'char'}, {'SEQLIST'})
+First Set of CHARRNG: ({'dash'}, {'CHARRNG'})
+First Set of RE: ({'pipe', '$', 'char', 'open', 'dot'}, {'RE'})
+First Set of SEQ: ({'open', 'dot', 'char'}, {'SEQ'})
+First Set of ALTLIST: ({'pipe'}, {'ALTLIST'})
+
+first-> SEQLIST [open char dot]
+first-> NUCLEUS [char dot open]
+first-> ATOMMOD [kleene plus]
+first-> ALTLIST [pipe]
+first-> ALT [open char dot pipe]
+first-> ATOM [open char dot]
+first-> CHARRNG [dash]
+first-> RE [open char dot pipe $]
+first-> SEQ [open char dot]
+
+
+
+
+Follow Set of NUCLEUS: ({'close', 'kleene', 'plus', 'char', 'dot', 'pipe', '$', 'open'}, {'NUCLEUS'})
+Follow Set of ALT: ({'$', 'close'}, {'ALT'})
+Follow Set of ATOM: ({'close', 'char', 'dot', 'pipe', '$', 'open'}, {'ATOM'})
+Follow Set of ATOMMOD: ({'pipe', '$', 'close', 'open', 'char', 'dot'}, {'ATOMMOD'})
+Follow Set of SEQLIST: ({'pipe', '$', 'close'}, {'SEQLIST'})
+Follow Set of CHARRNG: ({'close', 'kleene', 'plus', 'char', 'dot', 'pipe', '$', 'open'}, {'CHARRNG'})
+Follow Set of RE: (set(), {'RE'})
+Follow Set of SEQ: ({'pipe', '$', 'close'}, {'SEQ'})
+Follow Set of ALTLIST: ({'$', 'close'}, {'ALTLIST'})
+
+
+follow-> RE []
+follow-> ALT [$ close]
+follow-> ATOM [pipe open char dot $ close]
+follow-> SEQLIST [$ close pipe]
+follow-> CHARRNG [char dot close $ pipe open plus kleene]
+follow-> SEQ [pipe $ close]
+follow-> ALTLIST [$ close]
+follow-> NUCLEUS [open pipe close $ char dot plus kleene]
+follow-> ATOMMOD [$ char dot open pipe close]
+

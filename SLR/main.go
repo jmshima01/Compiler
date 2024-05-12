@@ -10,13 +10,12 @@ import (
 
 var count int = 0
 
-
 func closure(itemSet ItemSet, productionRules []ProductionRule) {
 	for {
 		l := len(itemSet)
 		for _, item := range itemSet {
 			for _, p := range productionRules {
-				if item.productionMarker == len(item.rhs) || item.rhs[0]=="lambda"{
+				if item.productionMarker == len(item.rhs) || item.rhs[0] == "lambda" {
 					continue
 				} // if * at end i.e S -> A B *
 				if item.rhs[item.productionMarker] == p.lhs {
@@ -34,7 +33,7 @@ func closure(itemSet ItemSet, productionRules []ProductionRule) {
 func goTo(itemSet ItemSet, productionRules []ProductionRule, symbol string) ItemSet {
 	res := make(ItemSet)
 	for _, item := range itemSet {
-		if item.productionMarker == len(item.rhs){
+		if item.productionMarker == len(item.rhs) {
 			continue
 		}
 
@@ -52,38 +51,37 @@ func goTo(itemSet ItemSet, productionRules []ProductionRule, symbol string) Item
 	return res
 }
 
-
-func makeCFSM(itemSet ItemSet, lookupCFSMID map[string]int, G CFSM, symbols set, id int, productionRules []ProductionRule, seen map[int]bool, itemsetLookup map[int]ItemSet){
+func makeCFSM(itemSet ItemSet, lookupCFSMID map[string]int, G CFSM, symbols set, id int, productionRules []ProductionRule, seen map[int]bool, itemsetLookup map[int]ItemSet) {
 	startID := id
-	numOfDone:=0
-	numItems:=0
+	numOfDone := 0
+	numItems := 0
 
 	// fmt.Println("NOW in State",id, itemSet.toString())
-	for _,v := range itemSet{
-		if len(v.rhs)==v.productionMarker{
+	for _, v := range itemSet {
+		if len(v.rhs) == v.productionMarker {
 			numOfDone++
 			// fmt.Println("heyy",v.toString(),v.productionMarker)
 		}
 		numItems++
 	}
-	
-	_,seenBefore:= seen[id]
 
-	if numOfDone==numItems{ // no new item sets possible
-		G[startID]=nil
+	_, seenBefore := seen[id]
+
+	if numOfDone == numItems { // no new item sets possible
+		G[startID] = nil
 		return
 	}
-	if seenBefore{
+	if seenBefore {
 		return
 	}
 
-	G[startID] = make([]Pair,0)
-	
-	for symbol := range symbols{
+	G[startID] = make([]Pair, 0)
+
+	for symbol := range symbols {
 		newSet := goTo(itemSet, productionRules, symbol)
 		// fmt.Println("=={",newSet.toString(),symbol,"}==")
 		if newSet != nil {
-			
+
 			c, seenItBefore := lookupCFSMID[newSet.toString()]
 			if !seenItBefore {
 				count++
@@ -91,26 +89,23 @@ func makeCFSM(itemSet ItemSet, lookupCFSMID map[string]int, G CFSM, symbols set,
 				itemsetLookup[count] = newSet
 				data := Pair{id: count, transitionSymbol: symbol}
 				G[startID] = append(G[startID], data)
-				
 
-			} else{
+			} else {
 				data := Pair{id: c, transitionSymbol: symbol}
 				itemsetLookup[c] = newSet
 				G[startID] = append(G[startID], data)
-				
-				
+
 			}
-			
+
 		}
 	}
 
 	seen[startID] = true
-	for _,v := range G[startID]{	
-		makeCFSM(itemsetLookup[v.id],lookupCFSMID,G,symbols,v.id,productionRules,seen,itemsetLookup)
+	for _, v := range G[startID] {
+		makeCFSM(itemsetLookup[v.id], lookupCFSMID, G, symbols, v.id, productionRules, seen, itemsetLookup)
 		seen[v.id] = true
-	} 
+	}
 }
-
 
 func main() {
 	args := os.Args
@@ -141,10 +136,10 @@ func main() {
 		}
 	}
 
-	productionRules := makeProductionRules(grammar)
-
 	symbols := setUnion(terminals, nonTerminals)
 	symbols.add("$")
+
+	productionRules := makeProductionRules(grammar)
 
 	startState := getStartState(productionRules)
 
@@ -162,7 +157,6 @@ func main() {
 		followCache[k] = follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set))
 	}
 
-
 	itemsetZero := make(ItemSet)
 
 	for _, p := range productionRules {
@@ -176,7 +170,7 @@ func main() {
 	for _, v := range itemsetZero {
 		fmt.Println(v)
 	}
-	
+
 	fmt.Println("=============")
 	lookupCFSMID := make(map[string]int)
 	lookupCFSMID[itemsetZero.toString()] = 0
@@ -186,83 +180,104 @@ func main() {
 
 	itemsetLookup := make(map[int]ItemSet)
 	itemsetLookup[0] = itemsetZero
-	
-	makeCFSM(itemsetZero,lookupCFSMID,cfsm,symbols,0,productionRules,seen,itemsetLookup)
-	
+
+	makeCFSM(itemsetZero, lookupCFSMID, cfsm, symbols, 0, productionRules, seen, itemsetLookup)
 
 	fmt.Println(cfsm)
 	fmt.Println("++++++++++++++++")
-	for k,v := range itemsetLookup{
-		fmt.Println(k,"->",v.toString())
+	for k, v := range itemsetLookup {
+		fmt.Println(k, "->", v.toString())
 	}
 
-	SLRTable := make([][]string,len(cfsm))
+	SLRTable := make([][]string, len(cfsm))
 
-	for i := range cfsm{
+	for i := range cfsm {
 		SLRTable[i] = make([]string, len(symbols)-1)
-		for j := range SLRTable[i]{
+		for j := range SLRTable[i] {
 			SLRTable[i][j] = "__"
 		}
 	}
-	
-	columnHeader := make(sort.StringSlice, 0)
-	for v := range symbols{
-		if v!=startState{
-			columnHeader = append(columnHeader, v)
-		}
-		
+
+	columnHeader := make([]string, 0)
+	for v := range terminals {
+		columnHeader = append(columnHeader, v)
 	}
-	columnHeader.Sort()
+	sort.Strings(columnHeader)
+	columnHeader = append(columnHeader, "$")
+	n := make([]string,0)
+	for v := range nonTerminals{
+		if v != startState {
+			n = append(n, v)
+		}
+	}
+	sort.Strings(n)
+	columnHeader = append(columnHeader, n...)
+	
 	SLRRowLookup := make(map[string]int)
-	for i,v:= range columnHeader{
-		SLRRowLookup[v]=i
+	for i, v := range columnHeader {
+		SLRRowLookup[v] = i
 	}
 	fmt.Println(columnHeader)
 	fmt.Println(SLRRowLookup)
 
+	// for k, v := range followCache {
+	// 	fmt.Println(k, "->", v)
+	// }
 
-
-	
-
-	for k,v := range followCache{
-		fmt.Println(k,"->",v)
+	productionRuleLookup := make(map[string]int)
+	for i,p := range productionRules{
+		productionRuleLookup[p.toString()] = i+1
 	}
-	for id,itemLis := range cfsm{
-		for _,x := range itemLis{
-			SLRTable[id][SLRRowLookup[x.transitionSymbol]] = fmt.Sprintf("sh-%d",x.id)
 
-			for _,y := range itemsetLookup[x.id]{
-				if len(y.rhs) == y.productionMarker || y.rhs[0] == "lambda" {
-					
-					
-					fmt.Println(y.lhs,"->",y.rhs,y.productionMarker)
-					
-					f := followCache[y.lhs]
-					for z := range f{
-						// if SLRTable[id][SLRRowLookup[z]] != "__"{
-						// 	println("CONFLICT",SLRTable[id][SLRRowLookup[x.transitionSymbol]])
-						// 	os.Exit(2)
-						// }
-						SLRTable[id][SLRRowLookup[z]] = fmt.Sprintf("rd-p")
+	for id, itemLis := range cfsm {
+		if len(itemLis) == 0{
+			for _,v := range itemsetLookup[id]{
+				if v.lhs == startState{
+					SLRTable[id][0] = fmt.Sprintf("RD-%d",productionRuleLookup[ProductionRule{rhs: v.rhs,lhs: v.lhs}.toString()])
+				} else{
+					for f := range followCache[v.lhs]{
+						SLRTable[id][SLRRowLookup[f]] = fmt.Sprintf("rd-%d",productionRuleLookup[ProductionRule{rhs: v.rhs,lhs: v.lhs}.toString()])
 					}
-				}
-				if y.lhs == startState && len(y.rhs) == y.productionMarker{
-					for i := range symbols{
-						SLRTable[id][SLRRowLookup[i]] = fmt.Sprintf("RD-ROW")
-					}
-					
 				}
 			}
-			// fmt.Println(id,itemsetLookup[x.id].toString(),x.transitionSymbol)
 		}
+		for _, x := range itemLis {
+			SLRTable[id][SLRRowLookup[x.transitionSymbol]] = fmt.Sprintf("sh-%d", x.id)
+
+			for _, y := range itemsetLookup[x.id]{
+				if y.rhs[0] == "lambda"{
+					for f := range followCache[y.lhs]{
+						SLRTable[id][SLRRowLookup[f]] = fmt.Sprintf("rd-l%d",productionRuleLookup[ProductionRule{rhs: y.rhs,lhs: y.lhs}.toString()])
+					}
+				}
+			}
+				// if len(y.rhs) == y.productionMarker || y.rhs[0] == "lambda" {
+
+				// 	fmt.Println(y.lhs,"->",y.rhs,y.productionMarker)
+
+				// 	f := followCache[y.lhs]
+				// 	for z := range f{
+				// 		// if SLRTable[id][SLRRowLookup[z]] != "__"{
+				// 		// 	println("CONFLICT",SLRTable[id][SLRRowLookup[x.transitionSymbol]])
+				// 		// 	os.Exit(2)
+				// 		// }
+				// 		SLRTable[id][SLRRowLookup[z]] = fmt.Sprintf("rd-p")
+				// 	}
+				// }
+				
+			// }
+		}
+		// fmt.Println(id,itemsetLookup[x.id].toString(),x.transitionSymbol)
 	}
+
 	fmt.Println(columnHeader)
-	for _,v := range SLRTable{
+	for _, v := range SLRTable {
 		fmt.Println(v)
 	}
 
-	
-
-
+	// let us parse...
+	// tokenStream := []string{"y","x","x","h","x","p","y","$"}
+	// S := make(stack,0)
+	// Q := make(queue,0)
 
 }
