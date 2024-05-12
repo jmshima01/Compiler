@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
-	"os"
+	// "os"
 )
 
 func lex(s string) []token {
