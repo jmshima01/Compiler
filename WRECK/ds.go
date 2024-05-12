@@ -4,6 +4,9 @@ import(
 	"fmt"
 	"os"
 	"strings"
+	"strconv"
+	"encoding/hex"
+	// "regexp"
 )
 
 // James' DATA STRUCTURES
@@ -84,7 +87,7 @@ func (q *queue) push(v token) {
 
 func (q *queue) peek()token{
 	if q.isEmpty(){
-		fmt.Println("EMPTY Q")
+		// fmt.Println("EMPTY Q")
 		return token{}
 	}
 	return (*q)[0] 
@@ -217,7 +220,85 @@ func genEdgeInfo(root *Node, dfs *string) *string{
 }
 
 
+// ALPHABET ENCODING <-->
 
+
+// Converts weird hex format string to byte array
+func parseAlphabetEncoding(s string)[]byte{
+	s = strings.Join(strings.Fields(s),"")
+	ascii_permited := make([]byte,0)
+	for j:=0; j<len(s); j++{
+		if string(s[j]) == "x"{
+			val,err := strconv.ParseInt(s[j+1:j+3],16,8)
+			// fmt.Printf("hex %x:\n",val)
+			if err != nil{
+				fmt.Println("error reading parse ascii",err)
+				os.Exit(1)
+			}
+			ascii_permited = append(ascii_permited, byte(int(val)))
+			j+=2
+		} else{
+			// fmt.Println("non:",string(first_line[j]))
+			ascii_permited = append(ascii_permited, byte(int(s[j])))
+		}
+	} 
+	return ascii_permited
+}
+
+
+func byteSliceToStringSlice(byteSlice []byte) []string {
+    stringSlice := make([]string, len(byteSlice))
+    for i, b := range byteSlice {
+        stringSlice[i] = string(b)
+    }
+    return stringSlice
+}
+
+func alphabetEncoded(hx []byte) string{
+	aEncoded := ""
+	for _,c := range hx{
+		x := strconv.FormatInt(int64(byte(c)), 16)
+		
+		if len(x) == 2{
+			aEncoded += fmt.Sprintf("x%s",x)
+		} else{
+			aEncoded += fmt.Sprintf("x0%s",x)
+		}
+
+		// if c == byte(10) || c == byte(32) || c==byte(92) && i!=len(hexAlphabet)-1{
+		// 	aEncoded+=" "
+		// }
+			
+	}
+	return aEncoded
+}
+
+func convertAlpha(s string)string{
+	x := strconv.FormatInt(int64(byte(s[0])), 16)
+	aEncoded:= ""	
+	if len(x) == 2{
+		aEncoded = fmt.Sprintf("x%s",x)
+	} else{
+		aEncoded = fmt.Sprintf("x0%s",x)
+	}
+	return aEncoded
+}
+
+
+func hexToASCII(hexString string) (string, error) {
+    bytes, err := hex.DecodeString(hexString)
+    if err != nil {
+        return "", err
+    }
+    return string(bytes), nil
+}
+
+
+func convertHx(s string)string{
+	x := s[1:] 
+	asciiString, _ := hexToASCII(x)
+	return asciiString
+}
 
 // ========== File I/O =================
 func readLines(path string) []string{

@@ -7,9 +7,11 @@ import (
 
 var T [][]int
 var L [][]int
-var alphabet string = "" 
+var alphabet []string = []string{} 
 var numStates int = -1
 var alphabetLookup map[string]int = map[string]int{}
+var hexAlphabet []byte = []byte{}
+var lambdaChar string = "Z"
 
 
 func addState()int{
@@ -40,13 +42,9 @@ func addLambda(src int, dest int){
 	L[src][dest] = 0 // *
 }
 
-
 func addEdge(c string, src int, dest int){
 	T[src][alphabetLookup[c]] = dest 
 }
-
-
-
 
 func nodeSeq(current *Node, src int, dest int){
 	t := src
@@ -109,23 +107,40 @@ func nodeAlt(current *Node, src int, dest int){
 
 }
 
-
-
 func nodePlus(current *Node, src int, dest int){
 	data := current.children[0].data
-	nxt := addState()
-	addEdge(data,src,nxt)
-	addEdge(data,nxt,nxt)
-	fmt.Println(dest,nxt)
-	addLambda(nxt,dest)
+	child := current.children[0]
+
+	t := addState()
+	switch data{
+	case "dot":
+		nodeDot(child,src,t)
+	case "range":
+		nodeRange(child,src,t)
+	case "SEQ":
+		nodeSeq(child,src,t)
+	case "ALT":
+		nodeAlt(child,src,t)
+	case "kleene":
+		nodeKleene(child,src,t)
+	case "plus":
+		nodePlus(child,src,t)
+	// case "lambda":
+	default:
+		nodeLeaf(child,src,t)
+	}
+	
+	
+	addLambda(t,src)
+	addLambda(t,dest)
 }
 
 
 func charRange(start, end rune) []string {
     
 	if start > end {
-        fmt.Println("Invalid range found: start character must be less than or equal to end character",string(start),string(end))
-        os.Exit(2)
+        fmt.Println("Semantic Error: start character must be less than or equal to end character",string(start),string(end))
+        os.Exit(3)
     }
     result := make([]string,0)
     for ch := start; ch <= end; ch++ {
@@ -135,13 +150,14 @@ func charRange(start, end rune) []string {
 }
 
 func nodeRange(current *Node, src int, dest int){
-	start := rune(current.children[0].data[0])
-	end := rune(current.children[1].data[0])
+	
+	start := rune(convertHx(current.children[0].data)[0])
+	end := rune(convertHx(current.children[1].data)[0])
 	r := charRange(start,end)
 	fmt.Println(r)
 	for _,v := range r{
 		fmt.Println(dest)
-		addEdge(v,src,dest)
+		addEdge(convertAlpha(v),src,dest)
 	}
 }
 
@@ -152,14 +168,34 @@ func nodeDot(current *Node, src int, dest int){
 }
 
 func nodeKleene(current *Node, src int, dest int){
-	fir := addState()
-	sec := addState()
-	addLambda(src,fir)
-	addLambda(fir,sec)
-	addLambda(sec,dest)
-	addLambda(sec,fir)
-	addEdge(current.children[0].data,fir,sec)
+	first := addState()
+	addLambda(src,first)
+	out := addState()
+	addLambda(out,dest)
+	data := current.children[0].data
+	child := current.children[0]
 
+	
+	switch data{
+	case "dot":
+		nodeDot(child,first,out)
+	case "range":
+		nodeRange(child,first,out)
+	case "SEQ":
+		nodeSeq(child,first,out)
+	case "ALT":
+		nodeAlt(child,first,out)
+	case "kleene":
+		nodeKleene(child,first,out)
+	case "plus":
+		nodePlus(child,first,out)
+	// case "lambda":
+	default:
+		nodeLeaf(child,first,out)
+	}
+	
+	addLambda(first,out)
+	addLambda(out,first)
 }
 
 
@@ -168,13 +204,15 @@ func nodeLeaf(current *Node, src int, dest int){
 	addEdge(current.data,src,dest)
 }
 
-func makeNFA(ast *Node){
-
+func makeNFA(ast *Node, filename string){
+	T = nil // clear globals
+	L = nil
 	// make NFA
-	
-
+	numStates = -1 // reset
+	alphaIndLookup := make(map[int]string)
 	for i,v := range alphabet{
-		alphabetLookup[string(v)] = i
+		alphabetLookup[v] = i
+		alphaIndLookup[i] = v
 	}
 
 	acceptStates := make(map[int]bool)
@@ -213,5 +251,43 @@ func makeNFA(ast *Node){
 		fmt.Println(v)
 	}
 
+	toNFA := ""
+
+	alphaHeader := alphabetEncoded(hexAlphabet)
+	a := []string{}
+	for i:=0; i<len(alphaHeader); i+=3{
+		a = append(a, alphaHeader[i:i+3])
+	}
+	alphaHeader = ""
+	for i,v:= range a{
+		alphaHeader+=v
+		if i !=len(a)-1{
+			alphaHeader+=" "
+		}
+	}
+
+	header := fmt.Sprintf("%d %s %s\n",numStates+1,lambdaChar,alphaHeader)
+	toNFA+=header
+
+	for i:=0; i<len(T); i++{
+		for j:=0; j<len(T[0]); j++{
+			if T[i][j]==-1{
+				continue
+			}
+			toNFA += fmt.Sprintf("- %d %d %s\n",i,T[i][j],alphaIndLookup[j])
+		}
+	}
+	for i:=0; i<len(L); i++{
+		for j:=0; j<len(L[0]); j++{
+			if L[i][j]==0{
+				toNFA += fmt.Sprintf("- %d %d %s\n",i,j,lambdaChar)
+			}
+		}
+	}
+	toNFA += "+ 1 1"
+	// fmt.Println(alphabetLookup)
+	fmt.Println(toNFA)
+
+	writeToFile(filename,toNFA)
 
 }

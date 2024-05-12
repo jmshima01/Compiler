@@ -203,45 +203,6 @@ func follow(N string, P []ProductionRule, dervLambda set, firsts map[string]set,
 
 }
 
-// func follow(N string, P []ProductionRule, dervLambda set, firsts map[string]set, followSet set, seen set) set {
-// 	_, ok := seen[N]
-// 	if ok {
-// 		return followSet
-// 	}
-// 	seen.add(N)
-// 	needFollows := make(set)
-// 	for _, p := range P {
-// 		foundN := false
-// 		needFollow := false
-// 		last := p
-// 		for i, v := range p.rhs {
-// 			if v == N {
-// 				foundN = true
-// 				if i == len(p.rhs)-1 {
-// 					needFollow = true
-// 				}
-// 				continue
-// 			}
-// 			if foundN {
-// 				followSet = setUnion(followSet, firsts[v])
-// 				// fmt.Println(v,dervLambda[v])
-// 				if !dervLambda[v] {
-// 					needFollow = false
-// 					break
-// 				}
-// 			}
-// 		}
-// 		if needFollow {
-// 			needFollows.add(last.lhs)
-// 		}
-// 	}
-
-// 	for s, _ := range needFollows {
-// 		followSet = follow(s, P, dervLambda, firsts, followSet, seen)
-// 	}
-
-// 	return followSet
-// }
 
 func predict(p ProductionRule, dervLambda set, firsts map[string]set, follows map[string]set) set {
 	predictSet := make(set)
@@ -267,9 +228,9 @@ func predict(p ProductionRule, dervLambda set, firsts map[string]set, follows ma
 }
 
 // ========== LL(1) Table driven Parser =================
-func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .jack source file
+func makeLLTable(grammar []string) ([][]int,string,map[int]ProductionRule,map[string]int,map[string]int){ // Produces AST given a .jack source file
 	
-	// trim whitespace
+	// ::Table gen::
 	for i, v := range grammar {
 		grammar[i] = strings.TrimSpace(v)
 	}
@@ -278,7 +239,7 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 	terminals := make(set)
 
 	for _, line := range grammar {
-		v := strings.Split(line, " ")
+		v := strings.Fields(line)
 		for _, s := range v {
 			if isNonTerminal(s) {
 				nonTerminals.add(s)
@@ -287,30 +248,37 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 			}
 		}
 	}
-	
+
 	symbols := setUnion(terminals, nonTerminals)
 	symbols.add("$")
 
 	productionRules := makeProductionRules(grammar)
-	
-	// startState := getStartState(productionRules)
+
+	startState := getStartState(productionRules)
 	// fmt.Println(startState)
-	
 
 	dervLambdaCache := make(set)
 	for k, _ := range symbols {
+		if isNonTerminal(k) {
+			fmt.Println("derv->", k, derivesToLambda(k, productionRules))
+		}
 		dervLambdaCache[k] = derivesToLambda(k, productionRules)
 	}
+
 	firstCache := map[string]set{}
 	for k, _ := range symbols {
+		if isNonTerminal(k) {
+			fmt.Println("first->", k, first(k, productionRules, dervLambdaCache, make(set), make(set)).getValues())
+		}
 		firstCache[k] = first(k, productionRules, dervLambdaCache, make(set), make(set))
 
 	}
-
-	
-	fmt.Println("------------------")
+	fmt.Println()
 	followCache := map[string]set{}
 	for k, _ := range nonTerminals {
+		// fmt.Println("doing follow of...",k)
+		fmt.Println("follow->", k, follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set)).getValues())
+
 		followCache[k] = follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set))
 
 	}
@@ -323,7 +291,6 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 	for i, p := range productionRules {
 		ruleLookup[i+1] = p
 	}
-
 
 	columnValues := terminals.getValues()
 	sort.Strings(columnValues)
@@ -349,10 +316,6 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 		columnLookup[v] = i
 	}
 
-	// fmt.Println(rowValues)
-	// fmt.Println(columnValues)
-	// fmt.Println(columnLookup)
-	// fmt.Println(rowLookup)
 	LLTable := make([][]int, len(rowLookup))
 	for _, i := range rowLookup {
 		LLTable[i] = make([]int, len(columnLookup))
@@ -369,708 +332,278 @@ func AST(grammar []string, tokFilepath string) *Node{ // Produces AST given a .j
 		}
 
 	}
-	// fmt.Println()
+
 	fmt.Println(columnValues)
 	for _, v := range LLTable {
 		fmt.Println(v)
 	}
-// 	fmt.Println("=============LL table driven parsing============")
+	return LLTable,startState,ruleLookup,rowLookup,columnLookup
+}
+
+
+func makeAST(tokenStream []token, LLTable [][]int, startState string, ruleLookup map[int]ProductionRule,rowLookup map[string]int,columnLookup map[string]int) *Node{
+
+
+	S := make(stack, 0)
+	Q := make(queue, 0)
+	S = append(S, startState)
 	
-// 	tokenStream := readTokens(tokFilepath)
+	for _, tok := range tokenStream {
+		Q.push(tok)
+	}
 
-// 	// for _, v := range tokenStream {
-// 	// 	fmt.Println(v)
-// 	// }
+	Q.push(token{value: "$", tokenType: "$"})
 
-// 	S := make(stack, 0)
-// 	Q := make(queue, 0)
-// 	S = append(S, startState)
-// 	for i, v := range tokenStream {
-// 		if v.tokenType == "identifier" {
-// 			if tokenStream[i+1].value == "(" {
-// 				Q.push(token{value: v.value, tokenType: "subroutinename"})
-// 			} else if tokenStream[i+1].value == "." {
-// 				Q.push(token{value: v.value, tokenType: "objectname"})
-// 			} else if tokenStream[i+1].value == "[" {
-// 				Q.push(token{value: v.value, tokenType: "array"})
-// 			} else {
-// 				Q.push(v)
-// 			}
+	// fmt.Println(Q)
+	root := makeNode("ROOT", nil, 0)
+	current := root
+	uniqueID := 1
+	for {
+		if S.isEmpty() {
+			if !Q.isEmpty() {
+				fmt.Println("syntax error:", Q)
+				os.Exit(2)
+			}
 
-// 		} else if v.tokenType == "stringConst" {
-// 			Q.push(token{value: v.value, tokenType: "stringconstant"})
-// 		} else if v.tokenType == "integerConst" {
-// 			Q.push(token{value: v.value, tokenType: "integerconstant"})
-// 		} else {
-// 			Q.push(v)
-// 		}
+			break
+		}
 
-// 	}
-// 	Q.push(token{value: "$", tokenType: "$"})
-// 	// fmt.Println("---------------")
-// 	// for _, v := range Q {
-// 	// 	fmt.Println(v)
-// 	// }
+		// fmt.Println("S:", S)
+		// fmt.Println("Q:", Q)
+		s := S.peek()
+		q := Q.peek()
 
-// 	root := makeNode("ROOT", nil, 0)
-// 	current := root
-// 	// current.debug()
-// 	uniqueID := 1
-// 	for {
-// 		if S.isEmpty() {
-// 			if !Q.isEmpty() {
-// 				fmt.Println("syntax error:", Q)
-// 				os.Exit(2)
-// 			}
+		if s == "<*>" {
 
-// 			break
-// 		}
-
-// 		// fmt.Println("S:", S)
-// 		// fmt.Println("Q:", Q)
-
-// 		s := S.peek()
-// 		q := ""
-// 		t := Q.peek()
-
-// 		if t.tokenType == "keyword" || t.tokenType == "symbol" {
-// 			q = t.value
-// 		} else {
-// 			q = t.tokenType
-// 		}
-
-// 		if s == "<*>" {
-
-// 			S.pop()
-
-// 			// SDT Ast conversion: The Sword Slaying the Dragon aka Syntax Directed Translation
-// 			switch current.data {
-// 			case "ArrayName":
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-
-// 					if v.data != "[" && v.data != "]" {
-// 						newChildren = append(newChildren, v)
-// 					}
-// 				}
-// 				current.children = newChildren
-// 				current = current.parent
-// 			// 	current = current.parent
-// 			// 	newChildren := make([]*Node, 0)
-// 			// 	for _, v := range current.children {
-// 			// 		if v.data != "ArrayName" {
-// 			// 			newChildren = append(newChildren, v)
-// 			// 		} else {
-// 			// 			for _,x := range v.children{
-// 			// 				x.parent = current
-// 			// 			}
-// 			// 			newChildren = append(newChildren, v.children...)
-// 			// 		}
-// 			// 	}
-// 			// 	current.children = newChildren
-
-// 			case "ClassName":
-// 				current.data = current.children[0].data
-// 				current.id = current.children[0].id
-// 				current.children = nil
-// 				current = current.parent
+			S.pop()
+			// SDT!
+			switch current.data {
 			
-// 			case "SubroutineCallName":
-// 				current.data = current.children[0].data
-// 				current.id = current.children[0].id
-// 				current.children = nil
-// 				current = current.parent
-			
-// 			case "SubroutineName":
-// 				current.data = current.children[0].data
-// 				current.id = current.children[0].id
-// 				current.children = nil
-// 				current = current.parent
+			case "CHARRNG":
+				if current.children[0].data == "lambda" {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else {
+					current.data = current.children[1].data
+					current.id = current.children[1].id
+					current.children = nil
+					current = current.parent
+				}
+			case "ATOMMOD":
+				if current.children[0].data == "lambda" {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+				}
+			case "SEQLIST":
+				if current.children[0].data == "lambda" {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else if len(current.children) == 1 {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = current.children[0].children
+					current = current.parent
+					
+				} else {
+					current = current.parent
+					newChildren := make([]*Node, 0)
+					for _, v := range current.children {
+						if v.data != "SEQLIST" {
+							newChildren = append(newChildren, v)
+						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
+							newChildren = append(newChildren, v.children...)
+						}
+					}
+					current.children = newChildren
+				}
+			case "ALTLIST":
+				if current.children[0].data == "lambda" {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = nil
+					current = current.parent
+					current.children = current.children[:len(current.children)-1]
+				} else {
+					current = current.parent
+					newChildren := make([]*Node, 0)
+					for _, v := range current.children {
+						if v.data != "ALTLIST" {
+							newChildren = append(newChildren, v)
+						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
+							newChildren = append(newChildren, v.children...)
+						}
+					}
+					current.children = newChildren
+				}
+			case "NUCLEUS":
+				if len(current.children) == 1 {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = current.children[0].children
+					current = current.parent
 
-// 			case "Type":
-// 				current.data = current.children[0].data
-// 				current.id = current.children[0].id
-// 				current.children = nil
-// 				current = current.parent
-// 			case "ClassVarDecSF":
-// 				current.data = current.children[0].data
-// 				current.id = current.children[0].id
-// 				current.children = nil
-// 				current = current.parent
-// 			case "SubroutineDecCFM":
-// 				current.data = current.children[0].data
-// 				current.id = current.children[0].id
-// 				current.children = nil
-// 				current = current.parent
+				} else if len(current.children) == 3 {
+					current.data = current.children[1].data
+					current.id = current.children[1].id
+					current.children = current.children[1].children
+					current = current.parent
 
-// 			case "SubroutineDecType":
-// 				current.data = current.children[0].data
-// 				current.id = current.children[0].id
-// 				current.children = nil
-// 				current = current.parent
-// 			// case "KeywordConstant":
-// 			// 	current.data = current.children[0].data
-// 			// 	current.id = current.children[0].id
-// 			// 	current.children = nil
-// 			// 	current = current.parent
-			
-// 			case "Term":
-// 				current = current.parent
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-// 					if v.data != "Term" {
-// 						newChildren = append(newChildren, v)
-// 					} else {
-// 						for _,x := range v.children{
-// 							x.parent = current
-// 						}
-// 						newChildren = append(newChildren, v.children...)
-// 					}
-// 				}
-// 				current.children = newChildren
-
-// 			case "Expression":
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-
-// 					if v.data != ")" && v.data != "(" {
-// 						newChildren = append(newChildren, v)
-// 					}
-// 				}
-// 				current.children = newChildren
-// 				current = current.parent
-
-// 			case "Statement":
-// 				current = current.parent
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-// 					if v.data != "Statement" {
-// 						newChildren = append(newChildren, v)
-// 					} else {
-// 						for _,x := range v.children{
-// 							x.parent = current
-// 						}
-// 						newChildren = append(newChildren, v.children...)
-// 					}
-// 				}
-// 				current.children = newChildren
-
-// 			case "ExpressionTerms":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					current = current.parent
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data != "ExpressionTerms" {
-// 							newChildren = append(newChildren, v)
-// 						} else {
-// 							for _,x := range v.children{
-// 								x.parent = current
-// 							}
-// 							newChildren = append(newChildren, v.children...)
-// 						}
-// 					}
-// 					current.children = newChildren
-// 				}
-
-// 			case "SubroutineBodyVarDec":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					current = current.parent
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data != "SubroutineBodyVarDec" {
-// 							newChildren = append(newChildren, v)
-// 						} else {
-// 							for _,x := range v.children{
-// 								x.parent = current
-// 							}
-// 							newChildren = append(newChildren, v.children...)
-// 						}
-// 					}
-// 					current.children = newChildren
-
-// 				}
-// 			case "ExtraVarExt":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					current = current.parent
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data != "ExtraVarExt" {
-// 							newChildren = append(newChildren, v)
-// 						} else {
-// 							for _,x := range v.children{
-// 								x.parent = current
-// 							}
-// 							newChildren = append(newChildren, v.children...)
-// 						}
-// 					}
-// 					current.children = newChildren
-// 				}
-// 			case "Statements":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					current = current.parent
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data != "Statements" {
-// 							newChildren = append(newChildren, v)
-// 						} else {
-// 							for _,x := range v.children{
-// 								x.parent = current
-// 							}
-// 							newChildren = append(newChildren, v.children...)
-// 						}
-// 					}
-// 					current.children = newChildren
-
-// 				}
-// 			case "LetExpressionCheck":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					current = current.parent
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data != "LetExpressionCheck" {
-// 							newChildren = append(newChildren, v)
-// 						} else {
-// 							for _,x := range v.children{
-// 								x.parent = current
-// 							}
-// 							newChildren = append(newChildren, v.children...)
-// 						}
-// 					}
-// 					current.children = newChildren
-// 				}
-
-// 			case "ReturnExpressionCheck":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					current = current.parent
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data != "ReturnExpressionCheck" {
-// 							newChildren = append(newChildren, v)
-// 						} else {
-// 							for _,x := range v.children{
-// 								x.parent = current
-// 							}
-// 							newChildren = append(newChildren, v.children...)
-// 						}
-// 					}
-// 					current.children = newChildren
-// 				}
-// 			case "ExpressionList":
-// 				if current.children[0].data == "lambda" {
-// 					// current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					// current.children = current.children[:len(current.children)-1]
-// 				} else {
-
-// 					current = current.parent
-// 				}
-// 			case "ParameterList":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-
-// 					current = current.parent
-// 				}
-// 			case "ClassVarDec":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data == "," || v.data == ";" {
-// 							continue
-// 						}
-// 						newChildren = append(newChildren, v)
-
-// 					}
-// 					current.children = newChildren
-// 					current = current.parent
-
-// 				}
-// 			case "SubroutineDec":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data == "(" || v.data == ")" {
-// 							continue
-// 						}
-// 						newChildren = append(newChildren, v)
-
-// 					}
-// 					current.children = newChildren
-// 					current = current.parent
-// 				}
-// 			case "VarDecExt":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					current = current.parent
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data != "VarDecExt" {
-// 							newChildren = append(newChildren, v)
-// 						} else {
-// 							for _, x := range v.children {
-// 								x.parent = current
-// 								if x.data != "," {
-// 									newChildren = append(newChildren, x)
-// 								}
-// 							}
-
-// 						}
-// 					}
-// 					current.children = newChildren
-// 				}
-
-// 			case "ExpressionListExt":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					current = current.parent
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data != "ExpressionListExt" {
-// 							newChildren = append(newChildren, v)
-// 						} else {
-// 							for _, x := range v.children {
-// 								x.parent = current
-// 								if x.data != "," {
-// 									newChildren = append(newChildren, x)
-// 								}
-// 							}
-
-// 						}
-// 					}
-// 					current.children = newChildren
-// 				}
-// 			case "ParameterListExt":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					current = current.parent
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data != "ParameterListExt" {
-// 							newChildren = append(newChildren, v)
-// 						} else {
-// 							for _, x := range v.children {
-// 								x.parent = current
-// 								if x.data != "," {
-// 									newChildren = append(newChildren, x)
-// 								}
-// 							}
-
-// 						}
-// 					}
-// 					current.children = newChildren
-// 				}
-
-// 			case "ElseStatement":
-// 				if current.children[0].data == "lambda" {
-// 					current.data = current.children[0].data
-// 					current.id = current.children[0].id
-// 					current.children = nil
-// 					current = current.parent
-// 					current.children = current.children[:len(current.children)-1]
-// 				} else {
-// 					newChildren := make([]*Node, 0)
-// 					for _, v := range current.children {
-// 						if v.data == "{" || v.data == "}" || v.data == "else" {
-// 							continue
-// 						}
-// 						newChildren = append(newChildren, v)
-
-// 					}
-// 					current.children = newChildren
-
-// 					for i,v := range current.children{
-// 						if v.data == "ElseStatement"{
-// 							if current.children[i-1].data=="IfStatement"{
-// 								v.parent = current.children[i-1]
-// 								addChild(current.children[i-1],v)
-// 								current.children = append(current.children[:i],current.children[i+1:]...)
-// 							}
-// 						}
-// 					}
-
-// 					current = current.parent
-// 				}
-
-// 			case "DoStatement":
-// 				current = current.parent
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-// 					if v.data != "DoStatement" {
-// 						newChildren = append(newChildren, v)
-// 					} else {
-// 						for _, x := range v.children {
-// 							x.parent = current
-// 							if x.data != "do" && x.data != ";" {
-// 								newChildren = append(newChildren, x)
-// 							}
-// 						}
-
-// 					}
-// 				}
-// 				current.children = newChildren
-// 				current.children[0].data = "DoStatement"
-
-// 			case "LetStatement":
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-// 					if v.data == "let" || v.data == ";" || v.data == "=" {
-// 						continue
-// 					}
-// 					newChildren = append(newChildren, v)
-
-// 				}
-// 				current.children = newChildren
-// 				current = current.parent
-
-// 			case "WhileStatement":
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-// 					if v.data == "while" || v.data == "(" || v.data == ")" || v.data == "{" || v.data == "}" {
-// 						continue
-// 					}
-// 					newChildren = append(newChildren, v)
-
-// 				}
-// 				current.children = newChildren
-
-// 				for i,v := range current.children{
-// 					if v.data == "ElseStatement"{
-// 						if current.children[i-1].data=="IfStatement"{
-// 							v.parent = current.children[i-1]
-// 							addChild(current.children[i-1],v)
-// 							current.children = append(current.children[:i],current.children[i+1:]...)
-// 						}
-// 					}
-// 				}
-
-// 				current = current.parent
-			
-// 			case "VarDec":
-// 				current.children = current.children[1 : len(current.children)-1]
-// 				current = current.parent
-			
-// 			case "ReturnStatement":
-// 				if len(current.children) == 2 {
-// 					current.children = nil
-// 				} else {
-// 					current.children = current.children[1:2]
-// 				}
-// 				current = current.parent
-			
-// 			case "SubroutineBody":
-// 				current.children = current.children[1 : len(current.children)-1]
-// 				for i,v := range current.children{
-// 					if v.data == "ElseStatement"{
-// 						if current.children[i-1].data == "IfStatement"{
-// 							v.parent = current.children[i-1]
-// 							addChild(current.children[i-1],v)
-// 							current.children = append(current.children[:i],current.children[i+1:]...)
-// 						}
-						
-// 					}
-// 				}
-// 				current = current.parent
-			
-// 			case "SubroutineCall":
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-// 					if v.data == "." || v.data == "(" || v.data == ")" {
-// 						continue
-// 					}
-// 					newChildren = append(newChildren, v)
-
-// 				}
-// 				current.children = newChildren
-// 				current = current.parent
-
-// 			case "Class":
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-// 					if v.data == "{" || v.data == "}" || v.data == "class" || v.data == "$" {
-// 						continue
-// 					}
-// 					newChildren = append(newChildren, v)
-
-// 				}
-// 				current.children = newChildren
-// 				current = current.parent
-			
-// 			case "IfStatement":
-// 				newChildren := make([]*Node, 0)
-// 				for _, v := range current.children {
-// 					if v.data == "{" || v.data == "}" || v.data == "(" || v.data == ")" || v.data == "if" {
-// 						continue
-// 					}
-// 					newChildren = append(newChildren, v)
-
-// 				}
-// 				current.children = newChildren
-
-// 				for i,v := range current.children{
-// 					if v.data == "ElseStatement"{
-// 						if current.children[i-1].data=="IfStatement"{
-// 							v.parent = current.children[i-1]
-// 							addChild(current.children[i-1],v)
-// 							current.children = append(current.children[:i],current.children[i+1:]...)
-// 						}
-// 					}
-// 				}
-
-// 				current = current.parent
-
-			
-// 			default:
-// 				current = current.parent
-// 			}
-// 			// current = current.parent //uncomment for no SDT
-// 			continue
-// 		}
-
-// 		if s == "lambda" {
-// 			S.pop()
-// 			lambNode := makeNode("lambda", current, uniqueID)
-// 			addChild(current, lambNode)
-// 			// current.debug()
-// 			uniqueID++
-// 			continue
-// 		}
-
-// 		if isTerminal(s) || s == "$" {
-// 			if s == q {
+				}else if len(current.children) == 2{
+					current.data = "range"
+					current = current.parent
 				
-// 				if t.tokenType == "stringconstant" || t.tokenType == "integerconstant"{
-// 					v := makeNode(t.value, current, uniqueID)
-// 					uniqueID++
-// 					term := makeNode(t.tokenType, current, uniqueID)
-// 					addChild(term,v)
-// 					uniqueID++
-// 					addChild(current,term)
-// 				} else{
-// 					term := makeNode(t.value, current, uniqueID)
-// 					addChild(current, term)
-// 					uniqueID++
-// 				}
-// 				S.pop()
-// 				Q.popfront()
-// 				// current.debug()
+				}else {
+					current = current.parent
+				}
+			case "ATOM":
+				if len(current.children) == 2 {
+					current.data = current.children[1].data
+					current.id = current.children[1].id
+					current.children = current.children[:len(current.children)-1]
+					current = current.parent
 
-// 			} else {
-// 				fmt.Println("syntax error: s!=q", s, q)
-// 				os.Exit(2)
-// 			}
+				} else if len(current.children) == 1 {
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = current.children[0].children
+					current = current.parent
+
+				} else {
+					current = current.parent
+				}
+			case "ALT":
+				if len(current.children) == 1{
+					current.data = current.children[0].data
+					current.id = current.children[0].id
+					current.children = current.children[0].children
+					current = current.parent
+				} else{
+					newChildren := make([]*Node, 0)
+					for _, v := range current.children {
+						if v.data != "pipe" {
+							newChildren = append(newChildren, v)
+						} else {
+							for _,x := range v.children{
+								x.parent = current
+							}
+							newChildren = append(newChildren, v.children...)
+						}
+					}
+					current.children = newChildren
+					for _,v := range current.children{
+						if v.data == "SEQ" && len(v.children)==1{
+							v.data = v.children[0].data
+							v.id = v.children[0].id
+							v.children = v.children[0].children
+						}
+					}
+					current = current.parent
+				}
+			case "RE":
+				current.data = current.children[0].data
+				current.id = current.children[0].id
+				current.children = current.children[0].children
+				current = current.parent
 			
-// 			continue
-// 		}
+			default:
+				current = current.parent
+			}
+			// current = current.parent //for no SDT
+			continue
+		}
 
-// 		nextRule, found := ruleLookup[LLTable[rowLookup[s]][columnLookup[q]]]
-// 		if !found {
+		if s == "lambda" {
+			S.pop()
+			lambNode := makeNode("lambda", current, uniqueID)
+			addChild(current, lambNode)
+			uniqueID++
+			continue
+		}
 
-// 			fmt.Println("Parsing Error: (No such token in LL table or associated rule)")
-// 			fmt.Println("-----")
-// 			fmt.Println(s, q)
-// 			fmt.Println(S)
-// 			fmt.Println(Q)
-// 			os.Exit(2)
-// 		}
+		if isTerminal(s) || s == "$" {
 
-// 		// fmt.Println("fetching rule...", nextRule)
-// 		top := S.pop()
-// 		newNode := makeNode(top, current, uniqueID)
-// 		addChild(current, newNode)
-// 		// current.debug()
+			if s == q.tokenType {
+				term := makeNode(q.tokenType, current, uniqueID)
+				if q.tokenType == "char" {
+					term.data = q.value
+				}
 
-// 		current = newNode
-// 		uniqueID++
-// 		// add rule in reverse to stack...
-// 		S = append(S, "<*>") // end of production symbol designation
-// 		for i := len(nextRule.rhs) - 1; i >= 0; i-- {
-// 			S = append(S, nextRule.rhs[i])
-// 		}
-// 	}
-// 	S = nil
-// 	Q = nil
+				addChild(current, term)
+				uniqueID++
+
+				S.pop()
+				Q.popfront()
+				// current.debug()
+
+			} else {
+				fmt.Println("syntax error: s!=q", s, q)
+				os.Exit(2)
+			}
+
+			continue
+		}
+
+		nextRule, found := ruleLookup[LLTable[rowLookup[s]][columnLookup[q.tokenType]]]
+		if !found {
+
+			fmt.Println("Parsing Error: (No such token in LL table or associated rule)")
+			fmt.Println("-----")
+			fmt.Println(s, q)
+			fmt.Println(S)
+			fmt.Println(Q)
+			os.Exit(2)
+		}
+
+		// fmt.Println("fetching rule...", nextRule)
+		top := S.pop()
+		newNode := makeNode(top, current, uniqueID)
+
+		addChild(current, newNode)
+		// current.debug()
+
+		current = newNode
+		uniqueID++
+		// add rule in reverse to stack...
+		S = append(S, "<*>") // end of production symbol designation
+		for i := len(nextRule.rhs) - 1; i >= 0; i-- {
+			S = append(S, nextRule.rhs[i])
+		}
+	}
+	S = nil
+	Q = nil
+
+	// printTree(current)
+	ast := current.children[0]
+
+	nodeInfo := ""
+	nodeInfo = *(genNodeInfo(ast, &nodeInfo))
+
+	edgeInfo := ""
+	edgeInfo = *(genEdgeInfo(ast, &edgeInfo))
+
+	toGraphiz := nodeInfo + "\n" + edgeInfo
+	writeToFile("parsetree.txt", toGraphiz) // parsetree!
 	
-// 	// printTree(current)
-// 	ast := current.children[0]
-	
+	return ast
 
-// 	nodeInfo := ""
-// 	nodeInfo = *(genNodeInfo(ast, &nodeInfo))
-
-// 	edgeInfo := ""
-// 	edgeInfo = *(genEdgeInfo(ast, &edgeInfo))
-
-// 	toGraphiz := nodeInfo + "\n" + edgeInfo
-// 	writeToFile("parsetree.txt", toGraphiz)
-
-	return nil
 }
