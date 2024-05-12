@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+# normalizes a scan.u file
+test -d "${COMPGRADING}" || { echo >&2 "normscanu: COMPGRADING not in environment (should be set by grader.sh)"; exit 1; }
+test -x "${COMPGRADING}/aenorm" || { echo >&2 "normscanu: un-invokable COMPGRADING/aenorm"; exit 1; }
+# alphabet line
+set -e
+sed -n    1p  "${1}" | "${COMPGRADING}/aenorm" -a
+sed -n '2,$p' "${1}" | while read tt tokenid data resid; do 
+	test -z "${tt}" && continue
+	test -n "${resid}" && { echo >&2 "ERROR: data field in scan.u files should not contain whitespace (use alphabet encoding)" ; exit 1; }
+	# put an empty file on aenorm's input because it defaults to stdin if data is empty
+	echo "${tt}" "${tokenid}" `"${COMPGRADING}/aenorm" ${data} </dev/null`
+done
+exit 0
+
