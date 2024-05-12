@@ -222,8 +222,8 @@ func makeNFA(ast *Node, filename string){
 	addState()
 	addState()
 	
-	fmt.Println(T)
-	fmt.Println(L)
+	// fmt.Println(T)
+	// fmt.Println(L)
 	switch ast.data{
 	case "dot":
 		nodeDot(ast,0,1)
@@ -242,14 +242,14 @@ func makeNFA(ast *Node, filename string){
 		nodeLeaf(ast,0,1)
 
 	}
-	fmt.Println("======  T ======")
-	for _,v:= range T{
-		fmt.Println(v)
-	}
-	fmt.Println("===== L ======")
-	for _,v:= range L{
-		fmt.Println(v)
-	}
+	// fmt.Println("======  T ======")
+	// for _,v:= range T{
+	// 	fmt.Println(v)
+	// }
+	// fmt.Println("===== L ======")
+	// for _,v:= range L{
+	// 	fmt.Println(v)
+	// }
 
 	toNFA := ""
 
@@ -286,7 +286,7 @@ func makeNFA(ast *Node, filename string){
 	}
 	toNFA += "+ 1 1"
 	// fmt.Println(alphabetLookup)
-	fmt.Println(toNFA)
+	// fmt.Println(toNFA)
 
 	writeToFile(filename,toNFA)
 

@@ -259,17 +259,17 @@ func makeLLTable(grammar []string) ([][]int,string,map[int]ProductionRule,map[st
 
 	dervLambdaCache := make(set)
 	for k, _ := range symbols {
-		if isNonTerminal(k) {
-			fmt.Println("derv->", k, derivesToLambda(k, productionRules))
-		}
+		// if isNonTerminal(k) {
+		// 	fmt.Println("derv->", k, derivesToLambda(k, productionRules))
+		// }
 		dervLambdaCache[k] = derivesToLambda(k, productionRules)
 	}
 
 	firstCache := map[string]set{}
 	for k, _ := range symbols {
-		if isNonTerminal(k) {
-			fmt.Println("first->", k, first(k, productionRules, dervLambdaCache, make(set), make(set)).getValues())
-		}
+		// if isNonTerminal(k) {
+		// 	fmt.Println("first->", k, first(k, productionRules, dervLambdaCache, make(set), make(set)).getValues())
+		// }
 		firstCache[k] = first(k, productionRules, dervLambdaCache, make(set), make(set))
 
 	}
@@ -277,15 +277,15 @@ func makeLLTable(grammar []string) ([][]int,string,map[int]ProductionRule,map[st
 	followCache := map[string]set{}
 	for k, _ := range nonTerminals {
 		// fmt.Println("doing follow of...",k)
-		fmt.Println("follow->", k, follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set)).getValues())
+		// fmt.Println("follow->", k, follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set)).getValues())
 
 		followCache[k] = follow(k, productionRules, dervLambdaCache, firstCache, make(set), make(set))
 
 	}
-	fmt.Println()
-	for _, p := range productionRules {
-		fmt.Println("predict->", p, predict(p, dervLambdaCache, firstCache, followCache).getValues())
-	}
+	// fmt.Println()
+	// for _, p := range productionRules {
+	// 	fmt.Println("predict->", p, predict(p, dervLambdaCache, firstCache, followCache).getValues())
+	// }
 
 	ruleLookup := map[int]ProductionRule{}
 	for i, p := range productionRules {
