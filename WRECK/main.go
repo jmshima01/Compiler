@@ -208,8 +208,8 @@ func main() {
 	Q := make(queue, 0)
 	S = append(S, startState)
 
-	// tokenStream = lex(`a-d.q(A|B|)*de+`)
-
+	tokenStream = lex(`a|b`)
+	alphabet = "ab"
 	for _, tok := range tokenStream {
 
 		Q.push(tok)

@@ -7,7 +7,7 @@ import (
 
 var T [][]int
 var L [][]int
-var alphabet string = "ABCDg" 
+var alphabet string = "" 
 var numStates int = -1
 var alphabetLookup map[string]int = map[string]int{}
 
@@ -25,19 +25,18 @@ func addState()int{
 	for i := range l{
 		l[i]=-1
 	}
+	L = append(L, l)
 	for i:= range L{
 		L[i] = append(L[i], -1)
 	}
 
-	L = append(L, l)
-
-
-	// L = append(T, make([]int, currState))
+	
 	
 	return numStates
 }
 
 func addLambda(src int, dest int){
+	
 	L[src][dest] = 0 // *
 }
 
@@ -60,21 +59,57 @@ func nodeSeq(current *Node, src int, dest int){
 			nodeDot(child,t,childDest)
 		case "range":
 			nodeRange(child,t,childDest)
-		// case "SEQ":
-		// 	nodeSeq(child,src,childDest)
-		// // case "ALT":
-		// // 	nodeAlt(current,src,dest)
-		// case "kleene":
-		// 	nodeKleene(child,src,childDest)
+		case "SEQ":
+			nodeSeq(child,t,childDest)
+		case "ALT":
+			nodeAlt(child,t,dest)
+		case "kleene":
+			nodeKleene(child,src,childDest)
 		case "plus":
 			nodePlus(child,t,childDest)
 		// case "lambda":
-		// default:
-		// 	nodeLeaf(child,src,childDest)
+		default:
+			nodeLeaf(child,t,childDest)
 		}
 		t=childDest
 	}
+	
+	addLambda(childDest,dest)
 }
+
+
+func nodeAlt(current *Node, src int, dest int){
+	t:=src
+	for _,child := range current.children{
+		t = addState()
+		addLambda(src,t)
+		childDest := addState()
+		switch child.data{
+		case "dot":
+			nodeDot(child,t,childDest)
+		case "range":
+			nodeRange(child,t,childDest)
+		case "SEQ":
+			nodeSeq(child,t,childDest)
+		case "ALT":
+			nodeAlt(child,t,dest)
+		case "kleene":
+			nodeKleene(child,src,childDest)
+		case "plus":
+			nodePlus(child,t,childDest)
+		// case "lambda":
+		default:
+			nodeLeaf(child,t,childDest)
+		}
+		
+		addLambda(childDest,dest)
+
+	}
+	
+
+}
+
+
 
 func nodePlus(current *Node, src int, dest int){
 	data := current.children[0].data
@@ -117,13 +152,20 @@ func nodeDot(current *Node, src int, dest int){
 }
 
 func nodeKleene(current *Node, src int, dest int){
+	fir := addState()
+	sec := addState()
+	addLambda(src,fir)
+	addLambda(fir,sec)
+	addLambda(sec,dest)
+	addLambda(sec,fir)
+	addEdge(current.children[0].data,fir,sec)
 
 }
 
 
 
 func nodeLeaf(current *Node, src int, dest int){
-
+	addEdge(current.data,src,dest)
 }
 
 func makeNFA(ast *Node){
@@ -138,13 +180,29 @@ func makeNFA(ast *Node){
 	acceptStates := make(map[int]bool)
 	acceptStates[1]=true
 
+	// init start and goal
 	addState()
 	addState()
 	
 	fmt.Println(T)
 	fmt.Println(L)
-	if ast.data == "SEQ"{
+	switch ast.data{
+	case "dot":
+		nodeDot(ast,0,1)
+	case "range":
+		nodeRange(ast,0,1)
+	case "SEQ":
 		nodeSeq(ast,0,1)
+	case "ALT":
+		nodeAlt(ast,0,1)
+	case "kleene":
+		nodeKleene(ast,0,1)
+	case "plus":
+		nodePlus(ast,0,1)
+	// case "lambda":
+	default:
+		nodeLeaf(ast,0,1)
+
 	}
 	fmt.Println("======  T ======")
 	for _,v:= range T{
