@@ -1,20 +1,17 @@
 equating states 0 0
-new   map 1 6
-equating states 1 6
-new   map 2 2
-new   map 3 3
-equating states 2 2
-known map 1 6
-conflict  3 5(3)
-equating states 3 3
-known map 1 6
-conflict  2 4(2)
-transition table '_test3__lgadfa_student_dfa.tt': 6 (gold state 1) alphabet column 1 should be ERR
-transition table '_test3__lgadfa_student_dfa.tt': 2 (gold state 2) alphabet column 1 should be ERR
-transition table '_test3__lgadfa_student_dfa.tt': 2 (gold state 2) alphabet column 31 should be 3
-transition table '_test3__lgadfa_student_dfa.tt': state 2(gold state 2) should be accepting
-transition table '_test3__lgadfa_student_dfa.tt': 3 (gold state 3) alphabet column 1 should be ERR
-transition table '_test3__lgadfa_student_dfa.tt': 3 (gold state 3) alphabet column 30 should be 2
-transition table '_test3__lgadfa_student_dfa.tt': state 3(gold state 3) should be accepting
-transition table '_test3__lgadfa_student_dfa.tt': should have 4 states, has 8
+new   map 1 5
+equating states 1 5
+new   map 2 1
+new   map 3 2
+equating states 2 1
+known map 1 5
+conflict  3 4(2)
+equating states 3 2
+known map 1 5
+conflict  2 3(1)
+transition table '_test3__lgadfa_student_dfa.tt': 1 (gold state 2) alphabet column 31 should be 2
+transition table '_test3__lgadfa_student_dfa.tt': state 1(gold state 2) should be accepting
+transition table '_test3__lgadfa_student_dfa.tt': 2 (gold state 3) alphabet column 30 should be 1
+transition table '_test3__lgadfa_student_dfa.tt': state 2(gold state 3) should be accepting
+transition table '_test3__lgadfa_student_dfa.tt': should have 4 states, has 6
 
