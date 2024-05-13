@@ -129,9 +129,12 @@ func main() {
 	}
 
 	writeToFile(args[2],scanu)
-	
+
 	for i := range tokenize{
 		tokenStream := lex(tokenize[i])
+		fmt.Println("=================")
+		fmt.Println(tokenStream)
+		fmt.Println("================")
 		ast := makeAST(tokenStream,LLTable,startState,ruleLookup,rowLookup,columnLookup)
 		makeNFA(ast,tokenNames[i]+".nfa")
 	}

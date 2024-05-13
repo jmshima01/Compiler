@@ -93,7 +93,7 @@ func nodeAlt(current *Node, src int, dest int){
 		case "ALT":
 			nodeAlt(child,t,dest)
 		case "kleene":
-			nodeKleene(child,src,childDest)
+			nodeKleene(child,t,childDest)
 		case "plus":
 			nodePlus(child,t,childDest)
 		case "lambda":
@@ -220,12 +220,15 @@ func makeNFA(ast *Node, filename string){
 	L = nil
 	// make NFA
 	numStates = -1 // reset
+	fmt.Println(alphabet)
 	alphaIndLookup := make(map[int]string)
 	for i,v := range alphabet{
 		alphabetLookup[v] = i
 		alphaIndLookup[i] = v
 	}
 
+	fmt.Println(alphaIndLookup)
+	fmt.Println(alphabetLookup)
 	acceptStates := make(map[int]bool)
 	acceptStates[1]=true
 
