@@ -43,10 +43,10 @@ func addLambda(src int, dest int){
 }
 
 func addEdge(c string, src int, dest int){
-	fmt.Println("ADDINNG",alphabetLookup[c],c,src,dest)
-	fmt.Println(alphabetLookup)
-	_,x := alphabetLookup[c]
-	fmt.Println(x)
+	// fmt.Println("ADDINNG",alphabetLookup[c],c,src,dest)
+	// fmt.Println(alphabetLookup)
+	// _,x := alphabetLookup[c]
+	// fmt.Println(x)
 	T[src][alphabetLookup[c]] = dest 
 }
 
@@ -173,6 +173,7 @@ func nodeRange(current *Node, src int, dest int){
 		// fmt.Println(dest)
 		addEdge(convertAlpha(v),src,dest)
 	}
+
 }
 
 func nodeDot(current *Node, src int, dest int){
@@ -209,8 +210,8 @@ func nodeKleene(current *Node, src int, dest int){
 		nodeLeaf(child,first,out)
 	}
 	
-	addLambda(dest,src)
-	addLambda(src,dest)
+	addLambda(first,out)
+	addLambda(out,first)
 	
 }
 
@@ -262,14 +263,14 @@ func makeNFA(ast *Node, filename string){
 		nodeLeaf(ast,0,1)
 
 	}
-	fmt.Println("======  T ======")
-	for _,v:= range T{
-		fmt.Println(v)
-	}
-	fmt.Println("===== L ======")
-	for _,v:= range L{
-		fmt.Println(v)
-	}
+	// fmt.Println("======  T ======")
+	// for _,v:= range T{
+	// 	fmt.Println(v)
+	// }
+	// fmt.Println("===== L ======")
+	// for _,v:= range L{
+	// 	fmt.Println(v)
+	// }
 
 	toNFA := ""
 
