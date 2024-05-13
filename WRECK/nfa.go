@@ -144,9 +144,8 @@ func nodePlus(current *Node, src int, dest int){
 		nodeLeaf(child,src,t)
 	}
 	
+	nodeKleene(child,t,dest)
 	
-	addLambda(t,src)
-	addLambda(t,dest)
 }
 
 
