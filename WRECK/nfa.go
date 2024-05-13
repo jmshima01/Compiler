@@ -65,7 +65,8 @@ func nodeSeq(current *Node, src int, dest int){
 			nodeKleene(child,src,childDest)
 		case "plus":
 			nodePlus(child,t,childDest)
-		// case "lambda":
+		case "lambda":
+			nodeLambda(child,t,childDest)
 		default:
 			nodeLeaf(child,t,childDest)
 		}
@@ -95,7 +96,8 @@ func nodeAlt(current *Node, src int, dest int){
 			nodeKleene(child,src,childDest)
 		case "plus":
 			nodePlus(child,t,childDest)
-		// case "lambda":
+		case "lambda":
+			nodeLambda(child,t,childDest)
 		default:
 			nodeLeaf(child,t,childDest)
 		}
@@ -106,6 +108,12 @@ func nodeAlt(current *Node, src int, dest int){
 	
 
 }
+
+func nodeLambda(current *Node, src int, dest int){
+	lamb := addState()
+	addLambda(lamb,dest)
+}
+
 
 func nodePlus(current *Node, src int, dest int){
 	data := current.children[0].data
@@ -125,7 +133,8 @@ func nodePlus(current *Node, src int, dest int){
 		nodeKleene(child,src,t)
 	case "plus":
 		nodePlus(child,src,t)
-	// case "lambda":
+	case "lambda":
+		nodeLambda(child,src,dest)
 	default:
 		nodeLeaf(child,src,t)
 	}
