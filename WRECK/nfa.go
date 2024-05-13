@@ -115,8 +115,8 @@ func nodeAlt(current *Node, src int, dest int){
 }
 
 func nodeLambda(current *Node, src int, dest int){
-	lamb := addState()
-	addLambda(lamb,dest)
+	
+	addLambda(src,dest)
 }
 
 
