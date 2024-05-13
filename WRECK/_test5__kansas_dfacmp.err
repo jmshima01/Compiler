@@ -1,4 +1,6 @@
 equating states 0 0
+known map 0 0
+known map 0 0
 new   map 1 1
 new   map 6 6
 new   map 2 2
@@ -25,7 +27,3 @@ known map 0 0
 known map 0 0
 known map 0 0
 equating states 6 6
-transition table '_test5__kansas_student_dfa.tt': 0 (gold state 0) alphabet column 1 should be ERR
-transition table '_test5__kansas_student_dfa.tt': 0 (gold state 0) alphabet column 2 should not be ERR
-transition table '_test5__kansas_student_dfa.tt': 0 (gold state 0) alphabet column 3 should not be ERR
-
