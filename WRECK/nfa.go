@@ -48,7 +48,7 @@ func addEdge(c string, src int, dest int){
 
 func nodeSeq(current *Node, src int, dest int){
 	t := src
-	childDest:= 0
+	childDest:= t
 	for _,child := range current.children{
 		childDest = addState()
 		
