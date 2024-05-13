@@ -1,79 +1,61 @@
 equating states 0 0
-new   map 1 1
-conflict  1 2(1)
-conflict  1 2(1)
-conflict  1 2(1)
-conflict  1 2(1)
-conflict  1 2(1)
-conflict  1 2(1)
-conflict  1 2(1)
-conflict  1 2(1)
-conflict  1 2(1)
-equating states 1 1
+new   map 1 0
+equating states 1 0
 new   map 2 0
-known map 2 0
-known map 2 0
-known map 2 0
-known map 2 0
-known map 2 0
-known map 2 0
-known map 2 0
-known map 2 0
-known map 2 0
 equating states 2 0
-conflict  2 1(0)
-conflict  2 2(0)
-conflict  2 2(0)
-conflict  2 2(0)
-conflict  2 2(0)
-conflict  2 2(0)
-conflict  2 2(0)
-conflict  2 2(0)
-conflict  2 2(0)
-conflict  2 2(0)
-new   map 3 3
-new   map 7 7
-new   map 4 4
-equating states 3 3
-known map 3 3
-known map 3 3
-known map 7 7
-known map 4 4
-equating states 4 4
-new   map 5 5
-equating states 5 5
-new   map 6 6
-equating states 6 6
-new   map 8 8
-equating states 7 7
-known map 3 3
-known map 3 3
-known map 7 7
-known map 4 4
-equating states 8 8
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 5 should be 1
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 6 should be 1
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 7 should be 1
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 8 should be 1
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 9 should be 1
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 10 should be 1
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 11 should be 1
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 12 should be 1
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 13 should be 1
+known map 2 0
+new   map 3 0
+new   map 7 4
+new   map 4 1
+equating states 3 0
+known map 3 0
+known map 3 0
+known map 7 4
+known map 4 1
+equating states 4 1
+new   map 5 2
+equating states 5 2
+new   map 6 3
+equating states 6 3
+new   map 8 5
+equating states 7 4
+known map 3 0
+known map 3 0
+known map 7 4
+known map 4 1
+equating states 8 5
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 5 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 6 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 7 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 8 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 9 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 10 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 11 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 12 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 13 should not be ERR
 transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 14 should be ERR
 transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 16 should be ERR
 transition table '_test3__punk_student_dfa.tt': 0 (gold state 0) alphabet column 20 should be ERR
-transition table '_test3__punk_student_dfa.tt': 1 (gold state 1) alphabet column 14 should be ERR
-transition table '_test3__punk_student_dfa.tt': 1 (gold state 1) alphabet column 16 should be ERR
-transition table '_test3__punk_student_dfa.tt': 1 (gold state 1) alphabet column 20 should be ERR
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 4 should be 0
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 5 should be 0
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 6 should be 0
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 7 should be 0
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 8 should be 0
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 9 should be 0
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 10 should be 0
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 11 should be 0
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 12 should be 0
-transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 13 should be 0
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 5 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 6 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 7 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 8 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 9 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 10 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 11 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 12 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 13 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 14 should be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 16 should be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 1) alphabet column 20 should be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 5 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 6 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 7 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 8 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 9 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 10 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 11 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 12 should not be ERR
+transition table '_test3__punk_student_dfa.tt': 0 (gold state 2) alphabet column 13 should not be ERR
+transition table '_test3__punk_student_dfa.tt': should have 9 states, has 6
 
