@@ -198,13 +198,15 @@ func nodeKleene(current *Node, src int, dest int){
 		nodeKleene(child,first,out)
 	case "plus":
 		nodePlus(child,first,out)
-	// case "lambda":
+	case "lambda":
+		nodeLambda(child,first,out)
 	default:
 		nodeLeaf(child,first,out)
 	}
 	
-	addLambda(first,out)
-	addLambda(out,first)
+	addLambda(dest,src)
+	addLambda(src,dest)
+	
 }
 
 
