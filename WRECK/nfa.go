@@ -43,6 +43,10 @@ func addLambda(src int, dest int){
 }
 
 func addEdge(c string, src int, dest int){
+	fmt.Println("ADDINNG",alphabetLookup[c],c,src,dest)
+	fmt.Println(alphabetLookup)
+	_,x := alphabetLookup[c]
+	fmt.Println(x)
 	T[src][alphabetLookup[c]] = dest 
 }
 
@@ -99,6 +103,7 @@ func nodeAlt(current *Node, src int, dest int){
 		case "lambda":
 			nodeLambda(child,t,childDest)
 		default:
+			fmt.Println("DEBUG",child.data,t,childDest)
 			nodeLeaf(child,t,childDest)
 		}
 		
@@ -218,17 +223,18 @@ func nodeLeaf(current *Node, src int, dest int){
 func makeNFA(ast *Node, filename string){
 	T = nil // clear globals
 	L = nil
+	
 	// make NFA
 	numStates = -1 // reset
-	fmt.Println(alphabet)
+	// fmt.Println(alphabet)
 	alphaIndLookup := make(map[int]string)
 	for i,v := range alphabet{
 		alphabetLookup[v] = i
 		alphaIndLookup[i] = v
 	}
 
-	fmt.Println(alphaIndLookup)
-	fmt.Println(alphabetLookup)
+	// fmt.Println(alphaIndLookup)
+	// fmt.Println(alphabetLookup)
 	acceptStates := make(map[int]bool)
 	acceptStates[1]=true
 
@@ -256,14 +262,14 @@ func makeNFA(ast *Node, filename string){
 		nodeLeaf(ast,0,1)
 
 	}
-	// fmt.Println("======  T ======")
-	// for _,v:= range T{
-	// 	fmt.Println(v)
-	// }
-	// fmt.Println("===== L ======")
-	// for _,v:= range L{
-	// 	fmt.Println(v)
-	// }
+	fmt.Println("======  T ======")
+	for _,v:= range T{
+		fmt.Println(v)
+	}
+	fmt.Println("===== L ======")
+	for _,v:= range L{
+		fmt.Println(v)
+	}
 
 	toNFA := ""
 

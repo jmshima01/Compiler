@@ -16,12 +16,12 @@ func lex(s string) []token {
 		}
 		if string(v) == `\` {
 			if string(s[i+1]) == "s" {
-				t := token{value: "0x20", tokenType: "char"}
+				t := token{value: "x20", tokenType: "char"}
 				skip = true
 				tokens = append(tokens, t)
 				continue
 			}else if string(s[i+1]) == `n` {
-				t := token{value: "0x0a", tokenType: "char"}
+				t := token{value: "x0a", tokenType: "char"}
 				skip = true
 				tokens = append(tokens, t)
 				continue
@@ -132,9 +132,9 @@ func main() {
 
 	for i := range tokenize{
 		tokenStream := lex(tokenize[i])
-		fmt.Println("=================")
-		fmt.Println(tokenStream)
-		fmt.Println("================")
+		// fmt.Println("=================")
+		// fmt.Println(tokenStream)
+		// fmt.Println("================")
 		ast := makeAST(tokenStream,LLTable,startState,ruleLookup,rowLookup,columnLookup)
 		makeNFA(ast,tokenNames[i]+".nfa")
 	}
