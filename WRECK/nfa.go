@@ -52,7 +52,7 @@ func addEdge(c string, src int, dest int){
 
 func nodeSeq(current *Node, src int, dest int){
 	t := src
-	childDest:= t
+	childDest:= 0
 	for _,child := range current.children{
 		childDest = addState()
 		
@@ -66,7 +66,7 @@ func nodeSeq(current *Node, src int, dest int){
 		case "ALT":
 			nodeAlt(child,t,dest)
 		case "kleene":
-			nodeKleene(child,src,childDest)
+			nodeKleene(child,t,childDest)
 		case "plus":
 			nodePlus(child,t,childDest)
 		case "lambda":
@@ -144,6 +144,8 @@ func nodePlus(current *Node, src int, dest int){
 		nodeLeaf(child,src,t)
 	}
 	
+	
+	addLambda(t,src)
 	addLambda(t,dest)
 }
 
