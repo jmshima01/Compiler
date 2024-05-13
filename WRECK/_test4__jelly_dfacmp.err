@@ -1,15 +1,15 @@
 equating states 0 0
-new   map 1 1
-known map 1 1
-known map 1 1
-known map 1 1
-known map 1 1
-known map 1 1
-known map 1 1
-known map 1 1
-known map 1 1
-known map 1 1
-equating states 1 1
+new   map 1 0
+known map 1 0
+known map 1 0
+known map 1 0
+known map 1 0
+known map 1 0
+known map 1 0
+known map 1 0
+known map 1 0
+known map 1 0
+equating states 1 0
 new   map 2 0
 known map 2 0
 known map 2 0
@@ -21,66 +21,80 @@ known map 2 0
 known map 2 0
 known map 2 0
 equating states 2 0
-conflict  2 1(0)
-conflict  2 1(0)
-conflict  2 1(0)
-conflict  2 1(0)
-conflict  2 1(0)
-conflict  2 1(0)
-conflict  2 1(0)
-conflict  2 1(0)
-conflict  2 1(0)
-conflict  2 1(0)
-new   map 3 2
-new   map 15 14
-new   map 4 3
-new   map 5 4
-equating states 3 2
-known map 3 2
-known map 15 14
-known map 4 3
-known map 5 4
-equating states 4 3
-new   map 13 12
-equating states 5 4
-new   map 6 5
-equating states 6 5
-new   map 7 6
-equating states 7 6
-new   map 8 7
-equating states 8 7
-new   map 9 8
-equating states 9 8
-new   map 10 9
-equating states 10 9
-new   map 11 10
-equating states 11 10
-new   map 12 11
-equating states 12 11
-known map 3 2
-equating states 13 12
-new   map 14 13
-equating states 14 13
-new   map 16 15
-equating states 15 14
-known map 3 2
-known map 15 14
-known map 4 3
-known map 5 4
-equating states 16 15
+known map 2 0
+known map 2 0
+known map 2 0
+known map 2 0
+known map 2 0
+known map 2 0
+known map 2 0
+known map 2 0
+known map 2 0
+known map 2 0
+new   map 3 0
+new   map 15 12
+new   map 4 1
+new   map 5 2
+equating states 3 0
+known map 3 0
+known map 15 12
+known map 4 1
+known map 5 2
+equating states 4 1
+new   map 13 10
+equating states 5 2
+new   map 6 3
+equating states 6 3
+new   map 7 4
+equating states 7 4
+new   map 8 5
+equating states 8 5
+new   map 9 6
+equating states 9 6
+new   map 10 7
+equating states 10 7
+new   map 11 8
+equating states 11 8
+new   map 12 9
+equating states 12 9
+known map 3 0
+equating states 13 10
+new   map 14 11
+equating states 14 11
+new   map 16 13
+equating states 15 12
+known map 3 0
+known map 15 12
+known map 4 1
+known map 5 2
+equating states 16 13
 transition table '_test4__jelly_student_dfa.tt': 0 (gold state 0) alphabet column 21 should be ERR
 transition table '_test4__jelly_student_dfa.tt': 0 (gold state 0) alphabet column 23 should be ERR
 transition table '_test4__jelly_student_dfa.tt': 0 (gold state 0) alphabet column 27 should be ERR
 transition table '_test4__jelly_student_dfa.tt': 0 (gold state 0) alphabet column 28 should be ERR
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 11 should be 0
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 12 should be 0
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 13 should be 0
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 14 should be 0
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 15 should be 0
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 16 should be 0
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 17 should be 0
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 18 should be 0
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 19 should be 0
-transition table '_test4__jelly_student_dfa.tt': 0 (gold state 2) alphabet column 20 should be 0
-transition table '_test4__jelly_student_dfa.tt': should have 17 states, has 16
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 1) alphabet column 21 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 1) alphabet column 23 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 1) alphabet column 27 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 1) alphabet column 28 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 11 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 12 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 13 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 14 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 15 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 16 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 17 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 18 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 19 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 0 (gold state 3) alphabet column 20 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 11 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 12 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 13 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 14 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 15 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 16 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 17 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 18 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 19 should be ERR
+transition table '_test4__jelly_student_dfa.tt': 12 (gold state 15) alphabet column 20 should be ERR
+transition table '_test4__jelly_student_dfa.tt': should have 17 states, has 14
 
