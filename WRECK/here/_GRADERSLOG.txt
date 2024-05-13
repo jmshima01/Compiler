@@ -1,0 +1,3 @@
+INVOCATION: -P WRECK wreck-jamesshima.tar.gz ./here ON Sun 12 May 2024 09:29:03 PM MDT:
+ISSUE: README type file not in a doc directory (req#7d)
+
