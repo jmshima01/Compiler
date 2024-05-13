@@ -64,7 +64,7 @@ func nodeSeq(current *Node, src int, dest int){
 		case "SEQ":
 			nodeSeq(child,t,childDest)
 		case "ALT":
-			nodeAlt(child,t,dest)
+			nodeAlt(child,t,childDest)
 		case "kleene":
 			nodeKleene(child,t,childDest)
 		case "plus":
@@ -95,7 +95,7 @@ func nodeAlt(current *Node, src int, dest int){
 		case "SEQ":
 			nodeSeq(child,t,childDest)
 		case "ALT":
-			nodeAlt(child,t,dest)
+			nodeAlt(child,t,childDest)
 		case "kleene":
 			nodeKleene(child,t,childDest)
 		case "plus":
@@ -103,7 +103,7 @@ func nodeAlt(current *Node, src int, dest int){
 		case "lambda":
 			nodeLambda(child,t,childDest)
 		default:
-			fmt.Println("DEBUG",child.data,t,childDest)
+			// fmt.Println("DEBUG",child.data,t,childDest)
 			nodeLeaf(child,t,childDest)
 		}
 		
@@ -139,7 +139,7 @@ func nodePlus(current *Node, src int, dest int){
 	case "plus":
 		nodePlus(child,src,t)
 	case "lambda":
-		nodeLambda(child,src,dest)
+		nodeLambda(child,src,t)
 	default:
 		nodeLeaf(child,src,t)
 	}
@@ -258,7 +258,8 @@ func makeNFA(ast *Node, filename string){
 		nodeKleene(ast,0,1)
 	case "plus":
 		nodePlus(ast,0,1)
-	// case "lambda":
+	case "lambda":
+		nodeLambda(ast,0,1)
 	default:
 		nodeLeaf(ast,0,1)
 
