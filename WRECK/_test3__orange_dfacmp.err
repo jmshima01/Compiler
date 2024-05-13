@@ -24,18 +24,124 @@ known map 9 9
 equating states 8 8
 known map 9 9
 equating states 9 9
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 21 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 22 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 23 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 24 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 25 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 26 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 29 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 30 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 31 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 32 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 33 should not be ERR
-transition table '_test3__orange_student_dfa.tt': 9 (gold state 9) alphabet column 34 should not be ERR
-transition table '_test3__orange_student_dfa.tt': state 9(gold state 9) should not be accepting
-transition table '_test3__orange_student_dfa.tt': should have 14 states, has 10
-
+new   map 10 10
+known map 10 10
+known map 10 10
+known map 10 10
+known map 10 10
+known map 10 10
+known map 10 10
+known map 10 10
+known map 10 10
+known map 10 10
+known map 10 10
+known map 10 10
+equating states 10 10
+new   map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+known map 11 11
+equating states 11 11
+new   map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+known map 12 12
+equating states 12 12
+new   map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+known map 13 13
+equating states 13 13
